@@ -1,0 +1,15 @@
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: voidspace_posts_db
+    environment:
+      POSTGRES_USER: voidspace
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: voidspace_posts_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:

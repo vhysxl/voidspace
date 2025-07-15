@@ -1,0 +1,93 @@
+# ================================
+# ENVIRONMENT & SECRETS
+# ================================
+.env
+.env.*
+!.env.example
+
+# ================================
+# PYTHON / FASTAPI
+# ================================
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Testing
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Database migrations
+alembic/versions/
+
+# ================================
+# NODE.JS / EXPRESS / VUE
+# ================================
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# Cache
+.npm
+.yarn-integrity
+
+# Coverage
+coverage/
+
+# ================================
+# GO / CHI
+# ================================
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Build artifacts
+bin/
+vendor/
+
+# Air live reload
+.air.toml
+.air_tmp/
+
+# ================================
+# GENERAL
+# ================================
+# Temporary files
+*.tmp
+*.temp
+tmp/
+.tmp/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db

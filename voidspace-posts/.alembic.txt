@@ -1,0 +1,13 @@
+alembic init alembic
+alembic upgrade head
+alembic revision --autogenerate -m "deskripsi perubahan"
+alembic upgrade <revision_id>
+
+python -m alembic upgrade head
+
+docker build -t <image-name> .
+
+docker run -d --name <container-name> -p <host-port>:<container-port> <image-name>
+
+docker exec -it <container-name> /bin/bash
+
