@@ -1,53 +1,60 @@
-from fastapi import Depends, APIRouter, HTTPException
-from app.api.v1 import router
+from fastapi import Depends, APIRouter
 from app.common.response import SuccessResponse
-from app.error.error_posts import DatabaseExcetion
 from app.middleware.middleware import get_user_from_gateway
 from app.schemas.posts_schemas import Posts, PostCreate
 from app.services.posts_service import PostService
 from typing import List
+from app.api.v1.endpoint import likes
 
-router = APIRouter()  # initializer endpoint ini
+router = APIRouter()
 
-
-@router.get("/")
-async def get_posts(service: PostService = Depends()) -> SuccessResponse[List[Posts]]:
-    try:
-        posts = service.get_posts()
-        return SuccessResponse[List[Posts]](
-            success=True, message="Posts retrieved successfully", data=posts
-        )
-    except DatabaseExcetion as e:
-        raise HTTPException(
-            status_code=500, detail="Internal Server Error, error " + str(e)
-        )
+# Pydantic model => Body parameter
+# primitif(str, int, bool, float) => Query parameter
+# Path variables with {}  => Path parameter
 
 
-@router.post("/create")
-async def create_post(
+@router.get("", response_model=SuccessResponse[List[Posts]])
+def get_posts(service: PostService = Depends()):
+    posts = service.get_posts()
+    return SuccessResponse(
+        success=True, message="Posts retrieved successfully", data=posts
+    )
+
+
+@router.post("/", response_model=SuccessResponse[Posts])
+def create_post(
     post_data: PostCreate,
     service: PostService = Depends(),
-    current_user: dict = Depends((get_user_from_gateway)),
-) -> SuccessResponse[Posts]:
-    try:
-        new_posts = service.create_posts(post_data)
-        return SuccessResponse[Posts](
-            success=True, message="Posts Created Successfully", data=new_posts
-        )
-    except DatabaseExcetion as e:
-        raise HTTPException(status_code=500, detail="Internal Server Error " + str(e))
+    # current_user: dict = Depends(get_user_from_gateway),
+):
+    new_posts = service.create_posts(post_data=post_data)
+    return SuccessResponse(
+        success=True, message="Posts Created Successfully", data=new_posts
+    )
 
 
-# @router.patch("/edit/{post_id}")
-# async def edit_post(post_id: str, post_data: PostCreate, service: PostService = Depends()):
-#     try:
-#         updated_post = service.
+@router.get("/{post_id}", response_model=SuccessResponse[Posts])
+def get_post(post_id: str, service: PostService = Depends()):
+    post = service.get_post(post_id=post_id)
+    return SuccessResponse(
+        success=True, message="Post retrieved successfully", data=post
+    )
 
-# @router.get("/posts/{post_id}")
-# async def get_post(post_id: str, db: Session = Depends(get_db)):
 
-# @router.delete("/posts/{post_id}")
-# async def delete_post(
+@router.patch("/{post_id}", response_model=SuccessResponse[Posts])
+def edit_post(post_id: str, post_data: PostCreate, service: PostService = Depends()):
+    updated_post = service.edit_posts(post_data=post_data, post_id=post_id)
+    return SuccessResponse(
+        success=True, message="Post edited successfully", data=updated_post
+    )
 
-# @router.get("/users/{user_id}/posts")
-# async def get_user_posts(
+
+@router.delete("/{post_id}", response_model=SuccessResponse)
+def delete_post(post_id: str, service: PostService = Depends()):
+    service.delete_post(post_id=post_id)
+    return SuccessResponse(success=True, message="Post Deleted successfully")
+
+
+router.include_router(
+    likes.router, prefix="/{post_id}"
+)  # subrouter ke like jadi: /posts/{post_id}/like

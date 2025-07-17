@@ -1,11 +1,19 @@
-# @router.post("/posts/{post_id}/like")
-# async def like_post(
+from fastapi import Depends, APIRouter
+from app.common.response import SuccessResponse
+from app.services.likes_service import LikeService
+from app.schemas.posts_schemas import Posts
 
-# @router.delete("/posts/{post_id}/like")
-# async def unlike_post(
 
-# @router.get("/posts/{post_id}/liked")
-# async def get_post_likes(
+router = APIRouter()
 
-# @router.get("/posts/{post_id}/liked") -> COUNT
-# async def  get_post_likes(
+
+@router.post("/like", response_model=SuccessResponse)
+def like_post(post_id: str, username: str, service: LikeService = Depends()):
+    service.like_post(username=username, post_id=post_id)
+    return SuccessResponse(success=True, message="Successfully liked post")
+
+
+@router.delete("/like", response_model=SuccessResponse)
+def unlike_post(post_id: str, username: str, service: LikeService = Depends()):
+    service.unlike_post(post_id=post_id, username=username)
+    return SuccessResponse(success=True, message="Successfully liked post")
