@@ -1,7 +1,7 @@
 from functools import wraps
 from app.error.error_posts import DatabaseExcetion, NotFound
 import logging
-from sqlalchemy.exc import SQLAlchemyError
+
 
 logger = logging.getLogger(__name__)
 
