@@ -34,11 +34,40 @@ func (u *userRepository) GetUsersByUsername(ctx context.Context, username string
 	panic("unimplemented")
 }
 
+// GetUserByCredentials implements domain.UserRepository.
+func (u *userRepository) GetUserByCredentials(ctx context.Context, credentials string) (*domain.User, error) {
+	user := &domain.User{}
+	err := u.db.QueryRowContext(ctx,
+		`SELECT id, username, email, password_hash, created_at, updated_at 
+		FROM users 
+		WHERE email = ? OR username = ?`,
+		credentials, credentials,
+	).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.PasswordHash,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	return user, nil
+}
+
 // GetUserByEmail implements domain.UserRepository.
 func (u *userRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
 	user := &domain.User{}
 	err := u.db.QueryRowContext(ctx,
-		"SELECT id, username, email, password_hash, created_at, updated_at FROM users WHERE email = ?",
+		`SELECT id, username, email, password_hash, created_at, updated_at 
+		FROM users 
+		WHERE email = ?`,
 		email).
 		Scan(
 			&user.ID,
@@ -63,7 +92,9 @@ func (u *userRepository) GetUserByEmail(ctx context.Context, email string) (*dom
 func (u *userRepository) GetUserByUsername(ctx context.Context, username string) (*domain.User, error) {
 	user := &domain.User{}
 	err := u.db.QueryRowContext(ctx,
-		"SELECT id, username, email, password_hash, created_at, updated_at FROM users WHERE username = ?",
+		`SELECT id, username, email, password_hash, created_at, updated_at 
+		FROM users 
+		WHERE username = ?`,
 		username).
 		Scan(
 			&user.ID,

@@ -23,6 +23,13 @@ type RegisterHandler struct {
 	Validator       *validator.Validate
 }
 
+func NewRegisterHandler(RegisterUsecase usecase.RegisterUsecase, validator *validator.Validate) *RegisterHandler {
+	return &RegisterHandler{
+		RegisterUsecase: RegisterUsecase,
+		Validator:       validator,
+	}
+}
+
 func (rh *RegisterHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	var request RegisterRequest
 
