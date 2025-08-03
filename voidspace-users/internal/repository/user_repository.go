@@ -17,7 +17,7 @@ func NewUserRepository(db *sql.DB) domain.UserRepository {
 }
 
 func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
-	_, err := u.db.ExecContext(
+	result, err := u.db.ExecContext(
 		ctx,
 		"INSERT INTO users (username, email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
 		user.Username,
@@ -26,7 +26,16 @@ func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
 		user.CreatedAt,
 		user.UpdatedAt,
 	)
-	return err
+	if err != nil {
+		return err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	user.ID = int(id)
+	return nil
 }
 
 // GetUsersByUsername implements domain.UserRepository.

@@ -18,7 +18,7 @@ func main() {
 
 	r := chi.NewRouter()
 
-	router.Router(r, app.DB, app.Validator, app.ContextTimeout)
+	router.Router(r, app)
 
 	log.Println("Listening", app.Config.Port)
 	err = http.ListenAndServe(app.Config.Port, r)
