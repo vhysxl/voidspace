@@ -3,19 +3,17 @@ package bootstrap
 import (
 	"context"
 	"crypto/rsa"
-	"crypto/x509"
 	"database/sql"
-	"encoding/pem"
-	"fmt"
 	"log"
-	"os"
 	"time"
 	"voidspace/users/config"
 	"voidspace/users/database"
+	"voidspace/users/logger"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+	"go.uber.org/zap"
 )
 
 type Application struct {
@@ -27,33 +25,24 @@ type Application struct {
 	AccessTokenDuration   time.Duration
 	RefreshTokenDuration  time.Duration
 	PrivateKey            *rsa.PrivateKey
+	Logger                *zap.Logger
 }
 
 func App() (*Application, error) {
 	err := godotenv.Load()
 	if err != nil {
-		log.Println(".env not found, using fallbacks")
+		log.Println(".env not found, using fallbacks", err)
 	}
 
-	privateKeyData, err := os.ReadFile(`C:\Users\Hp\Documents\projects\voidspace\private_key.pem`)
+	logger, err := logger.InitLogger()
 	if err != nil {
-		return nil, err
+		log.Println("logger failed to load", err)
 	}
+	defer logger.Sync()
 
-	block, _ := pem.Decode(privateKeyData)
-	if block == nil {
-		return nil, fmt.Errorf("failed to parse PEM block containing the key")
-	}
-
-	// Parse RSA private key
-	key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	privateKey, err := config.LoadPrivateKey("./secret/private_key.pem")
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse RSA private key: %v", err)
-	}
-
-	privateKey, ok := key.(*rsa.PrivateKey)
-	if !ok {
-		log.Fatal("key is not RSA private key")
+		logger.Error("Failed to load private key", zap.Error(err))
 	}
 
 	cfg := config.GetConfig()
@@ -73,6 +62,7 @@ func App() (*Application, error) {
 
 	db, err := database.MySqlDatabase(ctx, dbConfig)
 	if err != nil {
+		logger.Error("Failed to connect to database", zap.Error(err))
 		return nil, err
 	}
 
@@ -85,5 +75,6 @@ func App() (*Application, error) {
 		AccessTokenDuration:   time.Duration(cfg.AccessTokenDuration) * time.Hour,
 		RefreshTokenDuration:  time.Duration(cfg.RefreshTokenDuration) * 24 * time.Hour,
 		PrivateKey:            privateKey,
+		Logger:                logger,
 	}, nil
 }

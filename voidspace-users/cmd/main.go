@@ -7,6 +7,7 @@ import (
 	"voidspace/users/internal/api/router"
 
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -20,10 +21,11 @@ func main() {
 
 	router.Router(r, app)
 
-	log.Println("Listening", app.Config.Port)
+	app.Logger.Info("Listening", zap.String("port", app.Config.Port))
+
 	err = http.ListenAndServe(app.Config.Port, r)
 	if err != nil {
-		log.Fatalf("Server error: %v", err)
+		app.Logger.Fatal("Server error", zap.Error(err))
 	}
 
 }

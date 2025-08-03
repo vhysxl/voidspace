@@ -16,5 +16,8 @@ func Router(r *chi.Mux, app *bootstrap.Application) {
 		r.Route("/auth", func(r chi.Router) {
 			AuthRoutes(r, app)
 		})
+		r.Route("/user", func(r chi.Router) {
+			UserRoutes(r, app)
+		})
 	})
 }

@@ -31,7 +31,7 @@ func GetConfig() *Config {
 		envs = initConfig()
 	})
 
-	return &envs //return pointer so envs are One Source of Truth (Singleton)
+	return &envs //return pointer so envs are One Source of Truth (singleton)
 }
 
 func initConfig() Config {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rsa"
 	"encoding/json"
-	"log"
 	"time"
 
 	"net/http"
@@ -15,6 +14,7 @@ import (
 	"voidspace/users/utils/validations"
 
 	"github.com/go-playground/validator/v10"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -31,6 +31,7 @@ type RegisterHandler struct {
 	HandlerContextTimeout time.Duration
 	AccessTokenDuration   time.Duration
 	RefreshTokenDuration  time.Duration
+	Logger                *zap.Logger
 }
 
 func NewRegisterHandler(
@@ -40,6 +41,7 @@ func NewRegisterHandler(
 	handlerTimeout time.Duration,
 	accessTokenDuration time.Duration,
 	refreshTokenDuration time.Duration,
+	logger *zap.Logger,
 ) *RegisterHandler {
 	return &RegisterHandler{
 		RegisterUsecase:       usecase,
@@ -48,6 +50,7 @@ func NewRegisterHandler(
 		HandlerContextTimeout: handlerTimeout,
 		AccessTokenDuration:   accessTokenDuration,
 		RefreshTokenDuration:  refreshTokenDuration,
+		Logger:                logger,
 	}
 }
 
@@ -58,14 +61,14 @@ func (rh *RegisterHandler) HandleRegister(w http.ResponseWriter, r *http.Request
 
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		log.Printf("[RegisterHandler] Failed to decode request body: %v", err)
+		rh.Logger.Error("Decoder error", zap.Error(err))
 		response.JSONErr(w, http.StatusBadRequest, ErrInvalidRequest)
 		return
 	}
 
 	err = rh.Validator.Struct(request)
 	if err != nil {
-		log.Printf("[RegisterHandler] Validation failed: %v", err)
+		rh.Logger.Debug("Validation failed", zap.Error(err))
 		response.JSONErr(w, http.StatusBadRequest, validations.FormatValidationError(err))
 		return
 	}
@@ -75,7 +78,7 @@ func (rh *RegisterHandler) HandleRegister(w http.ResponseWriter, r *http.Request
 		bcrypt.DefaultCost,
 	)
 	if err != nil {
-		log.Printf("[RegisterHandler] Error hashing password: %v", err)
+		rh.Logger.Error("Hashing password error", zap.Error(err))
 		response.JSONErr(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
@@ -84,18 +87,18 @@ func (rh *RegisterHandler) HandleRegister(w http.ResponseWriter, r *http.Request
 
 	user, err := rh.RegisterUsecase.Register(ctx, request.Username, request.Email, hashed)
 	if err != nil {
-		log.Printf("[RegisterHandler] Usecase.Register error: %v", err)
+		rh.Logger.Error("Usecase error", zap.Error(err))
 		switch err {
+		case ctx.Err():
+			response.JSONErr(w, http.StatusRequestTimeout, ErrRequestTimeout)
+			return
 		case domain.ErrUserExists:
-			log.Printf("[RegisterHandler] User exists error: %v", err)
 			response.JSONErr(w, http.StatusConflict, err.Error())
 			return
 		case domain.ErrEmailExists:
-			log.Printf("[RegisterHandler] Email exists error: %v", err)
 			response.JSONErr(w, http.StatusConflict, err.Error())
 			return
 		default:
-			log.Printf("[RegisterHandler] Unexpected error in usecase.Register: %v", err)
 			response.JSONErr(w, http.StatusInternalServerError, ErrInternalServer)
 			return
 		}
@@ -104,14 +107,14 @@ func (rh *RegisterHandler) HandleRegister(w http.ResponseWriter, r *http.Request
 	//goroutines next
 	accessToken, err := token.CreateAccessToken(user, rh.PrivateKey, rh.AccessTokenDuration)
 	if err != nil {
-		log.Printf("[RegisterHandler] Error generating access token: %v", err)
+		rh.Logger.Error("Generate access token error", zap.Error(err))
 		response.JSONErr(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	refreshToken, err := token.CreateRefreshToken(user, rh.PrivateKey, rh.RefreshTokenDuration)
 	if err != nil {
-		log.Printf("[RegisterHandler] Error generating refresh token: %v", err)
+		rh.Logger.Error("Generate refresh token error", zap.Error(err))
 		response.JSONErr(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -126,12 +129,7 @@ func (rh *RegisterHandler) HandleRegister(w http.ResponseWriter, r *http.Request
 		SameSite: http.SameSiteStrictMode,
 	})
 
-	response.JSONSuccess(w, http.StatusCreated, "User registered successfully", map[string]interface{}{
+	response.JSONSuccess(w, http.StatusCreated, "User registered successfully", map[string]any{
 		"access_token": accessToken,
-		"user": map[string]interface{}{
-			"id":       user.ID,
-			"username": user.Username,
-			"email":    user.Email,
-		},
-		"expires_in": int(rh.AccessTokenDuration.Seconds())})
+		"expires_in":   int(rh.AccessTokenDuration.Seconds())})
 }

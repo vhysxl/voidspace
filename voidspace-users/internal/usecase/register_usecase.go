@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"log"
 	"time"
 	"voidspace/users/internal/domain"
 )
@@ -27,8 +26,6 @@ func NewRegisterUsecase(userRepository domain.UserRepository, contextTimeout tim
 func (r *registerUsecase) Register(ctx context.Context, username string, email string, passwordHash string) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.contextTimeout)
 	defer cancel()
-
-	log.Printf("[RegisterHandler] Starting registration request")
 
 	var existingUser *domain.User
 

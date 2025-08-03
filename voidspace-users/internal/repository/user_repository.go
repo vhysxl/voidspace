@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"voidspace/users/internal/domain"
+	"voidspace/users/internal/domain/views"
 )
 
 type userRepository struct {
@@ -17,9 +18,17 @@ func NewUserRepository(db *sql.DB) domain.UserRepository {
 }
 
 func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
-	result, err := u.db.ExecContext(
+	tx, err := u.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	result, err := tx.ExecContext(
 		ctx,
-		"INSERT INTO users (username, email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+		`INSERT INTO users 
+		(username, email, password_hash, created_at, updated_at) 
+		VALUES (?, ?, ?, ?, ?)`,
 		user.Username,
 		user.Email,
 		user.PasswordHash,
@@ -35,7 +44,67 @@ func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
 		return err
 	}
 	user.ID = int(id)
+
+	_, err = tx.ExecContext(
+		ctx,
+		"INSERT INTO user_profile (user_id) VALUES (?)",
+		user.ID,
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
 	return nil
+}
+
+// GetUserProfile implements domain.UserRepository.
+func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.UserProfile, error) {
+	var ( //initializer
+		username    string
+		displayName sql.NullString
+		bio         sql.NullString
+		avatarUrl   sql.NullString
+		bannerUrl   sql.NullString
+		location    sql.NullString
+	)
+
+	err := u.db.QueryRowContext(ctx,
+		`SELECT u.username, up.display_name, up.bio, up.avatar_url, up.banner_url, up.location
+    FROM users u
+    JOIN user_profile up ON u.id = up.user_id 
+    WHERE u.id = ?`,
+		ID,
+	).Scan(
+		&username,
+		&displayName,
+		&bio,
+		&avatarUrl,
+		&bannerUrl,
+		&location,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	user := &views.UserProfile{
+		Username:    username,
+		DisplayName: displayName.String,
+		Bio:         bio.String,
+		AvatarUrl:   avatarUrl.String,
+		BannerUrl:   bannerUrl.String,
+		Location:    location.String,
+	}
+
+	return user, nil
+
 }
 
 // GetUsersByUsername implements domain.UserRepository.

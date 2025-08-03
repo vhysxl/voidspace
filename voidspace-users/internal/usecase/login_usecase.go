@@ -26,7 +26,7 @@ func NewLoginUsecase(userRepository domain.UserRepository, contextTimeout time.D
 
 // Login implements LoginUsecase.
 func (l *loginUsecase) Login(ctx context.Context, credentials string, password string) (*domain.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, l.contextTimeout)
 	defer cancel()
 
 	user, err := l.userRepository.GetUserByCredentials(ctx, credentials)

@@ -14,8 +14,13 @@ func AuthRoutes(r chi.Router, app *bootstrap.Application) {
 	registerUsecase := usecase.NewRegisterUsecase(userRepository, app.DBContextTimeout)
 	loginUsecase := usecase.NewLoginUsecase(userRepository, app.DBContextTimeout)
 
-	registerHandler := handler.NewRegisterHandler(registerUsecase, app.Validator, app.PrivateKey, app.HandlerContextTimeout, app.AccessTokenDuration, app.RefreshTokenDuration)
-	loginHandler := handler.NewLoginHandler(loginUsecase, app.Validator)
+	registerHandler := handler.NewRegisterHandler(
+		registerUsecase, app.Validator, app.PrivateKey,
+		app.HandlerContextTimeout, app.AccessTokenDuration,
+		app.RefreshTokenDuration, app.Logger)
+	loginHandler := handler.NewLoginHandler(loginUsecase,
+		app.Validator, app.PrivateKey, app.HandlerContextTimeout,
+		app.AccessTokenDuration, app.RefreshTokenDuration, app.Logger)
 
 	r.Post("/register", registerHandler.HandleRegister)
 	r.Post("/login", loginHandler.HandleLogin)
