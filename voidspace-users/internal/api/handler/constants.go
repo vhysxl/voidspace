@@ -5,4 +5,5 @@ const (
 	ErrRequestTimeout = "Request Timeout"
 	ErrInvalidRequest = "Invalid request"
 	ErrInternalServer = "Internal server error"
+	ErrUnauthorized   = "Unauthorized"
 )

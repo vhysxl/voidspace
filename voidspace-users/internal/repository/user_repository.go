@@ -200,7 +200,20 @@ func (u *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User,
 
 // UpdateUser implements domain.UserRepository.
 func (u *userRepository) UpdateUser(ctx context.Context, user *domain.User) error {
-	panic("unimplemented")
+	result, err := u.db.ExecContext(
+		ctx,
+		`U INTO users 
+		(username, email, password_hash, created_at, updated_at) 
+		VALUES (?, ?, ?, ?, ?)`,
+		user.Username,
+		user.Email,
+		user.PasswordHash,
+		user.CreatedAt,
+		user.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
 }
 
 // DeleteUser implements domain.UserRepository.

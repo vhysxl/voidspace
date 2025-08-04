@@ -19,4 +19,5 @@ func UserRoutes(r chi.Router, app *bootstrap.Application) {
 	)
 
 	r.Get("/me", userHandler.HandleGetCurrentUser)
+	r.Get("/{username}", userHandler.HandleGetUser)
 }

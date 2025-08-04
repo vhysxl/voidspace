@@ -8,6 +8,7 @@ require (
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/joho/godotenv v1.5.1
+	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.40.0
 )
 
@@ -19,7 +20,6 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.27.0 // indirect
