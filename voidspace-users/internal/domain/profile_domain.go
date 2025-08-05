@@ -3,14 +3,15 @@ package domain
 import "context"
 
 type Profile struct {
-	UserID      int    `json:"user_id"`
-	DisplayName string `json:"display_name"`
-	Bio         string `json:"bio"`
-	AvatarUrl   string `json:"avatar_url"`
-	BannerUrl   string `json:"banner_url"`
-	Location    string `json:"location"`
+	UserID      int
+	DisplayName *string
+	Bio         *string
+	AvatarUrl   *string
+	BannerUrl   *string
+	Location    *string
 }
 
 type ProfileRepository interface {
+	GetProfileById(ctx context.Context, userID int) (*Profile, error)
 	Update(ctx context.Context, userID int, profile *Profile) error
 }

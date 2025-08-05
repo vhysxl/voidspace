@@ -64,6 +64,7 @@ func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
 // GetUserProfile implements domain.UserRepository.
 func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.UserProfile, error) {
 	var ( //initializer
+		userID      int
 		username    string
 		displayName sql.NullString
 		bio         sql.NullString
@@ -73,12 +74,13 @@ func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.Use
 	)
 
 	err := u.db.QueryRowContext(ctx,
-		`SELECT u.username, up.display_name, up.bio, up.avatar_url, up.banner_url, up.location
+		`SELECT u.id ,u.username, up.display_name, up.bio, up.avatar_url, up.banner_url, up.location
     FROM users u
     JOIN user_profile up ON u.id = up.user_id 
     WHERE u.id = ?`,
 		ID,
 	).Scan(
+		&userID,
 		&username,
 		&displayName,
 		&bio,
@@ -95,6 +97,7 @@ func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.Use
 	}
 
 	user := &views.UserProfile{
+		ID:          userID,
 		Username:    username,
 		DisplayName: displayName.String,
 		Bio:         bio.String,
@@ -105,11 +108,6 @@ func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.Use
 
 	return user, nil
 
-}
-
-// GetUsersByUsername implements domain.UserRepository.
-func (u *userRepository) GetUsersByUsername(ctx context.Context, username string) ([]*domain.User, error) {
-	panic("unimplemented")
 }
 
 // GetUserByCredentials implements domain.UserRepository.
@@ -199,21 +197,25 @@ func (u *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User,
 }
 
 // UpdateUser implements domain.UserRepository.
-func (u *userRepository) UpdateUser(ctx context.Context, user *domain.User) error {
-	result, err := u.db.ExecContext(
+func (u *userRepository) UpdateUser(ctx context.Context, user *views.UserProfile, ID int) error {
+	_, err := u.db.ExecContext(
 		ctx,
-		`U INTO users 
-		(username, email, password_hash, created_at, updated_at) 
-		VALUES (?, ?, ?, ?, ?)`,
-		user.Username,
-		user.Email,
-		user.PasswordHash,
-		user.CreatedAt,
-		user.UpdatedAt,
+		`UPDATE user_profile SET 
+         display_name = ?, 
+         bio = ?, 
+         avatar_url = ?, 
+         banner_url = ?, 
+         location = ?, 
+         updated_at = NOW() 
+         WHERE user_id = ?`,
+		user.DisplayName,
+		user.Bio,
+		user.AvatarUrl,
+		user.BannerUrl,
+		user.Location,
+		ID,
 	)
-	if err != nil {
-		return err
-	}
+	return err
 }
 
 // DeleteUser implements domain.UserRepository.

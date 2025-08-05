@@ -12,20 +12,9 @@ type userUsecase struct {
 	contextTimeout time.Duration
 }
 
-type UpdateUserData struct {
-	Username    *string
-	DisplayName *string
-	Bio         *string
-	AvatarUrl   *string
-	BannerUrl   *string
-	Location    *string
-}
-
 type UserUsecase interface {
 	GetCurrentUser(ctx context.Context, ID int) (*views.UserProfile, error)
 	GetUser(ctx context.Context, username string) (*views.UserProfile, error)
-	UpdateUser(ctx context.Context, IDRequester int, IDTarget int, updateData UpdateUserData) (*views.UserProfile, error)
-	DeleteUser(ctx context.Context, ID int) error
 }
 
 func NewUserUsecase(userRepository domain.UserRepository, contextTimeout time.Duration) UserUsecase {
@@ -54,14 +43,4 @@ func (u *userUsecase) GetUser(ctx context.Context, username string) (*views.User
 	}
 
 	return u.userRepository.GetUserProfile(ctx, user.ID)
-}
-
-// UpdateUser implements UserUsecase.
-func (u *userUsecase) UpdateUser(ctx context.Context, IDRequester int, IDTarget int, updateData UpdateUserData) (*views.UserProfile, error) {
-	panic("unimplemented")
-}
-
-// DeleteUser implements UserUsecase.
-func (u *userUsecase) DeleteUser(ctx context.Context, ID int) error {
-	panic("unimplemented")
 }

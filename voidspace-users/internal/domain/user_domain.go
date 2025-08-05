@@ -17,12 +17,11 @@ type User struct {
 
 type UserRepository interface {
 	Create(ctx context.Context, user *User) error
-	GetUsersByUsername(ctx context.Context, username string) ([]*User, error)
 	GetUserByID(ctx context.Context, id int) (*User, error)
 	GetUserByUsername(ctx context.Context, username string) (*User, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	GetUserProfile(ctx context.Context, userId int) (*views.UserProfile, error)
-	UpdateUser(ctx context.Context, user *User) error
+	UpdateUser(ctx context.Context, user *views.UserProfile, ID int) error
 	DeleteUser(ctx context.Context, id int) error
 	GetUserByCredentials(ctx context.Context, credentials string) (*User, error)
 }
