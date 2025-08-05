@@ -11,13 +11,16 @@ import (
 
 func UserRoutes(r chi.Router, app *bootstrap.Application) {
 	userRepository := repository.NewUserRepository(app.DB)
-	userUsecase := usecase.NewUserUsecase(userRepository, app.DBContextTimeout) //dbctx to passed to repo
+	userUsecase := usecase.NewUserUsecase(userRepository, app.DBContextTimeout)
+	profileRepository := repository.NewProfileRepository(app.DB)
+	profileUsecase := usecase.NewProfileUsecase(profileRepository, userRepository, app.DBContextTimeout)
 
 	userHandler := handler.NewUserHandler(
-		userUsecase, app.Validator, app.HandlerContextTimeout,
+		userUsecase, profileUsecase, app.Validator, app.HandlerContextTimeout,
 		app.Logger,
 	)
 
 	r.Get("/me", userHandler.HandleGetCurrentUser)
 	r.Get("/{username}", userHandler.HandleGetUser)
+	r.Patch("/profile", userHandler.HandleUpdateProfile)
 }

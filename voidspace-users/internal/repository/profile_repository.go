@@ -18,6 +18,12 @@ func ProfileRepository(db *sql.DB) domain.ProfileRepository {
 	}
 }
 
+func NewProfileRepository(db *sql.DB) domain.ProfileRepository {
+	return &profileRepository{
+		db: db,
+	}
+}
+
 // GetProfileById implements domain.ProfileRepository.
 func (p *profileRepository) GetProfileById(ctx context.Context, userID int) (*domain.Profile, error) {
 	profile := &domain.Profile{}

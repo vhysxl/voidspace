@@ -48,6 +48,7 @@ func NewUserHandler(
 ) *UserHandler {
 	return &UserHandler{
 		UserUsecase:           userUsecase,
+		ProfileUsecase:        profileUsecase,
 		Validator:             validator,
 		Logger:                logger,
 		HandlerContextTimeout: handlerTimeout,
