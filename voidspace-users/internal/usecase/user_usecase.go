@@ -15,6 +15,7 @@ type userUsecase struct {
 type UserUsecase interface {
 	GetCurrentUser(ctx context.Context, ID int) (*views.UserProfile, error)
 	GetUser(ctx context.Context, username string) (*views.UserProfile, error)
+	DeleteUser(ctx context.Context, ID int) error
 }
 
 func NewUserUsecase(userRepository domain.UserRepository, contextTimeout time.Duration) UserUsecase {
@@ -43,4 +44,11 @@ func (u *userUsecase) GetUser(ctx context.Context, username string) (*views.User
 	}
 
 	return u.userRepository.GetUserProfile(ctx, user.ID)
+}
+
+func (u *userUsecase) DeleteUser(ctx context.Context, ID int) error {
+	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
+	defer cancel()
+
+	return u.userRepository.DeleteUser(ctx, ID)
 }

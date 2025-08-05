@@ -198,27 +198,29 @@ func (u *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User,
 
 // UpdateUser implements domain.UserRepository.
 func (u *userRepository) UpdateUser(ctx context.Context, user *views.UserProfile, ID int) error {
-	_, err := u.db.ExecContext(
-		ctx,
-		`UPDATE user_profile SET 
-         display_name = ?, 
-         bio = ?, 
-         avatar_url = ?, 
-         banner_url = ?, 
-         location = ?, 
-         updated_at = NOW() 
-         WHERE user_id = ?`,
-		user.DisplayName,
-		user.Bio,
-		user.AvatarUrl,
-		user.BannerUrl,
-		user.Location,
-		ID,
-	)
-	return err
+	panic("unimplemented")
 }
 
 // DeleteUser implements domain.UserRepository.
 func (u *userRepository) DeleteUser(ctx context.Context, id int) error {
-	panic("unimplemented")
+	result, err := u.db.ExecContext(
+		ctx,
+		`DELETE FROM users WHERE id = ?`,
+		id,
+	)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return domain.ErrUserNotFound
+	}
+
+	return nil
+
 }
