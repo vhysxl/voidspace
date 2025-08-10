@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package users.v1;
+option go_package = "voidspace/users/proto/users/v1;usersv1";
+
+
+service AuthService {
+  rpc Register(RegisterRequest) returns (AuthResponse);
+  rpc Login(LoginRequest) returns (AuthResponse);
+  rpc RefreshToken(google.protobuf.Empty) returns (AuthResponse);
+}
+
+message AuthResponse {
+  optional string refresh_token =1;
+  string access_token = 2;
+  int32 expires_in = 3;
+  string message = 4;
+}
+
+message RegisterRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message LoginRequest {
+  string email_or_username = 1; 
+  string password = 2;
+}

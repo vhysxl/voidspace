@@ -9,16 +9,15 @@ import (
 
 // database struct
 type Config struct {
-	PublicHost            string
-	Port                  string
-	DBUser                string
-	DBPassword            string
-	DBAddress             string
-	DBName                string
-	DBContextTimeout      int
-	HandlerContextTimeout int
-	AccessTokenDuration   int
-	RefreshTokenDuration  int
+	PublicHost           string
+	Port                 string
+	DBUser               string
+	DBPassword           string
+	DBAddress            string
+	DBName               string
+	ContextTimeout       int
+	AccessTokenDuration  int
+	RefreshTokenDuration int
 }
 
 var (
@@ -36,16 +35,15 @@ func GetConfig() *Config {
 
 func initConfig() Config {
 	return Config{
-		PublicHost:            getEnv("PUBLIC_HOST", "http://localhost"),
-		Port:                  getEnv("PORT", ":8080"),
-		DBUser:                getEnv("DB_USER", "root"),
-		DBPassword:            getEnv("DB_PASS", "secret"),
-		DBAddress:             fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "3306")),
-		DBName:                getEnv("DB_NAME", "voidspace"),
-		DBContextTimeout:      getIntEnv("DB_CONTEXT_TIMEOUT", 5),
-		HandlerContextTimeout: getIntEnv("H_CONTEXT_TIMEOUT", 10),
-		AccessTokenDuration:   getIntEnv("ACCESS_TOKEN_DURATION", 1),
-		RefreshTokenDuration:  getIntEnv("REFRESH_TOKEN_DURATION", 7),
+		PublicHost:           getEnv("PUBLIC_HOST", "http://localhost"),
+		Port:                 getEnv("PORT", ":8080"),
+		DBUser:               getEnv("DB_USER", "root"),
+		DBPassword:           getEnv("DB_PASS", "secret"),
+		DBAddress:            fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "3306")),
+		DBName:               getEnv("DB_NAME", "voidspace"),
+		ContextTimeout:       getIntEnv("CONTEXT_TIMEOUT", 10),
+		AccessTokenDuration:  getIntEnv("ACCESS_TOKEN_DURATION", 1),
+		RefreshTokenDuration: getIntEnv("REFRESH_TOKEN_DURATION", 7),
 	}
 }
 

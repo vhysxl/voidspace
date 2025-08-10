@@ -4,11 +4,11 @@ import "context"
 
 type Profile struct {
 	UserID      int
-	DisplayName *string
-	Bio         *string
-	AvatarUrl   *string
-	BannerUrl   *string
-	Location    *string
+	DisplayName string
+	Bio         string
+	AvatarUrl   string
+	BannerUrl   string
+	Location    string
 }
 
 type ProfileRepository interface {

@@ -3,8 +3,11 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"time"
 	"voidspace/users/internal/domain"
 	"voidspace/users/internal/domain/views"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type userRepository struct {
@@ -36,6 +39,11 @@ func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
 		user.UpdatedAt,
 	)
 	if err != nil {
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			if mysqlErr.Number == 1062 {
+				return domain.ErrUserExists
+			}
+		}
 		return err
 	}
 
@@ -61,71 +69,22 @@ func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
 	return nil
 }
 
-// GetUserProfile implements domain.UserRepository.
-func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.UserProfile, error) {
-	var ( //initializer
-		userID      int
-		username    string
-		displayName sql.NullString
-		bio         sql.NullString
-		avatarUrl   sql.NullString
-		bannerUrl   sql.NullString
-		location    sql.NullString
-	)
-
-	err := u.db.QueryRowContext(ctx,
-		`SELECT u.id ,u.username, up.display_name, up.bio, up.avatar_url, up.banner_url, up.location
-    FROM users u
-    JOIN user_profile up ON u.id = up.user_id 
-    WHERE u.id = ?`,
-		ID,
-	).Scan(
-		&userID,
-		&username,
-		&displayName,
-		&bio,
-		&avatarUrl,
-		&bannerUrl,
-		&location,
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, domain.ErrUserNotFound
-		}
-		return nil, err
-	}
-
-	user := &views.UserProfile{
-		ID:          userID,
-		Username:    username,
-		DisplayName: displayName.String,
-		Bio:         bio.String,
-		AvatarUrl:   avatarUrl.String,
-		BannerUrl:   bannerUrl.String,
-		Location:    location.String,
-	}
-
-	return user, nil
-
-}
-
-// GetUserByCredentials implements domain.UserRepository.
-func (u *userRepository) GetUserByCredentials(ctx context.Context, credentials string) (*domain.User, error) {
+// GetUserByUsername implements domain.UserRepository.
+func (u *userRepository) GetUserByUsername(ctx context.Context, username string) (*domain.User, error) {
 	user := &domain.User{}
 	err := u.db.QueryRowContext(ctx,
 		`SELECT id, username, email, password_hash, created_at, updated_at 
 		FROM users 
-		WHERE email = ? OR username = ?`,
-		credentials, credentials,
-	).Scan(
-		&user.ID,
-		&user.Username,
-		&user.Email,
-		&user.PasswordHash,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
+		WHERE username = ?`,
+		username).
+		Scan(
+			&user.ID,
+			&user.Username,
+			&user.Email,
+			&user.PasswordHash,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+		)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -164,22 +123,22 @@ func (u *userRepository) GetUserByEmail(ctx context.Context, email string) (*dom
 	return user, nil
 }
 
-// GetUserByUsername implements domain.UserRepository.
-func (u *userRepository) GetUserByUsername(ctx context.Context, username string) (*domain.User, error) {
+// GetUserByCredentials implements domain.UserRepository.
+func (u *userRepository) GetUserByCredentials(ctx context.Context, credentials string) (*domain.User, error) {
 	user := &domain.User{}
 	err := u.db.QueryRowContext(ctx,
 		`SELECT id, username, email, password_hash, created_at, updated_at 
 		FROM users 
-		WHERE username = ?`,
-		username).
-		Scan(
-			&user.ID,
-			&user.Username,
-			&user.Email,
-			&user.PasswordHash,
-			&user.CreatedAt,
-			&user.UpdatedAt,
-		)
+		WHERE email = ? OR username = ?`,
+		credentials, credentials,
+	).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.PasswordHash,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -191,14 +150,72 @@ func (u *userRepository) GetUserByUsername(ctx context.Context, username string)
 	return user, nil
 }
 
-// GetUserByID implements domain.UserRepository.
-func (u *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
-	panic("unimplemented")
-}
+// GetUserProfile implements domain.UserRepository.
+func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.UserProfile, error) {
+	var ( //initializer
+		userID      int
+		username    string
+		createdAt   time.Time
+		displayName sql.NullString
+		bio         sql.NullString
+		avatarUrl   sql.NullString
+		bannerUrl   sql.NullString
+		location    sql.NullString
+		follower    sql.NullInt64
+		following   sql.NullInt64
+	)
 
-// UpdateUser implements domain.UserRepository.
-func (u *userRepository) UpdateUser(ctx context.Context, user *views.UserProfile, ID int) error {
-	panic("unimplemented")
+	err := u.db.QueryRowContext(ctx,
+		`SELECT 
+		u.id,
+		u.username,
+		u.created_at,
+		up.display_name,
+		up.bio,
+		up.avatar_url,
+		up.banner_url,
+		up.location,
+		(SELECT COUNT(*) FROM user_follows WHERE target_user_id = u.id) AS follower,
+		(SELECT COUNT(*) FROM user_follows WHERE user_id = u.id) AS following
+	FROM users u
+	JOIN user_profile up ON u.id = up.user_id
+	WHERE u.id = ?`,
+		ID,
+	).Scan(
+		&userID,
+		&username,
+		&createdAt,
+		&displayName,
+		&bio,
+		&avatarUrl,
+		&bannerUrl,
+		&location,
+		&follower,
+		&following,
+	)
+	if err != nil {
+
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	user := &views.UserProfile{
+		ID:          userID,
+		Username:    username,
+		CreatedAt:   createdAt,
+		DisplayName: displayName.String,
+		Bio:         bio.String,
+		AvatarUrl:   avatarUrl.String,
+		BannerUrl:   bannerUrl.String,
+		Location:    location.String,
+		Following:   int(following.Int64),
+		Followers:   int(follower.Int64),
+	}
+
+	return user, nil
+
 }
 
 // DeleteUser implements domain.UserRepository.

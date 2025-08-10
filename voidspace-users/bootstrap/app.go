@@ -8,6 +8,8 @@ import (
 	"time"
 	"voidspace/users/config"
 	"voidspace/users/database"
+	"voidspace/users/internal/repository"
+	"voidspace/users/internal/usecase"
 	"voidspace/users/logger"
 
 	"github.com/go-playground/validator/v10"
@@ -17,15 +19,19 @@ import (
 )
 
 type Application struct {
-	Config                *config.Config
-	DB                    *sql.DB //must using pointer from docs
-	Validator             *validator.Validate
-	DBContextTimeout      time.Duration
-	HandlerContextTimeout time.Duration
-	AccessTokenDuration   time.Duration
-	RefreshTokenDuration  time.Duration
-	PrivateKey            *rsa.PrivateKey
-	Logger                *zap.Logger
+	Config               *config.Config
+	DB                   *sql.DB
+	Validator            *validator.Validate
+	ContextTimeout       time.Duration
+	AccessTokenDuration  time.Duration
+	RefreshTokenDuration time.Duration
+	PrivateKey           *rsa.PrivateKey
+	Logger               *zap.Logger
+	//use case
+	FollowUsecase  usecase.FollowUsecase
+	AuthUsecase    usecase.AuthUsecase
+	ProfileUsecase usecase.ProfileUsecase
+	UserUsecase    usecase.UserUsecase
 }
 
 func App() (*Application, error) {
@@ -57,7 +63,7 @@ func App() (*Application, error) {
 		ParseTime:            true,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.DBContextTimeout)*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ContextTimeout)*time.Second)
 	defer cancel()
 
 	db, err := database.MySqlDatabase(ctx, dbConfig)
@@ -66,15 +72,28 @@ func App() (*Application, error) {
 		return nil, err
 	}
 
+	//registering repos, usecases and deps to the app
+	userRepo := repository.NewUserRepository(db)
+	profileRepo := repository.NewProfileRepository(db)
+	followRepo := repository.NewFollowRepository(db)
+
+	authUsecase := usecase.NewAuthUsecase(userRepo, time.Duration(cfg.ContextTimeout)*time.Second)
+	userUsecase := usecase.NewUserUsecase(userRepo, time.Duration(cfg.ContextTimeout)*time.Second)
+	profileUsecase := usecase.NewProfileUsecase(profileRepo, time.Duration(cfg.ContextTimeout)*time.Second)
+	followUsecase := usecase.NewFollowUsecase(userRepo, followRepo, time.Duration(cfg.ContextTimeout)*time.Second)
+
 	return &Application{
-		Config:                cfg,
-		DB:                    db,
-		Validator:             validator.New(),
-		DBContextTimeout:      time.Duration(cfg.DBContextTimeout) * time.Second,
-		HandlerContextTimeout: time.Duration(cfg.HandlerContextTimeout) * time.Second,
-		AccessTokenDuration:   time.Duration(cfg.AccessTokenDuration) * time.Hour,
-		RefreshTokenDuration:  time.Duration(cfg.RefreshTokenDuration) * 24 * time.Hour,
-		PrivateKey:            privateKey,
-		Logger:                logger,
+		Config:               cfg,
+		DB:                   db,
+		Validator:            validator.New(),
+		ContextTimeout:       time.Duration(cfg.ContextTimeout) * time.Second,
+		AccessTokenDuration:  time.Duration(cfg.AccessTokenDuration) * time.Hour,
+		RefreshTokenDuration: time.Duration(cfg.RefreshTokenDuration) * 24 * time.Hour,
+		PrivateKey:           privateKey,
+		Logger:               logger,
+		AuthUsecase:          authUsecase,
+		UserUsecase:          userUsecase,
+		ProfileUsecase:       profileUsecase,
+		FollowUsecase:        followUsecase,
 	}, nil
 }

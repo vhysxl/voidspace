@@ -1,31 +1,30 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"net/http"
+	"net"
 	"voidspace/users/bootstrap"
-	"voidspace/users/internal/api/router"
+	"voidspace/users/internal/server"
 
-	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
 
 func main() {
 	app, err := bootstrap.App()
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	r := chi.NewRouter()
-
-	router.Router(r, app)
-
-	app.Logger.Info("Listening", zap.String("port", app.Config.Port))
-
-	err = http.ListenAndServe(app.Config.Port, r)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", app.Config.Port))
 	if err != nil {
-		app.Logger.Fatal("Server error", zap.Error(err))
+		app.Logger.Fatal("listening error", zap.Error(err))
 	}
 
+	s := server.SetupGRPCServer(app)
+
+	app.Logger.Info("gRPC server starting", zap.String("port", app.Config.Port))
+	if err := s.Serve(lis); err != nil {
+		app.Logger.Fatal("Serve error", zap.Error(err))
+	}
 }

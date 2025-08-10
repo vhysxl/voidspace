@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"voidspace/users/internal/domain"
+	"voidspace/users/utils/common"
 )
 
 type profileRepository struct {
@@ -53,38 +54,24 @@ func (p *profileRepository) GetProfileById(ctx context.Context, userID int) (*do
 
 // Update implements domain.ProfileRepository.
 func (p *profileRepository) Update(ctx context.Context, userID int, profile *domain.Profile) error {
-	setClauses := []string{}
-	args := []any{}
-
-	if profile.DisplayName != nil {
-		setClauses = append(setClauses, "display_name = ?")
-		args = append(args, *profile.DisplayName)
-	}
-	if profile.Bio != nil {
-		setClauses = append(setClauses, "bio = ?")
-		args = append(args, *profile.Bio)
-	}
-	if profile.AvatarUrl != nil {
-		setClauses = append(setClauses, "avatar_url = ?")
-		args = append(args, *profile.AvatarUrl)
-	}
-	if profile.BannerUrl != nil {
-		setClauses = append(setClauses, "banner_url = ?")
-		args = append(args, *profile.BannerUrl)
-	}
-	if profile.Location != nil {
-		setClauses = append(setClauses, "location = ?")
-		args = append(args, *profile.Location)
+	setClauses := []string{
+		"display_name = ?",
+		"bio = ?",
+		"avatar_url = ?",
+		"banner_url = ?",
+		"location = ?",
 	}
 
-	if len(setClauses) == 0 {
-		// Nothing to update
-		return nil
+	args := []any{
+		common.NullIfEmpty(profile.DisplayName),
+		common.NullIfEmpty(profile.Bio),
+		common.NullIfEmpty(profile.AvatarUrl),
+		common.NullIfEmpty(profile.Location),
+		common.NullIfEmpty(profile.BannerUrl),
+		userID,
 	}
 
 	query := fmt.Sprintf("UPDATE user_profile SET %s WHERE user_id = ?", strings.Join(setClauses, ", "))
-	args = append(args, userID)
-
 	_, err := p.db.ExecContext(ctx, query, args...)
 	return err
 }
