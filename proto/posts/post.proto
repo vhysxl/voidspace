@@ -48,13 +48,13 @@ message GetAllPostsRequest {
 }
 
 message GetGlobalFeedRequest {
-  string cursor = 1;      
+  int32 page = 1;
   int32 limit = 2;
 }
 
 message GetFeedByUserIDsRequest {
   repeated int32 user_ids = 1;
-  string cursor = 2;      
+  int32 page = 2;      
   int32 limit = 3;
 }
 
@@ -80,12 +80,10 @@ message GetAllPostsResponse {
 
 message GetGlobalFeedResponse {
   repeated PostResponse posts = 1;
-  string next_cursor = 2;
   bool has_more = 3;
 }
 
 message GetFeedByUserIDsResponse {
   repeated PostResponse posts = 1;
-  string next_cursor = 2;
   bool has_more = 3;
 }
