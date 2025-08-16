@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package posts.v1;
+option go_package = "./posts;posts";
+
+service PostService {
+  rpc CreatePost(CreatePostRequest) returns (PostResponse);
+  rpc GetPost(GetPostRequest) returns (PostResponse);
+  rpc UpdatePost(UpdatePostRequest) returns (PostResponse);
+  rpc DeletePost(DeletePostRequest) returns (PostResponse);
+  rpc GetAllPosts(GetAllPostsRequest) returns (GetAllPostsResponse);
+  rpc GetGlobalFeed(GetGlobalFeedRequest) returns (GetGlobalFeedResponse);
+  rpc GetFeedByUserIDs(GetFeedByUserIDsRequest) returns (GetFeedByUserIDsResponse);
+  rpc Like(LikeRequest) returns (LikeResponse);
+  rpc Unlike(LikeRequest) returns (LikeResponse);
+}
+
+message CreatePostRequest {
+  string content = 1;
+  int32 user_id = 2;
+  repeated string post_images = 3;
+}
+
+message LikeRequest {
+  int32 user_id = 1;
+  int32 post_id = 2;
+}
+
+message GetPostRequest {
+  int32 id = 1;
+}
+
+message UpdatePostRequest {
+  int32 id = 1;           
+  int32 user_id = 2;       
+  string content = 3;     
+  repeated string post_images = 4; 
+}
+
+message DeletePostRequest {
+  int32 id = 1;
+}
+
+message GetAllPostsRequest {
+  int32 user_id = 1;
+}
+
+message GetGlobalFeedRequest {
+  string cursor = 1;      
+  int32 limit = 2;
+}
+
+message GetFeedByUserIDsRequest {
+  repeated int32 user_ids = 1;
+  string cursor = 2;      
+  int32 limit = 3;
+}
+
+// Response messages
+message LikeResponse {
+  bool success = 1;
+  int32 new_likes_count = 2;  
+}
+
+message PostResponse {
+  int32 id = 1;
+  string content = 2;
+  int32 user_id = 3;
+  repeated string post_images = 4;
+  int32 likes_count = 5;
+  google.protobuf.Timestamp created_at = 6;  
+  google.protobuf.Timestamp updated_at = 7;  
+}
+
+message GetAllPostsResponse {
+  repeated PostResponse posts = 1;
+}
+
+message GetGlobalFeedResponse {
+  repeated PostResponse posts = 1;
+  string next_cursor = 2;
+  bool has_more = 3;
+}
+
+message GetFeedByUserIDsResponse {
+  repeated PostResponse posts = 1;
+  string next_cursor = 2;
+  bool has_more = 3;
+}
