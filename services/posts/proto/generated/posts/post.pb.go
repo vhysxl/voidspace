@@ -84,7 +84,6 @@ func (x *CreatePostRequest) GetPostImages() []string {
 
 type LikeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	PostId        int32                  `protobuf:"varint,2,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -118,13 +117,6 @@ func (x *LikeRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use LikeRequest.ProtoReflect.Descriptor instead.
 func (*LikeRequest) Descriptor() ([]byte, []int) {
 	return file_posts_post_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *LikeRequest) GetUserId() int32 {
-	if x != nil {
-		return x.UserId
-	}
-	return 0
 }
 
 func (x *LikeRequest) GetPostId() int32 {
@@ -336,7 +328,7 @@ func (x *GetAllPostsRequest) GetUserId() int32 {
 
 type GetGlobalFeedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Cursor        string                 `protobuf:"bytes,1,opt,name=cursor,proto3" json:"cursor,omitempty"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
 	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -372,11 +364,11 @@ func (*GetGlobalFeedRequest) Descriptor() ([]byte, []int) {
 	return file_posts_post_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *GetGlobalFeedRequest) GetCursor() string {
+func (x *GetGlobalFeedRequest) GetPage() int32 {
 	if x != nil {
-		return x.Cursor
+		return x.Page
 	}
-	return ""
+	return 0
 }
 
 func (x *GetGlobalFeedRequest) GetLimit() int32 {
@@ -389,7 +381,7 @@ func (x *GetGlobalFeedRequest) GetLimit() int32 {
 type GetFeedByUserIDsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserIds       []int32                `protobuf:"varint,1,rep,packed,name=user_ids,json=userIds,proto3" json:"user_ids,omitempty"`
-	Cursor        string                 `protobuf:"bytes,2,opt,name=cursor,proto3" json:"cursor,omitempty"`
+	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
 	Limit         int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -432,11 +424,11 @@ func (x *GetFeedByUserIDsRequest) GetUserIds() []int32 {
 	return nil
 }
 
-func (x *GetFeedByUserIDsRequest) GetCursor() string {
+func (x *GetFeedByUserIDsRequest) GetPage() int32 {
 	if x != nil {
-		return x.Cursor
+		return x.Page
 	}
-	return ""
+	return 0
 }
 
 func (x *GetFeedByUserIDsRequest) GetLimit() int32 {
@@ -638,7 +630,6 @@ func (x *GetAllPostsResponse) GetPosts() []*PostResponse {
 type GetGlobalFeedResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Posts         []*PostResponse        `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
-	NextCursor    string                 `protobuf:"bytes,2,opt,name=next_cursor,json=nextCursor,proto3" json:"next_cursor,omitempty"`
 	HasMore       bool                   `protobuf:"varint,3,opt,name=has_more,json=hasMore,proto3" json:"has_more,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -681,13 +672,6 @@ func (x *GetGlobalFeedResponse) GetPosts() []*PostResponse {
 	return nil
 }
 
-func (x *GetGlobalFeedResponse) GetNextCursor() string {
-	if x != nil {
-		return x.NextCursor
-	}
-	return ""
-}
-
 func (x *GetGlobalFeedResponse) GetHasMore() bool {
 	if x != nil {
 		return x.HasMore
@@ -698,7 +682,6 @@ func (x *GetGlobalFeedResponse) GetHasMore() bool {
 type GetFeedByUserIDsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Posts         []*PostResponse        `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
-	NextCursor    string                 `protobuf:"bytes,2,opt,name=next_cursor,json=nextCursor,proto3" json:"next_cursor,omitempty"`
 	HasMore       bool                   `protobuf:"varint,3,opt,name=has_more,json=hasMore,proto3" json:"has_more,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -741,13 +724,6 @@ func (x *GetFeedByUserIDsResponse) GetPosts() []*PostResponse {
 	return nil
 }
 
-func (x *GetFeedByUserIDsResponse) GetNextCursor() string {
-	if x != nil {
-		return x.NextCursor
-	}
-	return ""
-}
-
 func (x *GetFeedByUserIDsResponse) GetHasMore() bool {
 	if x != nil {
 		return x.HasMore
@@ -764,9 +740,8 @@ const file_posts_post_proto_rawDesc = "" +
 	"\acontent\x18\x01 \x01(\tR\acontent\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x1f\n" +
 	"\vpost_images\x18\x03 \x03(\tR\n" +
-	"postImages\"?\n" +
+	"postImages\"&\n" +
 	"\vLikeRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12\x17\n" +
 	"\apost_id\x18\x02 \x01(\x05R\x06postId\" \n" +
 	"\x0eGetPostRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\"w\n" +
@@ -779,13 +754,13 @@ const file_posts_post_proto_rawDesc = "" +
 	"\x11DeletePostRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\"-\n" +
 	"\x12GetAllPostsRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x05R\x06userId\"D\n" +
-	"\x14GetGlobalFeedRequest\x12\x16\n" +
-	"\x06cursor\x18\x01 \x01(\tR\x06cursor\x12\x14\n" +
-	"\x05limit\x18\x02 \x01(\x05R\x05limit\"b\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\"@\n" +
+	"\x14GetGlobalFeedRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x14\n" +
+	"\x05limit\x18\x02 \x01(\x05R\x05limit\"^\n" +
 	"\x17GetFeedByUserIDsRequest\x12\x19\n" +
-	"\buser_ids\x18\x01 \x03(\x05R\auserIds\x12\x16\n" +
-	"\x06cursor\x18\x02 \x01(\tR\x06cursor\x12\x14\n" +
+	"\buser_ids\x18\x01 \x03(\x05R\auserIds\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\x05R\x04page\x12\x14\n" +
 	"\x05limit\x18\x03 \x01(\x05R\x05limit\"P\n" +
 	"\fLikeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12&\n" +
@@ -803,16 +778,12 @@ const file_posts_post_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"C\n" +
 	"\x13GetAllPostsResponse\x12,\n" +
-	"\x05posts\x18\x01 \x03(\v2\x16.posts.v1.PostResponseR\x05posts\"\x81\x01\n" +
+	"\x05posts\x18\x01 \x03(\v2\x16.posts.v1.PostResponseR\x05posts\"`\n" +
 	"\x15GetGlobalFeedResponse\x12,\n" +
-	"\x05posts\x18\x01 \x03(\v2\x16.posts.v1.PostResponseR\x05posts\x12\x1f\n" +
-	"\vnext_cursor\x18\x02 \x01(\tR\n" +
-	"nextCursor\x12\x19\n" +
-	"\bhas_more\x18\x03 \x01(\bR\ahasMore\"\x84\x01\n" +
+	"\x05posts\x18\x01 \x03(\v2\x16.posts.v1.PostResponseR\x05posts\x12\x19\n" +
+	"\bhas_more\x18\x03 \x01(\bR\ahasMore\"c\n" +
 	"\x18GetFeedByUserIDsResponse\x12,\n" +
-	"\x05posts\x18\x01 \x03(\v2\x16.posts.v1.PostResponseR\x05posts\x12\x1f\n" +
-	"\vnext_cursor\x18\x02 \x01(\tR\n" +
-	"nextCursor\x12\x19\n" +
+	"\x05posts\x18\x01 \x03(\v2\x16.posts.v1.PostResponseR\x05posts\x12\x19\n" +
 	"\bhas_more\x18\x03 \x01(\bR\ahasMore2\xfc\x04\n" +
 	"\vPostService\x12A\n" +
 	"\n" +
