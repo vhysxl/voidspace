@@ -19,3 +19,7 @@ migration_fix: #rollback to certain version
 
 proto_generate:
 	protoc --proto_path=${PROTO_PATH} --go_out=${GENERATED_PROTO} --go-grpc_out=${GENERATED_PROTO} ${PROTO_FILE}
+	
+
+
+	
