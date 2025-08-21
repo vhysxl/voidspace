@@ -163,6 +163,66 @@ func (ph *PostHandler) DeletePost(ctx context.Context, req *pb.DeletePostRequest
 	return err
 }
 
-//getall
-//getglobalfeed
+func (ph *PostHandler) GetAllPosts(ctx context.Context, req *pb.GetAllPostsRequest) (*pb.GetAllPostsResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
+	defer cancel()
+
+	posts, err := ph.PostUsecase.GetAllUserPosts(ctx, int32(req.UserId))
+	if err != nil {
+		ph.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	var postResponses []*pb.PostResponse
+	for _, post := range posts {
+		postResponses = append(postResponses, &pb.PostResponse{
+			Id:         post.ID,
+			Content:    post.Content,
+			UserId:     post.UserID,
+			PostImages: post.PostImages,
+			LikesCount: post.LikesCount,
+			CreatedAt:  timestamppb.New(post.CreatedAt),
+			UpdatedAt:  timestamppb.New(post.UpdatedAt),
+		})
+	}
+
+	return &pb.GetAllPostsResponse{Posts: postResponses}, nil
+}
+
+func (ph *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedRequest) (*pb.GetGlobalFeedResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
+	defer cancel()
+
+	posts, hasNext, err := ph.PostUsecase.GetGlobalFeed(ctx, req.Limit, req.offset)
+	if err != nil {
+		ph.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	var postResponses []*pb.PostResponse
+	for _, post := range posts {
+		postResponses = append(postResponses, &pb.PostResponse{
+			Id:         post.ID,
+			Content:    post.Content,
+			UserId:     post.UserID,
+			PostImages: post.PostImages,
+			LikesCount: post.LikesCount,
+			CreatedAt:  timestamppb.New(post.CreatedAt),
+			UpdatedAt:  timestamppb.New(post.UpdatedAt),
+		})
+	}
+
+	return &pb.GetGlobalFeedResponse{Posts: postResponses, HasNext: hasNext}, nil
+}
+
 //getfollowfeed
