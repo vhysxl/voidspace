@@ -11,9 +11,9 @@ service PostService {
   rpc GetPost(GetPostRequest) returns (PostResponse);
   rpc UpdatePost(UpdatePostRequest) returns (google.protobuf.Empty);
   rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty);
-  rpc GetAllPosts(GetAllPostsRequest) returns (GetAllPostsResponse);
-  rpc GetGlobalFeed(GetGlobalFeedRequest) returns (GetGlobalFeedResponse);
-  rpc GetFeedByUserIDs(GetFeedByUserIDsRequest) returns (GetFeedByUserIDsResponse);
+  rpc GetAllPosts(GetAllPostsRequest) returns (GetFeedResponse);
+  rpc GetGlobalFeed(GetGlobalFeedRequest) returns (GetFeedResponse);
+  rpc GetFeedByUserIDs(GetFeedByUserIDsRequest) returns (GetFeedResponse);
 }
 
 message CreatePostRequest {
@@ -61,16 +61,7 @@ message PostResponse {
   google.protobuf.Timestamp updated_at = 7;  
 }
 
-message GetAllPostsResponse {
+message GetFeedResponse {
   repeated PostResponse posts = 1;
-}
-
-message GetGlobalFeedResponse {
-  repeated PostResponse posts = 1;
-  bool has_more = 3;
-}
-
-message GetFeedByUserIDsResponse {
-  repeated PostResponse posts = 1;
-  bool has_more = 3;
+  bool has_more = 2;
 }

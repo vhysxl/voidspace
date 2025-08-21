@@ -24,6 +24,7 @@ type Application struct {
 	DB             *sql.DB
 	// usecase
 	LikeUsecase usecase.LikeUsecase
+	PostUsecase usecase.PostUsecase
 }
 
 func App() (*Application, error) {
@@ -54,8 +55,10 @@ func App() (*Application, error) {
 	validator := validator.New()
 
 	likeRepo := repository.NewLikeRepository(db)
+	postRepo := repository.NewPostRepository(db)
 
 	likeUsecase := usecase.NewLikeUsecase(likeRepo, time.Duration(cfg.ContextTimeout)*time.Second)
+	postUsecase := usecase.NewPostUsecase(postRepo, time.Duration(cfg.ContextTimeout)*time.Second)
 
 	logger.Info("Application bootstrapped successfully")
 
@@ -66,5 +69,6 @@ func App() (*Application, error) {
 		Logger:         logger,
 		DB:             db,
 		LikeUsecase:    likeUsecase,
+		PostUsecase:    postUsecase,
 	}, nil
 }

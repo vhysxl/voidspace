@@ -21,7 +21,15 @@ func SetupGRPCServer(app *bootstrap.Application) *grpc.Server {
 		app.Logger,
 	)
 
-	pb.RegisterPostServiceServer(s, likeHandler)
+	postHandler := service.NewPostHandler(
+		app.PostUsecase,
+		app.Validator,
+		app.ContextTimeout,
+		app.Logger,
+	)
+
+	pb.RegisterPostServiceServer(s, postHandler)
+	pb.RegisterLikesServiceServer(s, likeHandler)
 
 	reflection.Register(s)
 

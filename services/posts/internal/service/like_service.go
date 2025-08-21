@@ -15,7 +15,7 @@ import (
 )
 
 type LikeHandler struct {
-	pb.UnimplementedPostServiceServer
+	pb.UnimplementedLikesServiceServer
 
 	LikeUsecase    usecase.LikeUsecase
 	Logger         *zap.Logger
@@ -84,9 +84,8 @@ func (lh *LikeHandler) Unlike(ctx context.Context, req *pb.LikeRequest) (*pb.Lik
 	}
 
 	data := &domain.Like{
-		UserID:    int32(userId),
-		PostID:    req.PostId,
-		CreatedAt: time.Now(),
+		UserID: int32(userId),
+		PostID: req.PostId,
 	}
 
 	likeCount, err := lh.LikeUsecase.UnlikePost(ctx, data)

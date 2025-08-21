@@ -3,7 +3,7 @@ syntax = "proto3";
 package posts.v1;
 option go_package = "./posts;posts";
 
-service PostService {
+service LikesService {
   rpc Like(LikeRequest) returns (LikeResponse);
   rpc Unlike(LikeRequest) returns (LikeResponse);
 }

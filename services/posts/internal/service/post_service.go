@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 	"voidspace/posts/internal/domain"
 	"voidspace/posts/internal/usecase"
@@ -12,6 +13,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -104,14 +106,14 @@ func (ph *PostHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb
 	}, nil
 }
 
-func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) error {
+func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*emptypb.Empty, error) {
 	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
 	defer cancel()
 
 	userId, ok := ctx.Value(interceptor.CtxKeyUserID).(int)
 	if !ok {
 		ph.Logger.Error(ErrFailedGetUserID)
-		return status.Error(codes.Unauthenticated, ErrFailedGetUserID)
+		return nil, status.Error(codes.Unauthenticated, ErrFailedGetUserID)
 	}
 
 	data := &domain.Post{
@@ -126,25 +128,25 @@ func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest
 		ph.Logger.Error(ErrUsecase, zap.Error(err))
 		switch err {
 		case ctx.Err():
-			return status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
 		case domain.ErrPostNotFound:
-			return status.Error(codes.NotFound, err.Error())
+			return nil, status.Error(codes.NotFound, err.Error())
 		default:
-			return status.Error(codes.Internal, ErrInternalServer)
+			return nil, status.Error(codes.Internal, ErrInternalServer)
 		}
 	}
 
-	return err
+	return nil, err
 }
 
-func (ph *PostHandler) DeletePost(ctx context.Context, req *pb.DeletePostRequest) error {
+func (ph *PostHandler) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*emptypb.Empty, error) {
 	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
 	defer cancel()
 
 	userId, ok := ctx.Value(interceptor.CtxKeyUserID).(int)
 	if !ok {
 		ph.Logger.Error(ErrFailedGetUserID)
-		return status.Error(codes.Unauthenticated, ErrFailedGetUserID)
+		return nil, status.Error(codes.Unauthenticated, ErrFailedGetUserID)
 	}
 
 	err := ph.PostUsecase.DeletePost(ctx, req.Id, int32(userId))
@@ -152,18 +154,18 @@ func (ph *PostHandler) DeletePost(ctx context.Context, req *pb.DeletePostRequest
 		ph.Logger.Error(ErrUsecase, zap.Error(err))
 		switch err {
 		case ctx.Err():
-			return status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
 		case domain.ErrPostNotFound:
-			return status.Error(codes.NotFound, err.Error())
+			return nil, status.Error(codes.NotFound, err.Error())
 		default:
-			return status.Error(codes.Internal, ErrInternalServer)
+			return nil, status.Error(codes.Internal, ErrInternalServer)
 		}
 	}
 
-	return err
+	return nil, err
 }
 
-func (ph *PostHandler) GetAllPosts(ctx context.Context, req *pb.GetAllPostsRequest) (*pb.GetAllPostsResponse, error) {
+func (ph *PostHandler) GetAllPosts(ctx context.Context, req *pb.GetAllPostsRequest) (*pb.GetFeedResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
 	defer cancel()
 
@@ -191,14 +193,14 @@ func (ph *PostHandler) GetAllPosts(ctx context.Context, req *pb.GetAllPostsReque
 		})
 	}
 
-	return &pb.GetAllPostsResponse{Posts: postResponses}, nil
+	return &pb.GetFeedResponse{Posts: postResponses}, nil
 }
 
-func (ph *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedRequest) (*pb.GetGlobalFeedResponse, error) {
+func (ph *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedRequest) (*pb.GetFeedResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
 	defer cancel()
 
-	posts, hasNext, err := ph.PostUsecase.GetGlobalFeed(ctx, req.Limit, req.offset)
+	posts, hasNext, err := ph.PostUsecase.GetGlobalFeed(ctx, req.Limit, req.Offset)
 	if err != nil {
 		ph.Logger.Error(ErrUsecase, zap.Error(err))
 		switch err {
@@ -222,7 +224,37 @@ func (ph *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedR
 		})
 	}
 
-	return &pb.GetGlobalFeedResponse{Posts: postResponses, HasNext: hasNext}, nil
+	return &pb.GetFeedResponse{Posts: postResponses, HasMore: hasNext}, nil
 }
 
-//getfollowfeed
+func (ph *PostHandler) GetFeedByUserIDs(ctx context.Context, req *pb.GetFeedByUserIDsRequest) (*pb.GetFeedResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
+	defer cancel()
+
+	fmt.Println(req)
+	posts, hasMore, err := ph.PostUsecase.GetFollowFeed(ctx, req.UserIds, req.Limit, req.Offset)
+	if err != nil {
+		ph.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	var postResponses []*pb.PostResponse
+	for _, post := range posts {
+		postResponses = append(postResponses, &pb.PostResponse{
+			Id:         post.ID,
+			Content:    post.Content,
+			UserId:     post.UserID,
+			PostImages: post.PostImages,
+			LikesCount: post.LikesCount,
+			CreatedAt:  timestamppb.New(post.CreatedAt),
+			UpdatedAt:  timestamppb.New(post.UpdatedAt),
+		})
+	}
+
+	return &pb.GetFeedResponse{Posts: postResponses, HasMore: hasMore}, nil
+}
