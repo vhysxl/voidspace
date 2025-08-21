@@ -37,7 +37,7 @@ func NewLikeHandler(
 	}
 }
 
-func (lh *LikeHandler) LikePost(ctx context.Context, req *pb.LikeRequest) (*pb.LikeResponse, error) {
+func (lh *LikeHandler) Like(ctx context.Context, req *pb.LikeRequest) (*pb.LikeResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, lh.ContextTimeout)
 	defer cancel()
 
@@ -53,26 +53,27 @@ func (lh *LikeHandler) LikePost(ctx context.Context, req *pb.LikeRequest) (*pb.L
 		CreatedAt: time.Now(),
 	}
 
-	err := lh.LikeUsecase.LikePost(ctx, data)
+	likeCount, err := lh.LikeUsecase.LikePost(ctx, data)
 	if err != nil {
 		lh.Logger.Error(ErrUsecase, zap.Error(err))
 		switch err {
 		case ctx.Err():
 			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
-		// case domain.ErrPostNotFound:
-		// 	return nil, status.Error(codes.NotFound, err.Error())
+		case domain.ErrPostNotFound:
+			return nil, status.Error(codes.NotFound, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer)
 		}
 	}
 
 	return &pb.LikeResponse{
-		Success: true,
+		Success:       true,
+		NewLikesCount: likeCount,
 	}, nil
 
 }
 
-func (lh *LikeHandler) UnlikePost(ctx context.Context, req *pb.LikeRequest) (*pb.LikeResponse, error) {
+func (lh *LikeHandler) Unlike(ctx context.Context, req *pb.LikeRequest) (*pb.LikeResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, lh.ContextTimeout)
 	defer cancel()
 
@@ -88,21 +89,22 @@ func (lh *LikeHandler) UnlikePost(ctx context.Context, req *pb.LikeRequest) (*pb
 		CreatedAt: time.Now(),
 	}
 
-	err := lh.LikeUsecase.UnlikePost(ctx, data)
+	likeCount, err := lh.LikeUsecase.UnlikePost(ctx, data)
 	if err != nil {
 		lh.Logger.Error(ErrUsecase, zap.Error(err))
 		switch err {
 		case ctx.Err():
 			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
-		// case domain.ErrPostNotFound:
-		// 	return nil, status.Error(codes.NotFound, err.Error())
+		case domain.ErrPostNotFound:
+			return nil, status.Error(codes.NotFound, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer)
 		}
 	}
 
 	return &pb.LikeResponse{
-		Success: true,
+		Success:       true,
+		NewLikesCount: likeCount,
 	}, nil
 
 }

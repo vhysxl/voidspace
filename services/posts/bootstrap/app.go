@@ -7,9 +7,12 @@ import (
 	"time"
 	"voidspace/posts/config"
 	"voidspace/posts/database"
+	"voidspace/posts/internal/repository"
+	"voidspace/posts/internal/usecase"
 	"voidspace/posts/logger"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
 
@@ -19,10 +22,15 @@ type Application struct {
 	Validator      *validator.Validate
 	Logger         *zap.Logger
 	DB             *sql.DB
+	// usecase
+	LikeUsecase usecase.LikeUsecase
 }
 
 func App() (*Application, error) {
-	// Load configuration
+	err := godotenv.Load()
+	if err != nil {
+		log.Println(".env not found, using fallbacks", err)
+	}
 	cfg := config.GetConfig()
 
 	// Initialize logger
@@ -45,6 +53,10 @@ func App() (*Application, error) {
 	// Initialize validator
 	validator := validator.New()
 
+	likeRepo := repository.NewLikeRepository(db)
+
+	likeUsecase := usecase.NewLikeUsecase(likeRepo, time.Duration(cfg.ContextTimeout)*time.Second)
+
 	logger.Info("Application bootstrapped successfully")
 
 	return &Application{
@@ -53,5 +65,6 @@ func App() (*Application, error) {
 		Validator:      validator,
 		Logger:         logger,
 		DB:             db,
+		LikeUsecase:    likeUsecase,
 	}, nil
 }

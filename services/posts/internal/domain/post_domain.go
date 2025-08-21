@@ -16,7 +16,7 @@ type Post struct {
 }
 
 type PostRepository interface {
-	Create(ctx context.Context, post *Post) error
+	Create(ctx context.Context, post *Post) (*Post, error)
 	GetByID(ctx context.Context, id int32) (*Post, error)
 	Update(ctx context.Context, post *Post) error
 	Delete(ctx context.Context, id int32) error

@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+// import "google/protobuf/empty.proto";
 
 package posts.v1;
 option go_package = "./posts;posts";
@@ -13,18 +14,11 @@ service PostService {
   rpc GetAllPosts(GetAllPostsRequest) returns (GetAllPostsResponse);
   rpc GetGlobalFeed(GetGlobalFeedRequest) returns (GetGlobalFeedResponse);
   rpc GetFeedByUserIDs(GetFeedByUserIDsRequest) returns (GetFeedByUserIDsResponse);
-  rpc Like(LikeRequest) returns (LikeResponse);
-  rpc Unlike(LikeRequest) returns (LikeResponse);
 }
 
 message CreatePostRequest {
   string content = 1;
-  int32 user_id = 2;
   repeated string post_images = 3;
-}
-
-message LikeRequest {
-  int32 post_id = 2;
 }
 
 message GetPostRequest {
@@ -32,8 +26,7 @@ message GetPostRequest {
 }
 
 message UpdatePostRequest {
-  int32 id = 1;           
-  int32 user_id = 2;       
+  int32 id = 1;                 
   string content = 3;     
   repeated string post_images = 4; 
 }
@@ -58,11 +51,6 @@ message GetFeedByUserIDsRequest {
 }
 
 // Response messages
-message LikeResponse {
-  bool success = 1;
-  int32 new_likes_count = 2;  
-}
-
 message PostResponse {
   int32 id = 1;
   string content = 2;

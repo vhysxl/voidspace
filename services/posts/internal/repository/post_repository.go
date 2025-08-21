@@ -19,20 +19,28 @@ func NewPostRepository(db *sql.DB) domain.PostRepository {
 }
 
 // Create implements domain.PostRepository.
-func (p *postRepository) Create(ctx context.Context, post *domain.Post) error {
-	_, err := p.db.ExecContext(
+func (p *postRepository) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {
+	err := p.db.QueryRowContext(
 		ctx,
-		`INSERT INTO posts
-		 (content, user_id, post_images, created_at, updated_at)
-		 VALUES ($1, $2, $3, $4, $5)`,
+		`INSERT INTO posts (content, user_id, post_images)
+     VALUES ($1, $2, $3) RETURNING id, content, user_id, post_images, created_at, updated_at`,
 		post.Content,
 		post.UserID,
-		post.PostImages,
-		post.CreatedAt,
-		post.UpdatedAt,
+		pq.Array(post.PostImages), // <- ini penting
+	).Scan(
+		&post.ID,
+		&post.Content,
+		&post.UserID,
+		pq.Array(&post.PostImages),
+		&post.CreatedAt,
+		&post.UpdatedAt,
 	)
 
-	return err
+	if err != nil {
+		return nil, err
+	}
+
+	return post, err
 }
 
 // GetAllPosts implements domain.PostRepository.

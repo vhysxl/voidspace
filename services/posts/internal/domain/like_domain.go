@@ -12,6 +12,6 @@ type Like struct {
 }
 
 type LikeRepository interface {
-	LikePost(ctx context.Context, like *Like) error
-	UnlikePost(ctx context.Context, like *Like) error
+	LikePost(ctx context.Context, like *Like) (int32, error)
+	UnlikePost(ctx context.Context, like *Like) (int32, error)
 }

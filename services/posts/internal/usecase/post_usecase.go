@@ -12,7 +12,7 @@ type postUsecase struct {
 }
 
 type PostUsecase interface {
-	CreatePost(ctx context.Context, post *domain.Post) error
+	CreatePost(ctx context.Context, post *domain.Post) (*domain.Post, error)
 	GetByID(ctx context.Context, id int32) (*domain.Post, error)
 	GetAllUserPosts(ctx context.Context, userID int32) ([]*domain.Post, error)
 	UpdatePost(ctx context.Context, post *domain.Post) error
@@ -29,7 +29,7 @@ func NewPostUsecase(postRepository domain.PostRepository, contextTimeout time.Du
 }
 
 // CreatePost implements PostUsecase.
-func (p *postUsecase) CreatePost(ctx context.Context, post *domain.Post) error {
+func (p *postUsecase) CreatePost(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
 	defer cancel()
 

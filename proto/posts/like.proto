@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package posts.v1;
+option go_package = "./posts;posts";
+
+service PostService {
+  rpc Like(LikeRequest) returns (LikeResponse);
+  rpc Unlike(LikeRequest) returns (LikeResponse);
+}
+
+message LikeRequest {
+  int32 post_id = 2;
+}
+
+// Response messages
+message LikeResponse {
+  bool success = 1;
+  int32 new_likes_count = 2;  
+}

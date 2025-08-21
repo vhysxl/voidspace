@@ -12,8 +12,8 @@ type likeUsecase struct {
 }
 
 type LikeUsecase interface {
-	LikePost(ctx context.Context, like *domain.Like) error
-	UnlikePost(ctx context.Context, like *domain.Like) error
+	LikePost(ctx context.Context, like *domain.Like) (int32, error)
+	UnlikePost(ctx context.Context, like *domain.Like) (int32, error)
 }
 
 func NewLikeUsecase(likeRepository domain.LikeRepository, contextTimeout time.Duration) LikeUsecase {
@@ -24,7 +24,7 @@ func NewLikeUsecase(likeRepository domain.LikeRepository, contextTimeout time.Du
 }
 
 // LikePost implements LikeUsecase.
-func (l *likeUsecase) LikePost(ctx context.Context, like *domain.Like) error {
+func (l *likeUsecase) LikePost(ctx context.Context, like *domain.Like) (int32, error) {
 	ctx, cancel := context.WithTimeout(ctx, l.contextTimeout)
 	defer cancel()
 
@@ -32,7 +32,7 @@ func (l *likeUsecase) LikePost(ctx context.Context, like *domain.Like) error {
 }
 
 // UnlikePost implements LikeUsecase.
-func (l *likeUsecase) UnlikePost(ctx context.Context, like *domain.Like) error {
+func (l *likeUsecase) UnlikePost(ctx context.Context, like *domain.Like) (int32, error) {
 	ctx, cancel := context.WithTimeout(ctx, l.contextTimeout)
 	defer cancel()
 
