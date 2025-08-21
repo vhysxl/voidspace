@@ -100,6 +100,6 @@ func (p *postUsecase) UpdatePost(ctx context.Context, post *domain.Post) error {
 	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
 	defer cancel()
 
-	//tODO: Ensure the post belongs to the user
+	//tODO: Ensure the post belongs to the use
 	return p.postRepository.Update(ctx, post)
 }

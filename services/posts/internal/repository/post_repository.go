@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"voidspace/posts/internal/domain"
 
 	"github.com/lib/pq"
@@ -164,11 +165,23 @@ func (p *postRepository) GetGlobalFeed(ctx context.Context, limit, offset int32)
 
 // Delete implements domain.PostRepository.
 func (p *postRepository) Delete(ctx context.Context, id int32) error {
-	_, err := p.db.ExecContext(
+	res, err := p.db.ExecContext(
 		ctx,
 		`DELETE FROM posts WHERE id = $1`,
 		id,
 	)
+	if err != nil {
+		return err
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return domain.ErrPostNotFound
+	}
+
 	return err
 }
 
@@ -189,8 +202,10 @@ func (p *postRepository) GetByID(ctx context.Context, id int32) (*domain.Post, e
 		&post.CreatedAt,
 		&post.UpdatedAt,
 	)
-
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, domain.ErrPostNotFound
+		}
 		return nil, err
 	}
 
@@ -199,7 +214,7 @@ func (p *postRepository) GetByID(ctx context.Context, id int32) (*domain.Post, e
 
 // Update implements domain.PostRepository.
 func (p *postRepository) Update(ctx context.Context, post *domain.Post) error {
-	_, err := p.db.ExecContext(
+	res, err := p.db.ExecContext(
 		ctx,
 		`UPDATE posts SET content = $1, post_images = $2, updated_at = $3
     WHERE id = $4`,
@@ -208,5 +223,15 @@ func (p *postRepository) Update(ctx context.Context, post *domain.Post) error {
 		post.UpdatedAt,
 		post.ID,
 	)
+	if err != nil {
+		return err
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return domain.ErrPostNotFound
+	}
 	return err
 }

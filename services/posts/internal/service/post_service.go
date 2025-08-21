@@ -75,3 +75,94 @@ func (ph *PostHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest
 		UpdatedAt:  timestamppb.New(post.CreatedAt),
 	}, nil
 }
+
+func (ph *PostHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.PostResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
+	defer cancel()
+
+	post, err := ph.PostUsecase.GetByID(ctx, req.Id)
+	if err != nil {
+		ph.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		case domain.ErrPostNotFound:
+			return nil, status.Error(codes.NotFound, err.Error())
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	return &pb.PostResponse{
+		Id:         post.ID,
+		Content:    post.Content,
+		UserId:     post.UserID,
+		PostImages: post.PostImages,
+		LikesCount: post.LikesCount,
+		CreatedAt:  timestamppb.New(post.CreatedAt),
+		UpdatedAt:  timestamppb.New(post.UpdatedAt),
+	}, nil
+}
+
+func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) error {
+	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
+	defer cancel()
+
+	userId, ok := ctx.Value(interceptor.CtxKeyUserID).(int)
+	if !ok {
+		ph.Logger.Error(ErrFailedGetUserID)
+		return status.Error(codes.Unauthenticated, ErrFailedGetUserID)
+	}
+
+	data := &domain.Post{
+		ID:         req.Id,
+		UserID:     int32(userId),
+		Content:    req.Content,
+		PostImages: req.PostImages,
+	}
+
+	err := ph.PostUsecase.UpdatePost(ctx, data)
+	if err != nil {
+		ph.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		case domain.ErrPostNotFound:
+			return status.Error(codes.NotFound, err.Error())
+		default:
+			return status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	return err
+}
+
+func (ph *PostHandler) DeletePost(ctx context.Context, req *pb.DeletePostRequest) error {
+	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
+	defer cancel()
+
+	userId, ok := ctx.Value(interceptor.CtxKeyUserID).(int)
+	if !ok {
+		ph.Logger.Error(ErrFailedGetUserID)
+		return status.Error(codes.Unauthenticated, ErrFailedGetUserID)
+	}
+
+	err := ph.PostUsecase.DeletePost(ctx, req.Id, int32(userId))
+	if err != nil {
+		ph.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		case domain.ErrPostNotFound:
+			return status.Error(codes.NotFound, err.Error())
+		default:
+			return status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	return err
+}
+
+//getall
+//getglobalfeed
+//getfollowfeed
