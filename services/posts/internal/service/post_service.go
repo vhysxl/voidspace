@@ -131,6 +131,8 @@ func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest
 			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
 		case domain.ErrPostNotFound:
 			return nil, status.Error(codes.NotFound, err.Error())
+		case domain.ErrUnauthorizedAction:
+			return nil, status.Error(codes.PermissionDenied, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer)
 		}
@@ -157,6 +159,8 @@ func (ph *PostHandler) DeletePost(ctx context.Context, req *pb.DeletePostRequest
 			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
 		case domain.ErrPostNotFound:
 			return nil, status.Error(codes.NotFound, err.Error())
+		case domain.ErrUnauthorizedAction:
+			return nil, status.Error(codes.PermissionDenied, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer)
 		}

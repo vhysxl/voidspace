@@ -36,12 +36,36 @@ func (p *postUsecase) CreatePost(ctx context.Context, post *domain.Post) (*domai
 	return p.postRepository.Create(ctx, post)
 }
 
+// UpdatePost implements PostUsecase.
+func (p *postUsecase) UpdatePost(ctx context.Context, post *domain.Post) error {
+	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
+	defer cancel()
+
+	existingPost, err := p.postRepository.GetByID(ctx, post.ID)
+	if err != nil {
+		return err
+	}
+
+	if post.UserID != existingPost.UserID {
+		return domain.ErrUnauthorizedAction
+	}
+
+	return p.postRepository.Update(ctx, post)
+}
+
 // DeletePost implements PostUsecase.
 func (p *postUsecase) DeletePost(ctx context.Context, id int32, userID int32) error {
 	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
 	defer cancel()
 
-	//TO DO:  Ensure the post belongs to the user
+	existingPost, err := p.postRepository.GetByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if userID != existingPost.UserID {
+		return domain.ErrUnauthorizedAction
+	}
 
 	return p.postRepository.Delete(ctx, id)
 }
@@ -93,13 +117,4 @@ func (p *postUsecase) GetGlobalFeed(ctx context.Context, limit int32, offset int
 		return nil, false, err
 	}
 	return posts, hasNext, nil
-}
-
-// UpdatePost implements PostUsecase.
-func (p *postUsecase) UpdatePost(ctx context.Context, post *domain.Post) error {
-	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
-	defer cancel()
-
-	//tODO: Ensure the post belongs to the use
-	return p.postRepository.Update(ctx, post)
 }

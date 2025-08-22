@@ -4,7 +4,7 @@ export
 GENERATED_PROTO := ./proto/generated
 MIGRATION_DIR := ./database/migrations
 PROTO_PATH := ../../proto
-PROTO_FILE := posts/like.proto
+PROTO_FILE := posts/post.proto
 DB_URL=postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE)
 
 .PHONY: migration_up migration_down migration_fix proto_generate
