@@ -37,7 +37,7 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	usersPrivate.PATCH("/profile", func(c echo.Context) error {
 		return c.String(200, "Update user endpoint not implemented yet")
 	})
-	usersPrivate.DELETE("/profile", func(c echo.Context) error {
+	usersPrivate.DELETE("/profile0", func(c echo.Context) error {
 		return c.String(200, "Delete user endpoint not implemented yet")
 	})
 
