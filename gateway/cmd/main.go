@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"voidspaceGateway/bootstrap"
+	"voidspaceGateway/internal/api/router"
 
 	"github.com/labstack/echo/v4"
 )
@@ -16,10 +16,7 @@ func main() {
 
 	e := echo.New()
 
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	router.SetupRoutes(app, e)
 
 	e.Logger.Fatal(e.Start(app.Config.Port))
-
 }
