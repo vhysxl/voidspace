@@ -2,6 +2,7 @@ package router
 
 import (
 	"voidspaceGateway/bootstrap"
+	"voidspaceGateway/internal/api/handlers"
 
 	"github.com/labstack/echo/v4"
 )
@@ -11,17 +12,13 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	api := e.Group("/api/v1")
 
 	// Auth group
+	authHandler := handlers.NewAuthHandler(app.ContextTimeout, app.Logger, app.Validator, app.AuthService, app.Config.PublicKey)
 	auth := api.Group("/auth")
-	auth.POST("/register", func(c echo.Context) error {
-		return c.String(200, "Register endpoint not implemented yet")
-	})
-	auth.POST("/login", func(c echo.Context) error {
-		return c.String(200, "Login endpoint not implemented yet")
-	})
+	auth.POST("/register", authHandler.Register)
+	auth.POST("/login", authHandler.Login)
+	auth.POST("/logout", authHandler.Logout)
 	//protected route
-	auth.POST("/refresh", func(c echo.Context) error {
-		return c.String(200, "Refresh token endpoint not implemented yet")
-	})
+	auth.POST("/refresh", authHandler.RefreshToken)
 
 	//user group
 	// Public routes
@@ -37,7 +34,7 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	usersPrivate.PATCH("/profile", func(c echo.Context) error {
 		return c.String(200, "Update user endpoint not implemented yet")
 	})
-	usersPrivate.DELETE("/profile0", func(c echo.Context) error {
+	usersPrivate.DELETE("/profile", func(c echo.Context) error {
 		return c.String(200, "Delete user endpoint not implemented yet")
 	})
 

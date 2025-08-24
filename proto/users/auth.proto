@@ -3,7 +3,7 @@ syntax = "proto3";
 import "google/protobuf/empty.proto";
 
 package users.v1;
-option go_package = "voidspace/users/proto/users/v1;usersv1";
+option go_package = "./users;users";
 
 
 service AuthService {

@@ -4,7 +4,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 package users.v1;
-option go_package = "voidspace/users/proto/users/v1;usersv1";
+option go_package = "./users;users";
 
 service UserService {
   rpc GetCurrentUser(google.protobuf.Empty) returns (GetUserResponse);

@@ -10,10 +10,11 @@ import (
 )
 
 type Config struct {
-	Port           string
-	PublicKey      *rsa.PublicKey
-	ApiSecret      string
-	ContextTimeout int
+	Port            string
+	PublicKey       *rsa.PublicKey
+	ApiSecret       string
+	ContextTimeout  int
+	UserServiceAddr string
 }
 
 var (
@@ -37,10 +38,11 @@ func initConfig() Config {
 	}
 
 	return Config{
-		Port:           getEnv("PORT", ":5000"),
-		PublicKey:      publicKey,
-		ApiSecret:      getEnv("API_SECRET", "SUPER SECRET LMAO"),
-		ContextTimeout: getIntEnv("CONTEXT_TIMEOUT", 10),
+		Port:            getEnv("PORT", ":5000"),
+		PublicKey:       publicKey,
+		ApiSecret:       getEnv("I_SECRET", "SUPER SECRET LMAO"),
+		ContextTimeout:  getIntEnv("CONTEXT_TIMEOUT", 10),
+		UserServiceAddr: getEnv("USER_SERVICE_URL", "localhost:8080"),
 	}
 
 }

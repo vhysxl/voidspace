@@ -17,8 +17,6 @@ func MySqlDatabase(ctx context.Context, config mysql.Config) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	} //throw err if nil
 
-	defer db.Close()
-
 	db.SetMaxOpenConns(25) //max pool
 	db.SetMaxIdleConns(10)
 	db.SetConnMaxLifetime(30 * time.Minute) //conn lifetime
