@@ -49,18 +49,21 @@ func (ah *AuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	l := new(models.LoginRequest)
-	if err := c.Bind(l); err != nil {
+	err := c.Bind(l)
+	if err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
 	}
 
-	if err := ah.Validator.Struct(l); err != nil {
+	err = ah.Validator.Struct(l)
+	if err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
 	}
 
 	res, err := ah.AuthService.Login(ctx, l)
 	if err != nil {
 		ah.Logger.Error("failed to login", zap.Error(err))
-		return responses.ErrorResponseMessage(c, http.StatusInternalServerError, constants.ErrInternalServer)
+		code, msg := utils.GRPCErrorToHTTP(err)
+		return responses.ErrorResponseMessage(c, code, msg)
 	}
 
 	if res.RefreshToken != "" {
@@ -85,7 +88,8 @@ func (ah *AuthHandler) Register(c echo.Context) error {
 	res, err := ah.AuthService.Register(ctx, r)
 	if err != nil {
 		ah.Logger.Error("failed to register", zap.Error(err))
-		return responses.ErrorResponseMessage(c, http.StatusInternalServerError, constants.ErrInternalServer)
+		code, msg := utils.GRPCErrorToHTTP(err)
+		return responses.ErrorResponseMessage(c, code, msg)
 	}
 
 	if res.RefreshToken != "" {
@@ -116,7 +120,8 @@ func (ah *AuthHandler) RefreshToken(c echo.Context) error {
 	res, err := ah.AuthService.RefreshToken(ctx, userID, username)
 	if err != nil {
 		ah.Logger.Error("failed to refresh token", zap.Error(err))
-		return responses.ErrorResponseMessage(c, http.StatusInternalServerError, constants.ErrInternalServer)
+		code, msg := utils.GRPCErrorToHTTP(err)
+		return responses.ErrorResponseMessage(c, code, msg)
 	}
 
 	if res.RefreshToken != "" {

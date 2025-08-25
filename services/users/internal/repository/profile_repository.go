@@ -66,8 +66,8 @@ func (p *profileRepository) Update(ctx context.Context, userID int, profile *dom
 		common.NullIfEmpty(profile.DisplayName),
 		common.NullIfEmpty(profile.Bio),
 		common.NullIfEmpty(profile.AvatarUrl),
-		common.NullIfEmpty(profile.Location),
 		common.NullIfEmpty(profile.BannerUrl),
+		common.NullIfEmpty(profile.Location),
 		userID,
 	}
 

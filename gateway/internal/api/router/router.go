@@ -3,16 +3,19 @@ package router
 import (
 	"voidspaceGateway/bootstrap"
 	"voidspaceGateway/internal/api/handlers"
+	"voidspaceGateway/middleware"
 
 	"github.com/labstack/echo/v4"
 )
 
 func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
+	// HANDLERS
+	authHandler := handlers.NewAuthHandler(app.ContextTimeout, app.Logger, app.Validator, app.AuthService, app.Config.PublicKey)
+	userHandler := handlers.NewUserHandler(app.ContextTimeout, app.Logger, app.Validator, app.UserService)
 
 	api := e.Group("/api/v1")
 
 	// Auth group
-	authHandler := handlers.NewAuthHandler(app.ContextTimeout, app.Logger, app.Validator, app.AuthService, app.Config.PublicKey)
 	auth := api.Group("/auth")
 	auth.POST("/register", authHandler.Register)
 	auth.POST("/login", authHandler.Login)
@@ -23,29 +26,19 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	//user group
 	// Public routes
 	usersPublic := api.Group("/users")
-	usersPublic.GET("/username/:username", func(c echo.Context) error {
-		return c.String(200, "Get user by username endpoint not implemented yet")
-	})
+	usersPublic.GET("/:username", userHandler.GetUser)
 	// Protected routes
-	usersPrivate := api.Group("/users") // to do : add middleware here for protecting routes
-	usersPrivate.GET("/profile", func(c echo.Context) error {
-		return c.String(200, "Get user by ID endpoint not implemented yet")
-	})
-	usersPrivate.PATCH("/profile", func(c echo.Context) error {
-		return c.String(200, "Update user endpoint not implemented yet")
-	})
-	usersPrivate.DELETE("/profile", func(c echo.Context) error {
-		return c.String(200, "Delete user endpoint not implemented yet")
-	})
+	usersPrivate := api.Group("/users")
+	usersPrivate.Use(middleware.AuthMiddleware(app.Config.PublicKey))
+	usersPrivate.GET("/me", userHandler.GetCurrentUser)
+	usersPrivate.PUT("/me", userHandler.UpdateProfile)
+	usersPrivate.DELETE("/me", userHandler.DeleteUser)
 
 	//follow group
-	follow := api.Group("/follow") // to do : add middleware here for protecting routes
-	follow.POST("/:id", func(c echo.Context) error {
-		return c.String(200, "Follow user endpoint not implemented yet")
-	})
-	follow.DELETE("/:id", func(c echo.Context) error {
-		return c.String(200, "Unfollow user endpoint not implemented yet")
-	})
+	follow := api.Group("/follow")
+	follow.Use(middleware.AuthMiddleware(app.Config.PublicKey))
+	follow.POST("/:username", userHandler.Follow)
+	follow.DELETE("/:username", userHandler.Unfollow)
 
 	// Posts group
 	// Public posts group
