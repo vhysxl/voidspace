@@ -87,7 +87,6 @@ func (us *UserService) GetUser(ctx context.Context, username string) (*models.Us
 	}
 
 	return &models.User{
-		ID:        res.User.GetId(),
 		Username:  res.User.GetUsername(),
 		Profile:   *profile,
 		CreatedAt: res.User.GetCreatedAt().AsTime(),

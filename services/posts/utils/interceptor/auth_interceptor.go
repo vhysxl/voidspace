@@ -26,9 +26,9 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 	) (any, error) {
 
 		skipAuthMethods := map[string]bool{
-			"/users.v1.AuthService/Login":    true,
-			"/users.v1.AuthService/Register": true,
-			"/users.v1.UserService/GetUser":  true, // pastikan konsisten dengan FullMethod
+			"/posts.v1.PostService/GetPost":       true,
+			"/posts.v1.PostService/GetAllPosts":   true,
+			"/posts.v1.PostService/GetGlobalFeed": true,
 		}
 		if skipAuthMethods[info.FullMethod] {
 			return handler(ctx, req)

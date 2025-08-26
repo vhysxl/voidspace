@@ -146,7 +146,9 @@ func (uh *UserHandler) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb
 		Following:   int32(existingUser.Following),
 	}
 
+	userIDInt32 := int32(existingUser.ID)
 	user := &pb.User{
+		Id:        &userIDInt32,
 		Username:  existingUser.Username,
 		Profile:   profile,
 		CreatedAt: timestamppb.New(existingUser.CreatedAt),

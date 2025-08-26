@@ -15,6 +15,7 @@ type Config struct {
 	ApiSecret       string
 	ContextTimeout  int
 	UserServiceAddr string
+	PostServiceAddr string
 }
 
 var (
@@ -43,6 +44,7 @@ func initConfig() Config {
 		ApiSecret:       getEnv("I_SECRET", "SUPER SECRET LMAO"),
 		ContextTimeout:  getIntEnv("CONTEXT_TIMEOUT", 10),
 		UserServiceAddr: getEnv("USER_SERVICE_URL", "localhost:8080"),
+		PostServiceAddr: getEnv("POST_SERVICE_URL", "localhost:5000"),
 	}
 
 }

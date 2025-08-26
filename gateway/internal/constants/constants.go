@@ -15,4 +15,8 @@ const (
 	DeleteUserSuccess    = "Delete user success"
 	FollowSuccess        = "Followed user successfully"
 	UnfollowSuccess      = "Unfollowed user successfully"
+	PostCreated          = "Post created successfully"
+	GetPostSuccess       = "Post received successfully"
+	UpdatePostSuccess    = "Post updated successfully"
+	DeletePostSuccess    = "Post Deleted"
 )

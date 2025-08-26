@@ -12,6 +12,7 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	// HANDLERS
 	authHandler := handlers.NewAuthHandler(app.ContextTimeout, app.Logger, app.Validator, app.AuthService, app.Config.PublicKey)
 	userHandler := handlers.NewUserHandler(app.ContextTimeout, app.Logger, app.Validator, app.UserService)
+	postHandler := handlers.NewPostHandler(app.ContextTimeout, app.Logger, app.Validator, app.PostService)
 
 	api := e.Group("/api/v1")
 
@@ -43,23 +44,14 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	// Posts group
 	// Public posts group
 	postsPublic := api.Group("/posts")
-	postsPublic.GET("/:id", func(c echo.Context) error {
-		return c.String(200, "Get post by ID endpoint not implemented yet")
-	})
-	postsPublic.GET("/user/:userId", func(c echo.Context) error {
-		return c.String(200, "Get posts by user ID endpoint not implemented yet")
-	})
+	postsPublic.GET("/:id", postHandler.GetPost)
+	postsPublic.GET("/user/:username", postHandler.GetUserPosts)
 	// Protected posts group
-	postsPrivate := api.Group("/posts") // to do : add middleware here for protecting routes
-	postsPrivate.POST("/", func(c echo.Context) error {
-		return c.String(200, "Create post endpoint not implemented yet")
-	})
-	postsPrivate.PATCH("/:id", func(c echo.Context) error {
-		return c.String(200, "Update post endpoint not implemented yet")
-	})
-	postsPrivate.DELETE("/:id", func(c echo.Context) error {
-		return c.String(200, "Delete post endpoint not implemented yet")
-	})
+	postsPrivate := api.Group("/posts")
+	postsPrivate.Use(middleware.AuthMiddleware(app.Config.PublicKey))
+	postsPrivate.POST("/", postHandler.Create)
+	postsPrivate.PUT("/:id", postHandler.Update)
+	postsPrivate.DELETE("/:id", postHandler.Delete)
 
 	// Feed group
 	feed := api.Group("/feed")
@@ -71,7 +63,8 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	})
 
 	// LIkes group
-	likes := api.Group("/likes") // to do : add middleware here for protecting routes
+	likes := api.Group("/likes")
+	likes.Use(middleware.AuthMiddleware(app.Config.PublicKey))
 	likes.POST("/:postId", func(c echo.Context) error {
 		return c.String(200, "Like post endpoint not implemented yet")
 	})
