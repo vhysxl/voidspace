@@ -13,6 +13,7 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	authHandler := handlers.NewAuthHandler(app.ContextTimeout, app.Logger, app.Validator, app.AuthService, app.Config.PublicKey)
 	userHandler := handlers.NewUserHandler(app.ContextTimeout, app.Logger, app.Validator, app.UserService)
 	postHandler := handlers.NewPostHandler(app.ContextTimeout, app.Logger, app.Validator, app.PostService)
+	likeHandler := handlers.NewLikeHandler(app.ContextTimeout, app.Logger, app.Validator, app.LikeService)
 
 	api := e.Group("/api/v1")
 
@@ -65,10 +66,6 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	// LIkes group
 	likes := api.Group("/likes")
 	likes.Use(middleware.AuthMiddleware(app.Config.PublicKey))
-	likes.POST("/:postId", func(c echo.Context) error {
-		return c.String(200, "Like post endpoint not implemented yet")
-	})
-	likes.DELETE("/:postId", func(c echo.Context) error {
-		return c.String(200, "Unlike post endpoint not implemented yet")
-	})
+	likes.POST("/:postId", likeHandler.Like)
+	likes.DELETE("/:postId", likeHandler.Unlike)
 }

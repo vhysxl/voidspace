@@ -24,6 +24,7 @@ type Application struct {
 	AuthService    *service.AuthService
 	UserService    *service.UserService
 	PostService    *service.PostService
+	LikeService    *service.LikeService
 }
 
 func App() (*Application, error) {
@@ -55,11 +56,16 @@ func App() (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
+	likeConn, err := grpc.NewClient(config.PostServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
 
 	// Services
 	authService := service.NewAuthService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewAuthServiceClient(authConn), *config.PublicKey)
 	userService := service.NewUserService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewUserServiceClient(userConn))
 	postService := service.NewPostService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn))
+	likeService := service.NewLikeService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewLikesServiceClient(likeConn))
 
 	logger.Info("Gateway Ready")
 
@@ -71,6 +77,7 @@ func App() (*Application, error) {
 		AuthService:    authService,
 		UserService:    userService,
 		PostService:    postService,
+		LikeService:    likeService,
 	}, nil
 
 }

@@ -19,4 +19,6 @@ const (
 	GetPostSuccess       = "Post received successfully"
 	UpdatePostSuccess    = "Post updated successfully"
 	DeletePostSuccess    = "Post Deleted"
+	LikeSuccess          = "Successfully Like a Post"
+	UnlikeSuccess        = "Successfully Unlike Post"
 )
