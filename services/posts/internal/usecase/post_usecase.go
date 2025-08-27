@@ -5,6 +5,8 @@ import (
 	"math"
 	"time"
 	"voidspace/posts/internal/domain"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type postUsecase struct {
@@ -147,15 +149,14 @@ func (p *postUsecase) AccountDeletionHandle(ctx context.Context, userId int32) e
 	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
 	defer cancel()
 
-	err := p.postRepository.DeleteAllPosts(ctx, userId)
-	if err != nil {
-		return err
-	}
+	g, ctx := errgroup.WithContext(ctx)
 
-	err = p.likeRepository.DeleteAllLikes(ctx, userId)
-	if err != nil {
-		return err
-	}
+	g.Go(func() error {
+		return p.postRepository.DeleteAllPosts(ctx, userId)
+	})
+	g.Go(func() error {
+		return p.likeRepository.DeleteAllLikes(ctx, userId)
+	})
 
-	return nil
+	return g.Wait()
 }
