@@ -11,11 +11,6 @@ type GetPostRequest struct {
 	ID int `validate:"required,gt=0"`
 }
 
-type GetFeedResponse struct {
-	Posts   []Post `json:"posts"`
-	HasMore bool   `json:"hasmore"`
-}
-
 type Post struct {
 	ID         int       `json:"id"`
 	Content    string    `json:"content"`

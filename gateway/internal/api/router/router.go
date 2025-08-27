@@ -59,6 +59,8 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	feed.GET("/", func(c echo.Context) error {
 		return c.String(200, "Global feed")
 	})
+	followFeed := api.Group("/feed")
+	followFeed.Use(middleware.AuthMiddleware(app.Config.PublicKey))
 	feed.GET("/followFeed", func(c echo.Context) error {
 		return c.String(200, "follow feed")
 	})
