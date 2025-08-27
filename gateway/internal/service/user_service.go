@@ -2,13 +2,13 @@ package service
 
 import (
 	"context"
-	"sync"
 	"time"
 	"voidspaceGateway/internal/models"
 	postpb "voidspaceGateway/proto/generated/posts"
 	userpb "voidspaceGateway/proto/generated/users"
 
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -134,47 +134,28 @@ func (us *UserService) DeleteUser(ctx context.Context, userID string, username s
 
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	var wg sync.WaitGroup
-	errChan := make(chan error, 2) // Buffer channel untuk menampung error dari 2 goroutine
+	// Move to saga pattern
 
-	// DeleteUser dari UserService
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	g, ctx := errgroup.WithContext(ctx)
+
+	g.Go(func() error {
 		_, err := us.UserClient.DeleteUser(ctx, &emptypb.Empty{})
 		if err != nil {
 			us.Logger.Error("failed to call UserService.DeleteUser", zap.Error(err))
-			errChan <- err // Kirim error ke channel
-			return
 		}
-		errChan <- nil // Tidak ada error
-	}()
+		return err
+	})
 
-	// AccountDeletionHandle dari PostService
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	// AccountDeletionHandle
+	g.Go(func() error {
 		_, err := us.PostClient.AccountDeletionHandle(ctx, &emptypb.Empty{})
 		if err != nil {
-			us.Logger.Error("failed to call PostService.AccountDeletionHandler", zap.Error(err))
-			errChan <- err // Kirim error ke channel
-			return
+			us.Logger.Error("failed to call PostService.AccountDeletionHandle", zap.Error(err))
 		}
-		errChan <- nil // Tidak ada error
-	}()
+		return err
+	})
 
-	// Tunggu kedua goroutine selesai
-	wg.Wait()
-
-	// Ambil error pertama yang datang
-	close(errChan)
-	for err := range errChan {
-		if err != nil {
-			return err // Return error pertama yang terjadi
-		}
-	}
-
-	return nil
+	return g.Wait()
 }
 
 func (us *UserService) Follow(ctx context.Context, userID string, username string, targetUsername string) error {
