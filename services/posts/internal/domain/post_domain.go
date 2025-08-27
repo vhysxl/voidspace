@@ -23,6 +23,7 @@ type PostRepository interface {
 	GetAllUserPosts(ctx context.Context, userID int32) ([]*Post, error)
 
 	// Feed
-	GetGlobalFeed(ctx context.Context, limit, offset int32) ([]*Post, bool, error)
-	GetFollowFeed(ctx context.Context, userIDs []int32, limit, offset int32) ([]*Post, bool, error)
+	GetGlobalFeed(ctx context.Context, cursor time.Time, cursorID int32) ([]*Post, bool, error)
+	GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime time.Time, cursorID int32) ([]*Post, bool, error)
+	DeleteAllPosts(ctx context.Context, userID int32) error
 }

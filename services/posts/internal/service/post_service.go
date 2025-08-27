@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"time"
 	"voidspace/posts/internal/domain"
 	"voidspace/posts/internal/usecase"
@@ -204,18 +204,29 @@ func (ph *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedR
 	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
 	defer cancel()
 
-	posts, hasNext, err := ph.PostUsecase.GetGlobalFeed(ctx, req.Limit, req.Offset)
+	var cursorTime *time.Time
+	var cursorID *int32
+
+	if req.Cursor != nil {
+		t := req.Cursor.AsTime()
+		cursorTime = &t
+	}
+	if req.CursorID != 0 {
+		cursorID = &req.CursorID
+	}
+
+	posts, hasNext, err := ph.PostUsecase.GetGlobalFeed(ctx, cursorTime, cursorID)
 	if err != nil {
 		ph.Logger.Error(ErrUsecase, zap.Error(err))
-		switch err {
-		case ctx.Err():
+		switch {
+		case errors.Is(err, ctx.Err()):
 			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer)
 		}
 	}
 
-	var postResponses []*pb.PostResponse
+	postResponses := make([]*pb.PostResponse, 0, len(posts))
 	for _, post := range posts {
 		postResponses = append(postResponses, &pb.PostResponse{
 			Id:         post.ID,
@@ -228,26 +239,40 @@ func (ph *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedR
 		})
 	}
 
-	return &pb.GetFeedResponse{Posts: postResponses, HasMore: hasNext}, nil
+	return &pb.GetFeedResponse{
+		Posts:   postResponses,
+		HasMore: hasNext,
+	}, nil
 }
 
 func (ph *PostHandler) GetFeedByUserIDs(ctx context.Context, req *pb.GetFeedByUserIDsRequest) (*pb.GetFeedResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
 	defer cancel()
 
-	fmt.Println(req)
-	posts, hasMore, err := ph.PostUsecase.GetFollowFeed(ctx, req.UserIds, req.Limit, req.Offset)
+	// siapkan cursor
+	var cursorTime *time.Time
+	var cursorID *int32
+
+	if req.Cursor != nil {
+		t := req.Cursor.AsTime()
+		cursorTime = &t
+	}
+	cursorID = &req.CursorID
+
+	// ambil feed berdasarkan user_ids + cursor
+	posts, hasMore, err := ph.PostUsecase.GetFollowFeed(ctx, req.UserIds, cursorTime, cursorID)
 	if err != nil {
 		ph.Logger.Error(ErrUsecase, zap.Error(err))
-		switch err {
-		case ctx.Err():
+		switch {
+		case errors.Is(err, ctx.Err()):
 			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer)
 		}
 	}
 
-	var postResponses []*pb.PostResponse
+	// mapping ke response
+	postResponses := make([]*pb.PostResponse, 0, len(posts))
 	for _, post := range posts {
 		postResponses = append(postResponses, &pb.PostResponse{
 			Id:         post.ID,
@@ -260,5 +285,32 @@ func (ph *PostHandler) GetFeedByUserIDs(ctx context.Context, req *pb.GetFeedByUs
 		})
 	}
 
-	return &pb.GetFeedResponse{Posts: postResponses, HasMore: hasMore}, nil
+	return &pb.GetFeedResponse{
+		Posts:   postResponses,
+		HasMore: hasMore,
+	}, nil
+}
+
+func (ph *PostHandler) AccountDeletionHandle(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
+	defer cancel()
+
+	userID, ok := ctx.Value(interceptor.CtxKeyUserID).(int)
+	if !ok {
+		ph.Logger.Error(ErrFailedGetUserID)
+		return nil, status.Error(codes.Internal, ErrFailedGetUserID)
+	}
+
+	err := ph.PostUsecase.AccountDeletionHandle(ctx, int32(userID))
+	if err != nil {
+		ph.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	return &emptypb.Empty{}, nil
 }

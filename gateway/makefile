@@ -3,7 +3,7 @@ export
 
 GENERATED_PROTO := ./proto/generated
 PROTO_PATH := ../proto
-PROTO_FILE := users/user.proto
+PROTO_FILE := posts/post.proto
 
 .PHONY: proto_generate
 

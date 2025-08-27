@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"sync"
 	"time"
 	"voidspaceGateway/internal/models"
+	postpb "voidspaceGateway/proto/generated/posts"
 	userpb "voidspaceGateway/proto/generated/users"
 
 	"go.uber.org/zap"
@@ -15,13 +17,15 @@ type UserService struct {
 	ContextTimeout time.Duration
 	Logger         *zap.Logger
 	UserClient     userpb.UserServiceClient
+	PostClient     postpb.PostServiceClient
 }
 
-func NewUserService(timeout time.Duration, logger *zap.Logger, userClient userpb.UserServiceClient) *UserService {
+func NewUserService(timeout time.Duration, logger *zap.Logger, userClient userpb.UserServiceClient, postClient postpb.PostServiceClient) *UserService {
 	return &UserService{
 		ContextTimeout: timeout,
 		Logger:         logger,
 		UserClient:     userClient,
+		PostClient:     postClient,
 	}
 }
 
@@ -130,13 +134,47 @@ func (us *UserService) DeleteUser(ctx context.Context, userID string, username s
 
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	_, err := us.UserClient.DeleteUser(ctx, &emptypb.Empty{})
-	if err != nil {
-		us.Logger.Error("failed to call UserService.DeleteUser", zap.Error(err))
-		return err
+	var wg sync.WaitGroup
+	errChan := make(chan error, 2) // Buffer channel untuk menampung error dari 2 goroutine
+
+	// DeleteUser dari UserService
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, err := us.UserClient.DeleteUser(ctx, &emptypb.Empty{})
+		if err != nil {
+			us.Logger.Error("failed to call UserService.DeleteUser", zap.Error(err))
+			errChan <- err // Kirim error ke channel
+			return
+		}
+		errChan <- nil // Tidak ada error
+	}()
+
+	// AccountDeletionHandle dari PostService
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, err := us.PostClient.AccountDeletionHandle(ctx, &emptypb.Empty{})
+		if err != nil {
+			us.Logger.Error("failed to call PostService.AccountDeletionHandler", zap.Error(err))
+			errChan <- err // Kirim error ke channel
+			return
+		}
+		errChan <- nil // Tidak ada error
+	}()
+
+	// Tunggu kedua goroutine selesai
+	wg.Wait()
+
+	// Ambil error pertama yang datang
+	close(errChan)
+	for err := range errChan {
+		if err != nil {
+			return err // Return error pertama yang terjadi
+		}
 	}
 
-	return err
+	return nil
 }
 
 func (us *UserService) Follow(ctx context.Context, userID string, username string, targetUsername string) error {

@@ -58,7 +58,7 @@ func App() (*Application, error) {
 	postRepo := repository.NewPostRepository(db)
 
 	likeUsecase := usecase.NewLikeUsecase(likeRepo, time.Duration(cfg.ContextTimeout)*time.Second)
-	postUsecase := usecase.NewPostUsecase(postRepo, time.Duration(cfg.ContextTimeout)*time.Second)
+	postUsecase := usecase.NewPostUsecase(postRepo, likeRepo, time.Duration(cfg.ContextTimeout)*time.Second)
 
 	logger.Info("Application bootstrapped successfully")
 

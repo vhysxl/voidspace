@@ -20,13 +20,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PostService_CreatePost_FullMethodName       = "/posts.v1.PostService/CreatePost"
-	PostService_GetPost_FullMethodName          = "/posts.v1.PostService/GetPost"
-	PostService_UpdatePost_FullMethodName       = "/posts.v1.PostService/UpdatePost"
-	PostService_DeletePost_FullMethodName       = "/posts.v1.PostService/DeletePost"
-	PostService_GetAllPosts_FullMethodName      = "/posts.v1.PostService/GetAllPosts"
-	PostService_GetGlobalFeed_FullMethodName    = "/posts.v1.PostService/GetGlobalFeed"
-	PostService_GetFeedByUserIDs_FullMethodName = "/posts.v1.PostService/GetFeedByUserIDs"
+	PostService_CreatePost_FullMethodName            = "/posts.v1.PostService/CreatePost"
+	PostService_GetPost_FullMethodName               = "/posts.v1.PostService/GetPost"
+	PostService_UpdatePost_FullMethodName            = "/posts.v1.PostService/UpdatePost"
+	PostService_DeletePost_FullMethodName            = "/posts.v1.PostService/DeletePost"
+	PostService_GetAllPosts_FullMethodName           = "/posts.v1.PostService/GetAllPosts"
+	PostService_GetGlobalFeed_FullMethodName         = "/posts.v1.PostService/GetGlobalFeed"
+	PostService_GetFeedByUserIDs_FullMethodName      = "/posts.v1.PostService/GetFeedByUserIDs"
+	PostService_AccountDeletionHandle_FullMethodName = "/posts.v1.PostService/AccountDeletionHandle"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -40,6 +41,7 @@ type PostServiceClient interface {
 	GetAllPosts(ctx context.Context, in *GetAllPostsRequest, opts ...grpc.CallOption) (*GetFeedResponse, error)
 	GetGlobalFeed(ctx context.Context, in *GetGlobalFeedRequest, opts ...grpc.CallOption) (*GetFeedResponse, error)
 	GetFeedByUserIDs(ctx context.Context, in *GetFeedByUserIDsRequest, opts ...grpc.CallOption) (*GetFeedResponse, error)
+	AccountDeletionHandle(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type postServiceClient struct {
@@ -120,6 +122,16 @@ func (c *postServiceClient) GetFeedByUserIDs(ctx context.Context, in *GetFeedByU
 	return out, nil
 }
 
+func (c *postServiceClient) AccountDeletionHandle(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, PostService_AccountDeletionHandle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility.
@@ -131,6 +143,7 @@ type PostServiceServer interface {
 	GetAllPosts(context.Context, *GetAllPostsRequest) (*GetFeedResponse, error)
 	GetGlobalFeed(context.Context, *GetGlobalFeedRequest) (*GetFeedResponse, error)
 	GetFeedByUserIDs(context.Context, *GetFeedByUserIDsRequest) (*GetFeedResponse, error)
+	AccountDeletionHandle(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -161,6 +174,9 @@ func (UnimplementedPostServiceServer) GetGlobalFeed(context.Context, *GetGlobalF
 }
 func (UnimplementedPostServiceServer) GetFeedByUserIDs(context.Context, *GetFeedByUserIDsRequest) (*GetFeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFeedByUserIDs not implemented")
+}
+func (UnimplementedPostServiceServer) AccountDeletionHandle(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountDeletionHandle not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 func (UnimplementedPostServiceServer) testEmbeddedByValue()                     {}
@@ -309,6 +325,24 @@ func _PostService_GetFeedByUserIDs_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_AccountDeletionHandle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).AccountDeletionHandle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_AccountDeletionHandle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).AccountDeletionHandle(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -343,6 +377,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetFeedByUserIDs",
 			Handler:    _PostService_GetFeedByUserIDs_Handler,
+		},
+		{
+			MethodName: "AccountDeletionHandle",
+			Handler:    _PostService_AccountDeletionHandle_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

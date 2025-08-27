@@ -14,4 +14,5 @@ type Like struct {
 type LikeRepository interface {
 	LikePost(ctx context.Context, like *Like) (int32, error)
 	UnlikePost(ctx context.Context, like *Like) (int32, error)
+	DeleteAllLikes(ctx context.Context, userID int32) error
 }

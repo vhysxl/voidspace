@@ -114,11 +114,24 @@ func (l *likeRepository) UnlikePost(ctx context.Context, like *domain.Like) (int
 		if err != nil {
 			return 0, err
 		}
-	} 
+	}
 
 	if err := tx.Commit(); err != nil {
 		return 0, err
 	}
 
 	return newLikesCount, nil
+}
+
+func (l *likeRepository) DeleteAllLikes(ctx context.Context, userID int32) error {
+	_, err := l.db.ExecContext(
+		ctx,
+		`DELETE FROM post_likes WHERE user_id = $1`,
+		userID,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

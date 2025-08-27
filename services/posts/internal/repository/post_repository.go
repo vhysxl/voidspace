@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"time"
 	"voidspace/posts/internal/domain"
 
 	"github.com/lib/pq"
@@ -161,27 +162,31 @@ func (p *postRepository) GetAllUserPosts(ctx context.Context, userID int32) ([]*
 }
 
 // GetFollowFeed implements domain.PostRepository.
-func (p *postRepository) GetFollowFeed(ctx context.Context, userIDs []int32, limit int32, offset int32) ([]*domain.Post, bool, error) {
-	//variable initializer
+func (p *postRepository) GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime time.Time, cursorID int32) ([]*domain.Post, bool, error) {
 	var jsonRaw sql.NullString
 
-	//query to get data
-	//LIMIT + 1 to check hasMore, offset for skip rows
+	query := `
+        SELECT id, content, user_id, post_images, likes_count, created_at, updated_at
+        FROM posts
+        WHERE user_id = ANY($1)
+          AND ((created_at < $2) OR (created_at = $2 AND id < $3))
+        ORDER BY created_at DESC, id DESC
+        LIMIT $4
+    `
+
 	rows, err := p.db.QueryContext(
 		ctx,
-		`SELECT id, content, user_id, post_images, likes_count, created_at, updated_at
-         FROM posts 
-         WHERE user_id = ANY($1) 
-         ORDER BY created_at DESC 
-         LIMIT $2 OFFSET $3`,
-		pq.Array(userIDs), limit+1, offset)
+		query,
+		pq.Array(userIDs),
+		cursorTime,
+		cursorID,
+		10+1, // ambil extra 1 buat cek hasMore
+	)
 	if err != nil {
 		return nil, false, err
 	}
-	//make sure the conn close after function done
 	defer rows.Close()
 
-	// slice initializer to store posts
 	var posts []*domain.Post
 	for rows.Next() {
 		post := &domain.Post{}
@@ -197,39 +202,40 @@ func (p *postRepository) GetFollowFeed(ctx context.Context, userIDs []int32, lim
 		if err != nil {
 			return nil, false, err
 		}
-		// marshall the jsonraw to PostImages, set [] if null
+
 		if jsonRaw.Valid {
-			err = json.Unmarshal([]byte(jsonRaw.String), &post.PostImages)
-			if err != nil {
+			if err := json.Unmarshal([]byte(jsonRaw.String), &post.PostImages); err != nil {
 				return nil, false, err
 			}
 		} else {
 			post.PostImages = []string{}
 		}
+
 		posts = append(posts, post)
 	}
 
-	// check has more compare it using limit
-	hasMore := len(posts) > int(limit)
+	hasMore := len(posts) > int(10)
 	if hasMore {
-		//remove last element, basically just use 10 (9 index)
-		posts = posts[:limit]
+		posts = posts[:10]
 	}
 
 	return posts, hasMore, nil
 }
 
 // GetGlobalFeed implements domain.PostRepository.
-func (p *postRepository) GetGlobalFeed(ctx context.Context, limit, offset int32) ([]*domain.Post, bool, error) {
+func (p *postRepository) GetGlobalFeed(ctx context.Context, cursorTime time.Time, cursorID int32) ([]*domain.Post, bool, error) {
 	var jsonRaw sql.NullString
 
-	rows, err := p.db.QueryContext(
-		ctx,
-		`SELECT id, content, user_id, post_images, likes_count, created_at, updated_at
-         FROM posts 
-         ORDER BY created_at DESC 
-         LIMIT $1 OFFSET $2`,
-		limit+1, offset)
+	query := `
+		SELECT id, content, user_id, post_images, likes_count, created_at, updated_at
+		FROM posts
+		WHERE (created_at < $1)
+		   OR (created_at = $1 AND id < $2)
+		ORDER BY created_at DESC, id DESC
+		LIMIT $3
+	`
+
+	rows, err := p.db.QueryContext(ctx, query, cursorTime, cursorID, 10+1)
 	if err != nil {
 		return nil, false, err
 	}
@@ -251,8 +257,7 @@ func (p *postRepository) GetGlobalFeed(ctx context.Context, limit, offset int32)
 			return nil, false, err
 		}
 		if jsonRaw.Valid {
-			err = json.Unmarshal([]byte(jsonRaw.String), &post.PostImages)
-			if err != nil {
+			if err := json.Unmarshal([]byte(jsonRaw.String), &post.PostImages); err != nil {
 				return nil, false, err
 			}
 		} else {
@@ -261,9 +266,9 @@ func (p *postRepository) GetGlobalFeed(ctx context.Context, limit, offset int32)
 		posts = append(posts, post)
 	}
 
-	hasMore := len(posts) > int(limit)
+	hasMore := len(posts) > 10
 	if hasMore {
-		posts = posts[:limit]
+		posts = posts[:10]
 	}
 
 	return posts, hasMore, nil
@@ -320,4 +325,17 @@ func (p *postRepository) Delete(ctx context.Context, id int32) error {
 	}
 
 	return err
+}
+
+func (p *postRepository) DeleteAllPosts(ctx context.Context, userID int32) error {
+	_, err := p.db.ExecContext(
+		ctx,
+		`DELETE FROM posts WHERE user_id = $1`,
+		userID,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

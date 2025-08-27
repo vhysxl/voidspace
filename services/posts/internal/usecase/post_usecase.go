@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"math"
 	"time"
 	"voidspace/posts/internal/domain"
 )
@@ -9,6 +10,7 @@ import (
 type postUsecase struct {
 	postRepository domain.PostRepository
 	contextTimeout time.Duration
+	likeRepository domain.LikeRepository
 }
 
 type PostUsecase interface {
@@ -17,12 +19,14 @@ type PostUsecase interface {
 	GetAllUserPosts(ctx context.Context, userID int32) ([]*domain.Post, error)
 	UpdatePost(ctx context.Context, post *domain.Post) error
 	DeletePost(ctx context.Context, id int32, userID int32) error
-	GetGlobalFeed(ctx context.Context, limit, offset int32) ([]*domain.Post, bool, error)
-	GetFollowFeed(ctx context.Context, userIDs []int32, limit, offset int32) ([]*domain.Post, bool, error)
+	GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID *int32) ([]*domain.Post, bool, error)
+	GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime *time.Time, cursorID *int32) ([]*domain.Post, bool, error)
+	AccountDeletionHandle(ctx context.Context, userId int32) error
 }
 
-func NewPostUsecase(postRepository domain.PostRepository, contextTimeout time.Duration) PostUsecase {
+func NewPostUsecase(postRepository domain.PostRepository, likeRepository domain.LikeRepository, contextTimeout time.Duration) PostUsecase {
 	return &postUsecase{
+		likeRepository: likeRepository,
 		postRepository: postRepository,
 		contextTimeout: contextTimeout,
 	}
@@ -94,27 +98,64 @@ func (p *postUsecase) GetByID(ctx context.Context, id int32) (*domain.Post, erro
 	return post, nil
 }
 
-// GetFollowFeed implements PostUsecase.
-func (p *postUsecase) GetFollowFeed(ctx context.Context, userIDs []int32, limit int32, offset int32) ([]*domain.Post, bool, error) {
+// GetGlobalFeed implements PostUsecase.
+func (p *postUsecase) GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID *int32) ([]*domain.Post, bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
 	defer cancel()
 
-	posts, hasNext, err := p.postRepository.GetFollowFeed(ctx, userIDs, limit, offset)
+	var timeVal time.Time
+	var idVal int32
+	if cursorTime == nil || cursorID == nil {
+		timeVal = time.Now()
+		idVal = math.MaxInt32
+	} else {
+		timeVal = *cursorTime
+		idVal = *cursorID
+	}
+
+	posts, hasNext, err := p.postRepository.GetGlobalFeed(ctx, timeVal, idVal)
 	if err != nil {
 		return nil, false, err
 	}
-
 	return posts, hasNext, nil
 }
 
-// GetGlobalFeed implements PostUsecase.
-func (p *postUsecase) GetGlobalFeed(ctx context.Context, limit int32, offset int32) ([]*domain.Post, bool, error) {
+// GetFollowFeed implements PostUsecase.
+func (p *postUsecase) GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime *time.Time, cursorID *int32) ([]*domain.Post, bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
 	defer cancel()
 
-	posts, hasNext, err := p.postRepository.GetGlobalFeed(ctx, limit, offset)
+	var timeVal time.Time
+	var idVal int32
+	if cursorTime == nil || cursorID == nil {
+		timeVal = time.Now()
+		idVal = math.MaxInt32
+	} else {
+		timeVal = *cursorTime
+		idVal = *cursorID
+	}
+
+	posts, hasNext, err := p.postRepository.GetFollowFeed(ctx, userIDs, timeVal, idVal)
 	if err != nil {
 		return nil, false, err
 	}
 	return posts, hasNext, nil
+}
+
+// AccountDeletionHandle implements PostUsecase.
+func (p *postUsecase) AccountDeletionHandle(ctx context.Context, userId int32) error {
+	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
+	defer cancel()
+
+	err := p.postRepository.DeleteAllPosts(ctx, userId)
+	if err != nil {
+		return err
+	}
+
+	err = p.likeRepository.DeleteAllLikes(ctx, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
