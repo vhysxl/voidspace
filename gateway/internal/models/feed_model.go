@@ -1,9 +1,16 @@
 package models
 
-type GetFeedReq struct {
-	UserID   string `json:"userid" validate:"required,min=1"`
-	Username string `json:"username" validate:"required,min=3,max=30,alphanum"`
-	USerIDs  []int  `json:"userids" validate:"required"`
+import "time"
+
+type GetFollowFeedReq struct {
+	UserIDs      []int32   `json:"userid" validate:"required"`
+	CursorUserID int       `json:"cursorid" validate:"required"`
+	Cursor       time.Time `json:"cursor" validate:"required"`
+}
+
+type GetGlobalFeed struct {
+	Cursor       time.Time `json:"cursor" validate:"required"`
+	CursorUserID int       `json:"cursorid" validate:"required"`
 }
 
 type GetFeedResponse struct {

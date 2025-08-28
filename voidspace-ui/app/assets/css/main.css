@@ -13,6 +13,7 @@
   --ui-color-neutral-800: #262626;
   --ui-color-neutral-900: #171717;
   --ui-color-neutral-950: #0a0a0a;
+  --ui-color-neutral-1000: #000000;
 
   --ui-bg: var(--ui-color-neutral-50);
   --ui-text: var(--ui-color-neutral-900);
@@ -22,7 +23,7 @@
 }
 
 .dark {
-  --ui-bg: var(--ui-color-neutral-950);
+  --ui-bg: var(--ui-color-neutral-1000);
   --ui-text: var(--ui-color-neutral-100);
   --ui-border: var(--ui-color-neutral-800);
   --ui-card: var(--ui-color-neutral-900);

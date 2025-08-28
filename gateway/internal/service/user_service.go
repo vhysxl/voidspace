@@ -135,7 +135,6 @@ func (us *UserService) DeleteUser(ctx context.Context, userID string, username s
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	// Move to saga pattern
-
 	g, ctx := errgroup.WithContext(ctx)
 
 	g.Go(func() error {
@@ -146,7 +145,6 @@ func (us *UserService) DeleteUser(ctx context.Context, userID string, username s
 		return err
 	})
 
-	// AccountDeletionHandle
 	g.Go(func() error {
 		_, err := us.PostClient.AccountDeletionHandle(ctx, &emptypb.Empty{})
 		if err != nil {
