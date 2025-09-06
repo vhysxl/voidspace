@@ -14,11 +14,15 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	userHandler := handlers.NewUserHandler(app.ContextTimeout, app.Logger, app.Validator, app.UserService)
 	postHandler := handlers.NewPostHandler(app.ContextTimeout, app.Logger, app.Validator, app.PostService)
 	likeHandler := handlers.NewLikeHandler(app.ContextTimeout, app.Logger, app.Validator, app.LikeService)
+	feedHandler := handlers.NewFeedHandler(app.ContextTimeout, app.Logger, app.Validator, app.FeedService)
+	uploadHanlder := handlers.NewUploadHandler(app.ContextTimeout, app.Logger, app.Validator, app.UploadService)
+	authMiddleware := middleware.AuthMiddleware((app.Config.PublicKey))
 
 	api := e.Group("/api/v1")
 
 	// Auth group
 	auth := api.Group("/auth")
+	auth.Use(middleware.ApiMiddleware("palalobautai"))
 	auth.POST("/register", authHandler.Register)
 	auth.POST("/login", authHandler.Login)
 	auth.POST("/logout", authHandler.Logout)
@@ -31,14 +35,14 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	usersPublic.GET("/:username", userHandler.GetUser)
 	// Protected routes
 	usersPrivate := api.Group("/users")
-	usersPrivate.Use(middleware.AuthMiddleware(app.Config.PublicKey))
+	usersPrivate.Use(authMiddleware)
 	usersPrivate.GET("/me", userHandler.GetCurrentUser)
 	usersPrivate.PUT("/me", userHandler.UpdateProfile)
 	usersPrivate.DELETE("/me", userHandler.DeleteUser)
 
 	//follow group
 	follow := api.Group("/follow")
-	follow.Use(middleware.AuthMiddleware(app.Config.PublicKey))
+	follow.Use(authMiddleware)
 	follow.POST("/:username", userHandler.Follow)
 	follow.DELETE("/:username", userHandler.Unfollow)
 
@@ -49,25 +53,28 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	postsPublic.GET("/user/:username", postHandler.GetUserPosts)
 	// Protected posts group
 	postsPrivate := api.Group("/posts")
-	postsPrivate.Use(middleware.AuthMiddleware(app.Config.PublicKey))
+	postsPrivate.Use(authMiddleware)
 	postsPrivate.POST("/", postHandler.Create)
 	postsPrivate.PUT("/:id", postHandler.Update)
 	postsPrivate.DELETE("/:id", postHandler.Delete)
 
 	// Feed group
 	feed := api.Group("/feed")
-	feed.GET("/", func(c echo.Context) error {
-		return c.String(200, "Global feed")
-	})
+	feed.GET("/", feedHandler.GetGlobalFeed)
 	followFeed := api.Group("/feed")
-	followFeed.Use(middleware.AuthMiddleware(app.Config.PublicKey))
+	followFeed.Use(authMiddleware)
 	feed.GET("/followFeed", func(c echo.Context) error {
 		return c.String(200, "follow feed")
 	})
 
 	// LIkes group
 	likes := api.Group("/likes")
-	likes.Use(middleware.AuthMiddleware(app.Config.PublicKey))
+	likes.Use(authMiddleware)
 	likes.POST("/:postId", likeHandler.Like)
 	likes.DELETE("/:postId", likeHandler.Unlike)
+
+	// Upload Group
+	upload := api.Group("/upload/signed-url")
+	upload.Use(authMiddleware)
+	upload.POST("", uploadHanlder.GenerateSignedURL)
 }

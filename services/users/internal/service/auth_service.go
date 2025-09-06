@@ -6,7 +6,7 @@ import (
 	"time"
 	"voidspace/users/internal/domain"
 	"voidspace/users/internal/usecase"
-	pb "voidspace/users/proto/generated/voidspace/users/proto/users/v1"
+	pb "voidspace/users/proto/generated/users"
 	"voidspace/users/utils/interceptor"
 	"voidspace/users/utils/token"
 	"voidspace/users/utils/validations"

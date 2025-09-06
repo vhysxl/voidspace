@@ -4,7 +4,7 @@ import "time"
 
 type PostRequest struct {
 	Content    string   `json:"content" validate:"required,min=1,max=500"`
-	PostImages []string `json:"postimages" validate:"omitempty,dive,url"`
+	PostImages []string `json:"post_images" validate:"omitempty,dive,url"`
 }
 
 type GetPostRequest struct {
@@ -19,4 +19,5 @@ type Post struct {
 	LikesCount int       `json:"likes_count"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
+	Author     *User     `json:"author"`
 }

@@ -42,7 +42,7 @@ func initConfig() Config {
 		DBAddress:            fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "3306")),
 		DBName:               getEnv("DB_NAME", "voidspace"),
 		ContextTimeout:       getIntEnv("CONTEXT_TIMEOUT", 10),
-		AccessTokenDuration:  getIntEnv("ACCESS_TOKEN_DURATION", 1),
+		AccessTokenDuration:  getIntEnv("ACCESS_TOKEN_DURATION", 5),
 		RefreshTokenDuration: getIntEnv("REFRESH_TOKEN_DURATION", 7),
 	}
 }

@@ -10,12 +10,14 @@ import (
 )
 
 type Config struct {
-	Port            string
-	PublicKey       *rsa.PublicKey
-	ApiSecret       string
-	ContextTimeout  int
-	UserServiceAddr string
-	PostServiceAddr string
+	Port              string
+	PublicKey         *rsa.PublicKey
+	ApiSecret         string
+	ContextTimeout    int
+	UserServiceAddr   string
+	PostServiceAddr   string
+	BucketName        string
+	GCSCredentialPath string
 }
 
 var (
@@ -39,12 +41,14 @@ func initConfig() Config {
 	}
 
 	return Config{
-		Port:            getEnv("PORT", ":5000"),
-		PublicKey:       publicKey,
-		ApiSecret:       getEnv("I_SECRET", "SUPER SECRET LMAO"),
-		ContextTimeout:  getIntEnv("CONTEXT_TIMEOUT", 10),
-		UserServiceAddr: getEnv("USER_SERVICE_URL", "localhost:8080"),
-		PostServiceAddr: getEnv("POST_SERVICE_URL", "localhost:5000"),
+		Port:              getEnv("PORT", ":5000"),
+		PublicKey:         publicKey,
+		ApiSecret:         getEnv("I_SECRET", "SUPER SECRET LMAO"),
+		ContextTimeout:    getIntEnv("CONTEXT_TIMEOUT", 30),
+		UserServiceAddr:   getEnv("USER_SERVICE_URL", "localhost:8080"),
+		PostServiceAddr:   getEnv("POST_SERVICE_URL", "localhost:5000"),
+		BucketName:        getEnv("BUCKET_NAME", "assets_voidspace"),
+		GCSCredentialPath: getEnv("GOOGLE_APPLICATION_CREDENTIALS", "./secret/credentials_gcs.json"),
 	}
 
 }

@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"strings"
 	"time"
 	"voidspace/users/internal/domain"
 	"voidspace/users/internal/domain/views"
@@ -94,6 +96,78 @@ func (u *userRepository) GetUserByUsername(ctx context.Context, username string)
 	}
 
 	return user, nil
+}
+
+// GetUserByIds implements domain.UserRepository.
+func (u *userRepository) GetUserByIds(ctx context.Context, userIDs []int32) ([]*views.UserProfile, error) {
+	placeholders := make([]string, len(userIDs))
+	args := make([]any, len(userIDs))
+	for i, id := range userIDs {
+		placeholders[i] = "?"
+		args[i] = id
+	}
+
+	query := fmt.Sprintf(`
+    SELECT 
+        u.id, 
+        u.username, 
+        up.display_name, 
+        up.avatar_url,
+        up.bio, 
+        up.banner_url, 
+        up.location,
+        (SELECT COUNT(*) FROM user_follows WHERE target_user_id = u.id) AS followers,
+        (SELECT COUNT(*) FROM user_follows WHERE user_id = u.id) AS following,
+        u.created_at
+    FROM users u
+    JOIN user_profile up ON u.id = up.user_id
+    WHERE u.id IN (%s)
+`, strings.Join(placeholders, ","))
+
+	rows, err := u.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := make([]*views.UserProfile, 0)
+	for rows.Next() {
+		var user views.UserProfile
+		var displayName sql.NullString
+		var bio sql.NullString
+		var avatarUrl sql.NullString
+		var bannerUrl sql.NullString
+		var location sql.NullString
+
+		err := rows.Scan(
+			&user.ID,
+			&user.Username,
+			&displayName,
+			&avatarUrl,
+			&bio,
+			&bannerUrl,
+			&location,
+			&user.Followers,
+			&user.Following,
+			&user.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		user.DisplayName = displayName.String
+		user.Bio = bio.String
+		user.AvatarUrl = avatarUrl.String
+		user.BannerUrl = bannerUrl.String
+		user.Location = location.String
+
+		users = append(users, &user)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 // GetUserByEmail implements domain.UserRepository.
@@ -239,5 +313,4 @@ func (u *userRepository) DeleteUser(ctx context.Context, id int) error {
 	}
 
 	return nil
-
 }

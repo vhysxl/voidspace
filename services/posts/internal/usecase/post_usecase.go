@@ -107,12 +107,12 @@ func (p *postUsecase) GetGlobalFeed(ctx context.Context, cursorTime *time.Time, 
 
 	var timeVal time.Time
 	var idVal int32
-	if cursorTime == nil || cursorID == nil {
-		timeVal = time.Now()
-		idVal = math.MaxInt32
-	} else {
+	if cursorTime != nil && cursorID != nil && !cursorTime.IsZero() && *cursorID > 0 {
 		timeVal = *cursorTime
 		idVal = *cursorID
+	} else {
+		timeVal = time.Now()
+		idVal = math.MaxInt32
 	}
 
 	posts, hasNext, err := p.postRepository.GetGlobalFeed(ctx, timeVal, idVal)

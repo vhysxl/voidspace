@@ -1,9 +1,56 @@
+<script setup lang="ts">
+import * as v from "valibot";
+import loginImage from '~/assets/images/auth.jpg'
+import logoDark from '~/assets/images/logo_dark.png'
+import logoLight from '~/assets/images/logo_light.png'
+import { useAuthStore } from '@/stores/AuthStore'
+import { useAuth } from "~/composables/useAuth";
+
+definePageMeta({
+  layout: "auth",
+  middleware: "guest"
+});
+
+const show = ref(false);
+const isLoading = ref(false)
+const auth = useAuthStore()
+const authCall = useAuth()
+const toast = useToast();
+
+const schema = v.object({
+  credential: v.pipe(v.string(), v.nonEmpty("Username or Email is required")),
+  password: v.pipe(v.string(), v.nonEmpty("Password is required")),
+});
+
+const state = reactive({
+  credential: "",
+  password: "",
+});
+
+async function onSubmit() {
+  if (isLoading.value) return
+
+  isLoading.value = true
+  try {
+    const res = await authCall.login(state.credential, state.password)
+    auth.login(res.data.access_token, res.data.expires_in)
+
+    await navigateTo('/')
+  } catch (error: any) {
+    toast.add({
+      title: "Login Failed",
+      description: error.message || "Failed to login please try again later",
+      color: "error",
+    })
+  } finally {
+    isLoading.value = false
+  }
+}
+
+</script>
+
 <template>
   <div class="flex flex-col lg:flex-row min-h-screen">
-    <!-- Container gambar - hidden on mobile -->
-
-
-    <!-- Form - centered on mobile, half width on desktop -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-8 min-h-screen lg:min-h-0">
       <div class="w-full max-w-md p-8 rounded-lg">
         <div class="flex justify-center mb-6">
@@ -21,7 +68,7 @@
             <UInput v-model="state.password" color="neutral" placeholder="Enter your password"
               :type="show ? 'text' : 'password'" class="w-full" size="lg" />
           </UFormField>
-          <UButton type="submit" color="neutral" size="lg" class="w-full mt-2 justify-center">
+          <UButton :disabled="isLoading" type="submit" color="neutral" size="lg" class="w-full mt-2 justify-center">
             Sign In
           </UButton>
         </UForm>
@@ -36,41 +83,3 @@
   </div>
 
 </template>
-
-<script setup lang="ts">
-import * as v from "valibot";
-import type { FormSubmitEvent } from "@nuxt/ui";
-import loginImage from '~/assets/images/auth.jpg'
-import logoDark from '~/assets/images/logo_dark.png'
-import logoLight from '~/assets/images/logo_light.png'
-
-const show = ref(false);
-
-definePageMeta({
-  layout: "auth",
-});
-
-// Login schema
-const schema = v.object({
-  credential: v.pipe(v.string(), v.nonEmpty("Username or Email is required")),
-  password: v.pipe(v.string(), v.nonEmpty("Password is required")),
-});
-
-type Schema = v.InferOutput<typeof schema>;
-
-const state = reactive({
-  credential: "",
-  password: "",
-});
-
-const toast = useToast();
-
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  toast.add({
-    title: "Success",
-    description: "Login successful.",
-    color: "neutral",
-  });
-  console.log(event.data);
-}
-</script>

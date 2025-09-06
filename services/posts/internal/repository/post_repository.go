@@ -241,7 +241,8 @@ func (p *postRepository) GetGlobalFeed(ctx context.Context, cursorTime time.Time
 	}
 	defer rows.Close()
 
-	var posts []*domain.Post
+	posts := []*domain.Post{}
+
 	for rows.Next() {
 		post := &domain.Post{}
 		err := rows.Scan(

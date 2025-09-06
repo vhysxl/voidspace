@@ -1,6 +1,7 @@
 package bootstrap
 
 import (
+	"context"
 	"log"
 	"time"
 	"voidspaceGateway/config"
@@ -25,6 +26,8 @@ type Application struct {
 	UserService    *service.UserService
 	PostService    *service.PostService
 	LikeService    *service.LikeService
+	FeedService    *service.FeedService
+	UploadService  *service.UploadService
 }
 
 func App() (*Application, error) {
@@ -61,11 +64,18 @@ func App() (*Application, error) {
 		return nil, err
 	}
 
+	logger.Info("bucket name", zap.String("bucket", config.BucketName))
+
 	// Services
 	authService := service.NewAuthService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewAuthServiceClient(authConn), *config.PublicKey)
 	userService := service.NewUserService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewUserServiceClient(userConn), postpb.NewPostServiceClient(postConn))
 	postService := service.NewPostService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn))
 	likeService := service.NewLikeService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewLikesServiceClient(likeConn))
+	feedService := service.NewFeedService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn))
+	uploadService, err := service.NewUploadService(context.Background(), config.BucketName, config.GCSCredentialPath)
+	if err != nil {
+		panic(err)
+	}
 
 	logger.Info("Gateway Ready")
 
@@ -78,6 +88,8 @@ func App() (*Application, error) {
 		UserService:    userService,
 		PostService:    postService,
 		LikeService:    likeService,
+		FeedService:    feedService,
+		UploadService:  uploadService,
 	}, nil
 
 }

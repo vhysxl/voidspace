@@ -138,7 +138,7 @@ func (ah *AuthHandler) Logout(c echo.Context) error {
 		Value:    "",
 		HttpOnly: true,
 		Secure:   false, // set to true in production
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
 		MaxAge:   -1, // Delete cookie
 	}

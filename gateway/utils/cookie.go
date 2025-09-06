@@ -12,7 +12,7 @@ func SetRefreshTokenCookie(c echo.Context, refreshToken string) error {
 		Value:    refreshToken,
 		HttpOnly: true,
 		Secure:   false, // set to true in production
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
 		MaxAge:   7 * 24 * 60 * 60,
 	}

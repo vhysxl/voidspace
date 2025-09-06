@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+@import 'tailwind-scrollbar-hide/v4';
 
 :root {
   --ui-color-neutral-50: #fafafa;
@@ -32,4 +33,13 @@
 
 .bg-ui {
   background-color: var(--ui-bg);
+}
+
+html {
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge baru */
 }

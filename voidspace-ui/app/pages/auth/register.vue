@@ -1,3 +1,84 @@
+<script setup lang="ts">
+import * as v from "valibot";
+import registerImage from '~/assets/images/auth2.jpg'
+import logoDark from '~/assets/images/logo_dark.png'
+import logoLight from '~/assets/images/logo_light.png'
+
+definePageMeta({
+  layout: "auth",
+  middleware: "guest"
+});
+
+const show = ref(false);
+const isLoading = ref(false)
+const auth = useAuthStore()
+const authCall = useAuth()
+
+// Register schema
+const schema = v.pipe(
+  v.object({
+    username: v.pipe(
+      v.string(),
+      v.nonEmpty("Username is required")
+    ),
+    email: v.pipe(
+      v.string(),
+      v.nonEmpty('Please enter your email.'),
+      v.email('The email address is badly formatted.')
+    ),
+    password: v.pipe(
+      v.string(),
+      v.nonEmpty('Please enter your password.'),
+      v.minLength(8, 'Your password must have 8 characters or more.')
+    ),
+    confirmPassword: v.pipe(
+      v.string(),
+      v.nonEmpty('Please confirm your password.')
+    ),
+  }),
+  v.forward(
+    v.partialCheck(
+      [['password'], ['confirmPassword']],
+      (input) => input.password === input.confirmPassword,
+      'The two passwords do not match.'
+    ),
+    ['confirmPassword']
+  )
+);
+
+const state = reactive({
+  username: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+});
+
+const toast = useToast();
+
+async function onSubmit() {
+  if (isLoading.value) return
+
+  isLoading.value = true
+  try {
+    const res = await authCall.register(state.username, state.email, state.password)
+    auth.login(res.data.access_token, res.data.expires_in)
+
+    await navigateTo('/')
+  } catch (error: any) {
+    console.log(error)
+    toast.add({
+      title: "Register failed",
+      description: error.message || "Failed to register please try again later.",
+      color: "error",
+    });
+  } finally {
+    isLoading.value = false
+  }
+
+  return
+}
+</script>
+
 <template>
   <div class="flex flex-col lg:flex-row min-h-screen">
     <!-- Form - centered on mobile, half width on desktop -->
@@ -26,7 +107,7 @@
               placeholder="Confirm password" class="w-full" size="lg" />
           </UFormField>
 
-          <UButton type="submit" color="neutral" size="lg" class="w-full justify-center">
+          <UButton :disabled="isLoading" type="submit" color="neutral" size="lg" class="w-full justify-center">
             Register
           </UButton>
         </UForm>
@@ -44,45 +125,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import * as v from "valibot";
-import type { FormSubmitEvent } from "@nuxt/ui";
-import registerImage from '~/assets/images/auth2.jpg'
-import logoDark from '~/assets/images/logo_dark.png'
-import logoLight from '~/assets/images/logo_light.png'
-
-const show = ref(false);
-
-definePageMeta({
-  layout: "auth",
-});
-
-// Register schema
-const schema = v.object({
-  username: v.pipe(v.string(), v.nonEmpty("Username is required")),
-  email: v.pipe(v.string(), v.nonEmpty("Email is required")),
-  password: v.pipe(v.string(), v.nonEmpty("Password is required")),
-  confirmPassword: v.pipe(v.string(), v.nonEmpty("Confirm Password is required")),
-});
-
-type Schema = v.InferOutput<typeof schema>;
-
-const state = reactive({
-  username: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-});
-
-const toast = useToast();
-
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  toast.add({
-    title: "Success",
-    description: "Registration successful.",
-    color: "neutral",
-  });
-  console.log(event.data);
-}
-</script>

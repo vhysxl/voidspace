@@ -4,13 +4,13 @@ import "time"
 
 type GetFollowFeedReq struct {
 	UserIDs      []int32   `json:"userid" validate:"required"`
-	CursorUserID int       `json:"cursorid" validate:"required"`
-	Cursor       time.Time `json:"cursor" validate:"required"`
+	CursorUserID int       `json:"cursorid"`
+	Cursor       time.Time `json:"cursor"`
 }
 
-type GetGlobalFeed struct {
-	Cursor       time.Time `json:"cursor" validate:"required"`
-	CursorUserID int       `json:"cursorid" validate:"required"`
+type GetGlobalFeedReq struct {
+	Cursor       time.Time `json:"cursor"`
+	CursorUserID int       `json:"cursorid"`
 }
 
 type GetFeedResponse struct {

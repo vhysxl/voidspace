@@ -1,40 +1,110 @@
 <script setup>
-import { HomeIcon, BellIcon, HandThumbUpIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
-import MobileNavigation from '~/components/mobileNavigation.vue'
+import { HomeIcon, BellIcon, HandThumbUpIcon, UserCircleIcon, ArrowLeftEndOnRectangleIcon } from '@heroicons/vue/24/outline'
+import { useAuthStore } from '@/stores/AuthStore'
+import MobileNavigation from '~/components/nav/mobileNavigation.vue'
+
 const route = useRoute()
+const router = useRouter()
+const auth = useAuthStore()
 
 const activePath = route.path
-const menuItems = [
+const menuItems = computed(() => [
   { label: "Home", href: "/", icon: HomeIcon },
   { label: "Notifications", href: "/notifications", icon: BellIcon, badge: 3 },
   { label: "Likes", href: "/likes", icon: HandThumbUpIcon },
-  { label: "Profile", href: "/profile", icon: UserCircleIcon },
-]
+  { label: "Profile", href: auth.isLoggedIn ? `/user/${auth.user?.username}` : `/auth/login`, icon: UserCircleIcon },
+])
+
+const colorMode = useColorMode();
+
+const isDark = computed({
+  get() {
+    return colorMode.value === "dark";
+  },
+  set(_isDark) {
+    colorMode.preference = _isDark ? "dark" : "light";
+  },
+});
+
+// Dropdown items with click handlers
+const items = ref([
+  {
+    label: 'Logout',
+    icon: 'i-lucide-log-out',
+    color: "error",
+    async onSelect() {
+      await auth.logout()
+      router.push('/auth/login')
+    }
+  },
+])
+
 </script>
 
 <template>
   <div class="max-w-screen-xl mx-auto flex min-h-screen">
-    <!-- SIDEBAR -->
-    <aside class="hidden lg:flex w-2/10 p-5 border-r border-neutral-500 flex-col justify-between">
-      <Navigation :menu-items="menuItems" :active-path="activePath" />
+    <!-- LEFT SIDEBAR -->
+    <aside class="hidden z-100 lg:flex w-64 flex-shrink-0">
+      <div
+        class="sticky top-0 h-screen w-full p-5 border-r border-neutral-500 flex flex-col justify-between overflow-y-auto">
+        <NavSidebar :menu-items="menuItems" :active-path="activePath" />
+        <div class="flex items-center space-x-2 mt-auto">
+          <template v-if="auth.isLoggedIn">
+            <UDropdownMenu :items="items" class="mouse-pointer" :content="{
+              align: 'start',
+              side: 'top',
+              sideOffset: 8
+            }" :ui="{
+              content: 'w-48'
+            }">
+              <!-- Trigger button untuk dropdown -->
+              <div
+                class="flex items-center space-x-3 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg p-2 transition-colors">
+                <UAvatar size="lg"
+                  :src="auth.user?.profile?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.profile?.displayName || auth.user?.username || 'U')}`"
+                  :alt="auth.user?.profile?.displayName || auth.user?.username" />
+                <div class="flex flex-col min-w-0 flex-1">
+                  <span class="font-semibold text-sm truncate">
+                    {{ auth.user?.profile?.displayName || auth.user?.username }}
+                  </span>
+                  <span class="text-xs text-neutral-500 truncate">
+                    @{{ auth.user?.username }}
+                  </span>
+                </div>
+                <!-- Dropdown arrow -->
+                <Icon name="i-lucide-chevron-up" class="w-4 h-4 text-neutral-400" />
+              </div>
 
-      <!-- AVATAR -->
-      <div class="flex items-center space-x-2">
-        <UAvatar size="xl"
-          src="https://images-ext-1.discordapp.net/external/B-T4tAJ-005Oa4ZCibUPCHCqG7ofGne0YxqZhyi9kmI/https/mudae.net/uploads/7266015/Gf1mE5j~4apc5wo66v4.png?format=webp&quality=lossless&width=281&height=438" />
-        <div class="flex flex-col">
-          <span class="font-semibold">Mizore</span>
-          <span class="text-sm text-neutral-500">@mizore</span>
+            </UDropdownMenu>
+          </template>
+
+          <template v-else>
+            <button @click="router.push('/auth/login')"
+              class="bg-neutral-950 dark:bg-white text-white dark:text-black font-bold rounded-full hover:bg-neutral-500 cursor-pointer px-20 py-2 transition-colors">
+              Login
+            </button>
+          </template>
         </div>
       </div>
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 p-5">
+    <main class="flex-1 min-w-0">
       <slot />
     </main>
 
-    <!-- Mobile Nav muncul otomatis karena ada di <Navigation /> -->
+    <!-- RIGHT SIDEBAR -->
+    <aside class="hidden lg:flex w-2/8 flex-shrink-0">
+      <div class="sticky top-0 h-screen w-full p-5 border-l border-neutral-500 overflow-y-auto scrollbar-hide">
+        <div class="flex flex-col space-y-6">
+          <RightSidebarWidgetFollowWidget title="Who to follow" />
+        </div>
+        <UButton :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'" color="neutral" variant="outline"
+          @click="isDark = !isDark" />
+      </div>
+    </aside>
+
+    <!-- Mobile Nav -->
     <MobileNavigation :menu-items="menuItems" :active-path="activePath" class="lg:hidden" />
   </div>
 </template>

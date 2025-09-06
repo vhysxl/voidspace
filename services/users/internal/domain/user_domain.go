@@ -20,6 +20,7 @@ type UserRepository interface {
 	GetUserByUsername(ctx context.Context, username string) (*User, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	GetUserByCredentials(ctx context.Context, credentials string) (*User, error)
+	GetUserByIds(ctx context.Context, userIDs []int32) ([]*views.UserProfile, error)
 	GetUserProfile(ctx context.Context, userId int) (*views.UserProfile, error)
 	DeleteUser(ctx context.Context, id int) error
 }

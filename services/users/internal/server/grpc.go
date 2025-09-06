@@ -3,7 +3,7 @@ package server
 import (
 	"voidspace/users/bootstrap"
 	handler "voidspace/users/internal/service"
-	pb "voidspace/users/proto/generated/voidspace/users/proto/users/v1"
+	pb "voidspace/users/proto/generated/users"
 	"voidspace/users/utils/interceptor"
 
 	"google.golang.org/grpc"

@@ -6,7 +6,7 @@ import (
 	"time"
 	"voidspace/users/internal/domain"
 	"voidspace/users/internal/usecase"
-	pb "voidspace/users/proto/generated/voidspace/users/proto/users/v1"
+	pb "voidspace/users/proto/generated/users"
 	"voidspace/users/utils/interceptor"
 
 	"voidspace/users/utils/validations"
@@ -157,6 +157,51 @@ func (uh *UserHandler) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb
 	return &pb.GetUserResponse{
 		Message: "success get user",
 		User:    user,
+	}, nil
+}
+
+func (uh *UserHandler) GetUsersByIds(ctx context.Context, req *pb.GetUserByUserIDsRequest) (*pb.GetUsersResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, uh.ContextTimeout)
+	defer cancel()
+
+	users, err := uh.UserUsecase.GetUserByIds(ctx, req.UserID)
+	if err != nil {
+		uh.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		case domain.ErrUserNotFound:
+			return nil, status.Error(codes.NotFound, err.Error())
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	pbUsers := make([]*pb.User, 0, len(users))
+	for _, u := range users {
+		profile := &pb.Profile{
+			DisplayName: u.DisplayName,
+			Bio:         u.Bio,
+			AvatarUrl:   u.AvatarUrl,
+			BannerUrl:   u.BannerUrl,
+			Location:    u.Location,
+			Followers:   int32(u.Followers),
+			Following:   int32(u.Following),
+		}
+
+		userIDInt32 := int32(u.ID)
+		pbUser := &pb.User{
+			Id:        &userIDInt32,
+			Username:  u.Username,
+			Profile:   profile,
+			CreatedAt: timestamppb.New(u.CreatedAt),
+		}
+		pbUsers = append(pbUsers, pbUser)
+	}
+
+	return &pb.GetUsersResponse{
+		Message: "success get users",
+		Users:   pbUsers,
 	}, nil
 }
 

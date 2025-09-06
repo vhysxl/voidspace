@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 	"voidspaceGateway/internal/models"
 	postpb "voidspaceGateway/proto/generated/posts"
@@ -35,6 +36,8 @@ func (ps *PostService) Create(ctx context.Context, username string, userID strin
 		"user_id":  userID,
 		"username": username,
 	})
+
+	fmt.Println(req)
 
 	ctx = metadata.NewOutgoingContext(ctx, md)
 

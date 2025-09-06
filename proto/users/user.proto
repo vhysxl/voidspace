@@ -9,6 +9,7 @@ option go_package = "./users;users";
 service UserService {
   rpc GetCurrentUser(google.protobuf.Empty) returns (GetUserResponse);
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc GetUsersByIds(GetUserByUserIDsRequest) returns (GetUsersResponse);
   rpc UpdateProfile(UpdateProfileRequest) returns (UserServiceResponse);
   rpc DeleteUser(google.protobuf.Empty) returns (UserServiceResponse);
   rpc Follow(FollowRequest) returns (UserServiceResponse);
@@ -17,6 +18,10 @@ service UserService {
 
 message GetUserRequest {
   string username = 1;
+}
+
+message GetUserByUserIDsRequest {
+  repeated int32 userID = 1;
 }
 
 message UpdateProfileRequest {
@@ -35,6 +40,11 @@ message FollowRequest {
 message GetUserResponse {
   string message = 1;
   User user = 2; 
+}
+
+message GetUsersResponse {
+  string message = 1;
+  repeated User users = 2; 
 }
 
 message UserServiceResponse {

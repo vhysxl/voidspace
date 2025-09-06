@@ -87,7 +87,7 @@ func App() (*Application, error) {
 		DB:                   db,
 		Validator:            validator.New(),
 		ContextTimeout:       time.Duration(cfg.ContextTimeout) * time.Second,
-		AccessTokenDuration:  time.Duration(cfg.AccessTokenDuration) * time.Hour,
+		AccessTokenDuration:  time.Duration(cfg.AccessTokenDuration) * time.Minute,
 		RefreshTokenDuration: time.Duration(cfg.RefreshTokenDuration) * 24 * time.Hour,
 		PrivateKey:           privateKey,
 		Logger:               logger,
