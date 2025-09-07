@@ -1,4 +1,7 @@
+import type { AuthResponse, ApiResponse } from "@/types/index";
+
 export default defineEventHandler(async (event) => {
+  type RegisterResponse = ApiResponse<AuthResponse>;
   const config = useRuntimeConfig();
   const body = await readBody(event);
 
@@ -12,21 +15,22 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    const data = await response.json();
+    const data: RegisterResponse = await response.json();
 
     const setCookieHeader = response.headers.get("set-cookie");
     if (setCookieHeader) {
       setHeader(event, "set-cookie", setCookieHeader);
     }
 
-    if (!response.ok) {
-      throw {
-        status: response.status,
-        detail: data.detail || "Register failed",
-      };
+    if (!response.ok || !data.success) {
+      throw createError({
+        statusCode: response.status,
+        statusMessage: data.detail || "Register failed",
+      });
     }
 
-    return data;
+    const successData = data as RegisterResponse;
+    return successData;
   } catch (error: any) {
     throw createError({
       statusCode: error.status || 500,

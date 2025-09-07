@@ -1,7 +1,8 @@
-<script setup>
-import { HomeIcon, BellIcon, HandThumbUpIcon, UserCircleIcon, ArrowLeftEndOnRectangleIcon } from '@heroicons/vue/24/outline'
+<script setup lang="ts">
+import { HomeIcon, BellIcon, HandThumbUpIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/AuthStore'
 import MobileNavigation from '~/components/nav/mobileNavigation.vue'
+import type { DropdownMenuItem } from '@nuxt/ui'
 
 const route = useRoute()
 const router = useRouter()
@@ -26,8 +27,7 @@ const isDark = computed({
   },
 });
 
-// Dropdown items with click handlers
-const items = ref([
+const items = ref < DropdownMenuItem[] > ([
   {
     label: 'Logout',
     icon: 'i-lucide-log-out',
@@ -37,6 +37,7 @@ const items = ref([
       router.push('/auth/login')
     }
   },
+
 ])
 
 </script>

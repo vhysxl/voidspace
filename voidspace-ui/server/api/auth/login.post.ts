@@ -1,4 +1,7 @@
+import type { AuthResponse, ApiResponse } from "@/types/index";
+
 export default defineEventHandler(async (event) => {
+  type LoginResponse = ApiResponse<AuthResponse>;
   const config = useRuntimeConfig();
   const body = await readBody(event);
 
@@ -12,7 +15,7 @@ export default defineEventHandler(async (event) => {
       body: JSON.stringify(body),
     });
 
-    const data = await response.json();
+    const data: LoginResponse = await response.json();
 
     // Forward Set-Cookie header dari backend
     const setCookieHeader = response.headers.get("set-cookie");
@@ -20,18 +23,20 @@ export default defineEventHandler(async (event) => {
       setHeader(event, "set-cookie", setCookieHeader);
     }
 
-    console.log(data.detail);
-
     //langsung masuk block catch pake custom biar bisa baca astoge
-    if (!response.ok) {
-      throw { status: response.status, detail: data.detail || "Login failed" };
+    if (!response.ok || !data.success) {
+      throw createError({
+        statusCode: response.status,
+        statusMessage: data.detail || "Login failed",
+      });
     }
 
-    return data;
+    const successData = data as LoginResponse;
+    return successData;
   } catch (error: any) {
     throw createError({
       statusCode: error.status || 500,
-      statusMessage: error.detail || error.message || "Login failed",
+      statusMessage: error.detail || "Login failed",
     });
   }
 });

@@ -42,7 +42,7 @@ func (s *UploadService) GenerateSignedURL(fileName, contentType string) (string,
 	opts := &storage.SignedURLOptions{
 		Scheme:  storage.SigningSchemeV4,
 		Method:  "PUT",
-		Expires: time.Now().Add(15 * time.Minute),
+		Expires: time.Now().Add(5 * time.Minute),
 	}
 
 	url, err := s.Client.Bucket(s.Bucket).SignedURL(fileName, opts)

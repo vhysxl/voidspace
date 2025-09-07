@@ -9,14 +9,12 @@ export interface UploadResponse {
 }
 
 export const useUpload = () => {
-  const config = useRuntimeConfig();
   const { fetchWithAuth } = useApi();
-  const apiUrl = config.public.apiUrl;
 
   const uploadFile = async (file: File): Promise<string> => {
     try {
       // Get signed URL
-      const response = (await fetchWithAuth(`${apiUrl}/upload/signed-url`, {
+      const response = (await fetchWithAuth(`/api/upload/upload`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

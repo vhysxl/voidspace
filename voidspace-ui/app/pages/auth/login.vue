@@ -33,7 +33,20 @@ async function onSubmit() {
   isLoading.value = true
   try {
     const res = await authCall.login(state.credential, state.password)
-    auth.login(res.data.access_token, res.data.expires_in)
+    const accessToken = res.data?.access_token
+    const expiresIn = res.data?.expires_in
+
+    if (typeof accessToken != "string" || typeof expiresIn != "number") {
+      toast.add({
+        title: "Login Failed",
+        description: "Failed to login please try again later",
+        color: "error",
+      })
+
+      return
+    }
+
+    auth.login(accessToken, expiresIn)
 
     await navigateTo('/')
   } catch (error: any) {

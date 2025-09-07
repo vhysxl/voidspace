@@ -2,10 +2,11 @@
 import { ref, computed } from 'vue'
 import CreatePostInput from '~/components/feed/createPostInput.vue'
 
-const { getVanillaFeed } = useFeed()
+const { getGlobalFeed } = useFeed()
 const posts = ref<Post[] | null>(null)
 const loading = ref(false)
 const route = useRoute()
+const auth = useAuthStore()
 const router = useRouter()
 
 // Tab configuration with query params
@@ -34,13 +35,14 @@ const switchTab = (tabKey: string) => {
   })
 }
 
-const fetchVanillaFeed = async () => {
+const fetchGlobalFeed = async () => {
   loading.value = true
   try {
-    const res = await getVanillaFeed()
+    const res = await getGlobalFeed()
     posts.value = res.data.posts
+
   } catch (error) {
-    console.error('Error fetching vanilla feed:', error)
+    console.error('Error fetching global feed:', error)
   } finally {
     loading.value = false
   }
@@ -49,7 +51,7 @@ const fetchVanillaFeed = async () => {
 const fetchFollowingFeed = async () => {
   loading.value = true
   try {
-    const res = await getVanillaFeed()
+    const res = await getGlobalFeed()
     posts.value = res.data.posts
   } catch (error) {
     console.error('Error fetching following feed:', error)
@@ -64,9 +66,28 @@ watch(() => activeTab.value, (newTab) => {
   if (newTab === 'following') {
     fetchFollowingFeed()
   } else {
-    fetchVanillaFeed()
+    fetchGlobalFeed()
   }
 }, { immediate: true })
+
+const handlePostCreated = (newPost: Post) => {
+  //  Prepend new post
+  if (posts.value) {
+    posts.value.unshift(newPost) //unshift add first element of array
+  }
+
+  // Option B: Refresh entire feed
+  if (activeTab.value === 'for-you') {
+    fetchGlobalFeed()
+  }
+}
+
+const handlePostDeleted = (postId: number) => {  // Accept the parameter
+  // Option 1: Remove from local array (instant UI update)
+  if (posts.value) {
+    posts.value = posts.value.filter(p => p.id !== postId)
+  }
+}
 </script>
 
 <template>
@@ -116,7 +137,8 @@ watch(() => activeTab.value, (newTab) => {
 
 
       <!-- Has posts -->
-      <FeedPostCard v-else :posts="posts || []" />
+      <FeedPostCard v-else :posts="posts || []" @post-deleted="handlePostDeleted" />
+      <div class="pb-14 lg:pb-36">p</div>
     </div>
 
     <!-- Floating Button (Mobile Only) -->
@@ -133,7 +155,7 @@ watch(() => activeTab.value, (newTab) => {
 
         <!-- Actual input -->
         <div class="flex-1">
-          <CreatePostInput />
+          <CreatePostInput @post-created="handlePostCreated" />
         </div>
 
         <!-- Spacer right (biar sejajar sidebar kanan) -->

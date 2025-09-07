@@ -13,12 +13,15 @@ const usersApi = useUsers()
 const user = useAuthStore()
 const toast = useToast();
 const { uploadFile } = useUpload()
-const { updateProfile } = useUsers()
+const { updateProfile, deleteUser } = useUsers()
 const username = route.params.username as string
 const userData = ref<User | null>(null)
 const isLoadingProfile = ref(false)
 const isSubmitting = ref(false)
 const error = ref<string | null>(null)
+const isDeletingAccount = ref(false)
+const deleteConfirmation = ref('')
+const modal = ref(false)
 
 const isOwner = computed(() => {
     return user.user?.username === username
@@ -198,6 +201,36 @@ const onSubmit = async (event: FormSubmitEvent<any>) => {
 
 }
 
+const deleteAccount = async () => {
+    if (deleteConfirmation.value !== userData.value?.username) return
+    isDeletingAccount.value = true
+    isSubmitting.value = true
+    try {
+        await deleteUser()
+
+        toast.add({
+            title: "Account Deleted",
+            description: "Your account has been permanently deleted",
+            color: "success",
+        })
+
+        user.user = null
+        user.accessToken = ""
+        user.expiresIn = 0
+
+        await navigateTo('/auth/login')
+    } catch (error: any) {
+        toast.add({
+            title: "Delete Failed",
+            description: error.message || "Failed to delete account",
+            color: "error",
+        })
+    } finally {
+        isDeletingAccount.value = false
+        isSubmitting.value = false
+    }
+}
+
 </script>
 
 <template>
@@ -223,67 +256,196 @@ const onSubmit = async (event: FormSubmitEvent<any>) => {
                     <div class="relative">
                         <img :src="currentProfile?.avatarUrl" alt="User avatar"
                             class="w-32 h-32 md:w-36 md:h-36 rounded-md border-4 border-white dark:border-black bg-white dark:bg-black shadow-lg hover:scale-105 transition-transform duration-300" />
-                        <!-- Loading overlay for avatar -->
                         <div v-if="isLoadingProfile"
                             class="absolute inset-0 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
                     </div>
 
-                    <!-- Action Buttons -->
-                    <div class="flex gap-3 mb-3">
+                    <!-- Action Buttons TODO: REFACTOR -->
+                    <div class="flex gap-3 mb-3 mt-24 md:mt-0">
                         <template v-if="isOwner">
                             <UModal>
                                 <button :disabled="isSubmitting" @click="resetForm"
-                                    class="px-5 py-2 rounded-full font-semibold text-sm border dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                                    Edit profile
+                                    class="px-5 py-2 md:mt-0 rounded-full font-semibold text-sm border dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                                    Account Settings
                                 </button>
+
                                 <template #content>
-                                    <UForm :schema="schema" :state="state" @submit="onSubmit"
-                                        class="space-y-4 overflow-auto p-8">
-                                        <UFormField label="Display Name" name="displayName">
-                                            <UInput v-model="state.displayName" color="neutral"
-                                                placeholder="Enter your display name" class="w-full" size="lg" />
-                                        </UFormField>
+                                    <div class="max-w-2xl mx-auto max-h-[90vh] overflow-hidden flex flex-col">
+                                        <!-- Header -->
+                                        <div class="flex-shrink-0 px-6 py-4 border-b dark:border-gray-700">
+                                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                                                Account Settings
+                                            </h2>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                Manage your profile information and account settings
+                                            </p>
+                                        </div>
 
-                                        <UFormField label="Bio" name="bio">
-                                            <UTextarea v-model="state.bio" color="neutral"
-                                                placeholder="Write something about yourself" class="w-full" size="lg" />
-                                        </UFormField>
+                                        <!-- Scrollable Content -->
+                                        <div class="flex-1 overflow-y-auto">
+                                            <!-- Profile Settings -->
+                                            <div class="px-6 py-6">
+                                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                                                    Profile Information
+                                                </h3>
 
-                                        <UFormField label="Avatar" name="avatarUrl">
-                                            <div class="space-y-2">
-                                                <UFileUpload accept="image/*" label="Upload Avatar"
-                                                    class="min-h-36 w-1/2" :loading="isSubmitting"
-                                                    v-model="state.avatar" />
+                                                <UForm :schema="schema" :state="state" @submit="onSubmit"
+                                                    class="space-y-4">
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <UFormField label="Display Name" name="displayName"
+                                                            class="md:col-span-2">
+                                                            <UInput v-model="state.displayName" color="neutral"
+                                                                placeholder="Enter your display name" class="w-full"
+                                                                size="lg" />
+                                                        </UFormField>
+
+                                                        <UFormField label="Bio" name="bio" class="md:col-span-2">
+                                                            <UTextarea v-model="state.bio" color="neutral"
+                                                                placeholder="Write something about yourself"
+                                                                class="w-full" size="lg" :rows="3" />
+                                                        </UFormField>
+
+                                                        <UFormField label="Location" name="location"
+                                                            class="md:col-span-2">
+                                                            <UInput v-model="state.location" color="neutral"
+                                                                placeholder="Your location" class="w-full" size="lg" />
+                                                        </UFormField>
+
+                                                        <UFormField label="Avatar" name="avatarUrl">
+                                                            <UFileUpload accept="image/*" label="Upload Avatar"
+                                                                class="min-h-32" :loading="isSubmitting"
+                                                                v-model="state.avatar" />
+                                                            <p class="text-xs text-gray-500 mt-1">Max 2MB • JPEG, PNG,
+                                                                WebP</p>
+                                                        </UFormField>
+
+                                                        <UFormField label="Banner" name="bannerUrl">
+                                                            <UFileUpload accept="image/*" label="Upload Banner"
+                                                                class="min-h-32" :loading="isSubmitting"
+                                                                v-model="state.banner" />
+                                                            <p class="text-xs text-gray-500 mt-1">Max 5MB • JPEG, PNG,
+                                                                WebP</p>
+                                                        </UFormField>
+                                                    </div>
+
+                                                    <div class="pt-4">
+                                                        <UButton :disabled="isSubmitting" :loading="isSubmitting"
+                                                            type="submit" color="neutral" size="lg"
+                                                            class="w-full justify-center">
+                                                            {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
+                                                        </UButton>
+                                                    </div>
+                                                </UForm>
                                             </div>
-                                        </UFormField>
 
-                                        <UFormField label="Banner" name="bannerUrl">
-                                            <div class="space-y-2">
-                                                <UFileUpload accept="image/*" label="Upload Banner"
-                                                    class="min-h-36 w-full" :loading="isSubmitting"
-                                                    v-model="state.banner" />
+                                            <!-- Danger Zone -->
+                                            <div class="px-6 py-6 border-t dark:border-gray-700 ">
+                                                <div class="max-w-3xl">
+                                                    <h3 class="text-lg font-medium text-red-600 dark:text-red-400 mb-2">
+                                                        Danger Zone
+                                                    </h3>
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                                        These actions are irreversible. Please proceed with caution.
+                                                    </p>
+
+                                                    <div
+                                                        class="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                                                        <div
+                                                            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                                            <div>
+                                                                <h4
+                                                                    class="text-sm font-medium text-red-800 dark:text-red-300">
+                                                                    Delete Account
+                                                                </h4>
+                                                                <p class="text-xs text-red-600 dark:text-red-400 mt-1">
+                                                                    Permanently remove your account and all associated
+                                                                    data
+                                                                </p>
+                                                            </div>
+
+                                                            <!-- Delete Account Modal -->
+                                                            <UModal :dismissible="false" v-model:open="modal"
+                                                                title="Account Deletion Confirmation">
+                                                                <UButton variant="outline" color="error" size="sm"
+                                                                    class="flex-shrink-0">
+                                                                    Delete Account
+                                                                </UButton>
+
+                                                                <template #content>
+                                                                    <div class="p-6">
+                                                                        <div class="flex items-center gap-3 mb-4">
+                                                                            <div
+                                                                                class="flex-shrink-0 w-10 h-10 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                                                                                <svg class="w-5 h-5 text-red-600 dark:text-red-400"
+                                                                                    fill="none" stroke="currentColor"
+                                                                                    viewBox="0 0 24 24">
+                                                                                    <path stroke-linecap="round"
+                                                                                        stroke-linejoin="round"
+                                                                                        stroke-width="2"
+                                                                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                                                                </svg>
+                                                                            </div>
+                                                                            <div>
+                                                                                <h3
+                                                                                    class="text-lg font-semibold text-gray-900 dark:text-white">
+                                                                                    Delete Account
+                                                                                </h3>
+                                                                                <p
+                                                                                    class="text-sm text-gray-500 dark:text-gray-400">
+                                                                                    This action cannot be undone
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <p
+                                                                            class="text-gray-600 dark:text-gray-400 text-sm mb-6">
+                                                                            Are you absolutely sure you want to delete
+                                                                            your account?
+                                                                            Type your username <strong>{{
+                                                                                userData?.username }}</strong> to
+                                                                            confirm.
+                                                                        </p>
+
+                                                                        <!-- Confirmation Input -->
+                                                                        <div class="mb-6">
+                                                                            <UInput color="neutral"
+                                                                                placeholder="Enter your username to confirm"
+                                                                                v-model="deleteConfirmation"
+                                                                                class="w-full" />
+                                                                        </div>
+
+                                                                        <div
+                                                                            class="flex flex-col sm:flex-row gap-3 sm:justify-end">
+                                                                            <UButton variant="ghost" size="sm"
+                                                                                @click="modal = false" color="neutral"
+                                                                                class="sm:order-1">
+                                                                                Cancel
+                                                                            </UButton>
+                                                                            <UButton color="error" size="sm"
+                                                                                :loading="isDeletingAccount"
+                                                                                :disabled="deleteConfirmation !== userData?.username"
+                                                                                @click="deleteAccount"
+                                                                                class="sm:order-2">
+                                                                                Delete My Account
+                                                                            </UButton>
+                                                                        </div>
+                                                                    </div>
+                                                                </template>
+                                                            </UModal>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </UFormField>
-
-                                        <UFormField label="Location" name="location">
-                                            <UInput v-model="state.location" color="neutral" placeholder="Your location"
-                                                class="w-full" size="lg" />
-                                        </UFormField>
-
-                                        <UButton :disabled="isSubmitting" :loading="isSubmitting" type="submit"
-                                            color="neutral" size="lg" class="w-full mt-2 justify-center">
-                                            {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
-                                        </UButton>
-                                    </UForm>
+                                        </div>
+                                    </div>
                                 </template>
-
                             </UModal>
                         </template>
                         <template v-else>
                             <button :disabled="isLoadingProfile" :class="[
                                 'px-5 py-2 rounded-full font-semibold text-sm transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed',
                             ]">
-                                <!-- Dynamic follow state nanti bisa ditambahkan -->
+                                <!-- Dynamic follow state nanti -->
                                 Follow
                             </button>
                         </template>
@@ -335,13 +497,13 @@ const onSubmit = async (event: FormSubmitEvent<any>) => {
                         <button class="hover:underline transition-all">
                             <span class="font-bold text-black dark:text-white">{{
                                 userData.profile.following?.toLocaleString() || '0'
-                            }}</span>
+                                }}</span>
                             <span class="text-gray-500 dark:text-gray-400 ml-1">Following</span>
                         </button>
                         <button class="hover:underline transition-all">
                             <span class="font-bold text-black dark:text-white">{{
                                 userData.profile.followers?.toLocaleString() || '0'
-                            }}</span>
+                                }}</span>
                             <span class="text-gray-500 dark:text-gray-400 ml-1">Followers</span>
                         </button>
                     </div>

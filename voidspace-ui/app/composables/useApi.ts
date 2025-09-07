@@ -4,25 +4,26 @@ export const useApi = () => {
   const auth = useAuth();
   const authStore = useAuthStore();
 
-  const isTokenExpired = (token: string) => {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]!));
-      const currentTime = Math.floor(Date.now() / 1000);
-      return payload.exp < currentTime;
-    } catch {
-      return true;
-    }
-  };
-
   const fetchWithAuth = async (url: string, options: any = {}) => {
     let token = authStore.accessToken;
+    const isExpired = Date.now() >= authStore.expiresIn;
 
     // Check token expiry BEFORE making request
-    if (token && isTokenExpired(token)) {
+    if (token && isExpired) {
       try {
         const refreshResponse = await auth.refresh();
-        token = refreshResponse.data.access_token;
-        authStore.accessToken = token;
+        const token = refreshResponse.data?.access_token;
+        const expiredIn = refreshResponse.data?.expires_in;
+
+        if (
+          typeof token !== "string" ||
+          token.trim() === "" ||
+          typeof expiredIn !== "number"
+        ) {
+          throw new Error("Invalid access token");
+        }
+
+        authStore.login(token, expiredIn);
       } catch (refreshError) {
         // Refresh failed, redirect to login
         await auth.logout();
@@ -40,10 +41,16 @@ export const useApi = () => {
       });
     } catch (error: any) {
       // Fallback: jika masih 401, coba refresh sekali lagi
-      if (error.status === 401 && token && !isTokenExpired(token)) {
+      if (error.status === 401 && token && !isExpired) {
         try {
           const refreshResponse = await auth.refresh();
-          authStore.accessToken = refreshResponse.data.access_token;
+          const token = refreshResponse.data?.access_token;
+
+          if (typeof token !== "string" || token.trim() === "") {
+            throw new Error("Invalid access token");
+          }
+
+          authStore.accessToken = token;
 
           return await $fetch(url, {
             ...options,

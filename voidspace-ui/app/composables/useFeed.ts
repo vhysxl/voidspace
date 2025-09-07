@@ -19,25 +19,32 @@ type FeedResponse = {
 };
 
 export const useFeed = () => {
+  const auth = useAuthStore();
   const { fetchWithAuth } = useApi();
-  const config = useRuntimeConfig();
-  const apiUrl = config.public.apiUrl;
 
-  const getVanillaFeed = async (): Promise<FeedResponse> => {
+  const getGlobalFeed = async (): Promise<FeedResponse> => {
     try {
-      const response = await $fetch<FeedResponse>(`${apiUrl}/feed/`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      let response;
 
-      return response;
+      if (auth.isLoggedIn) {
+        response = await fetchWithAuth(`/api/feed/global`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+      } else {
+        response = await $fetch<FeedResponse>(`/api/feed/`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      return response as FeedResponse;
     } catch (error: any) {
-      throw new Error(error.data?.detail || "Failed to get feed");
+      throw new Error(error.message || "Failed to get feed");
     }
   };
 
-  //authenticatedfeed
   //follow feed
 
-  return { getVanillaFeed };
+  return { getGlobalFeed };
 };

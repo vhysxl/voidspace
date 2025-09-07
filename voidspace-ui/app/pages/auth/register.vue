@@ -24,7 +24,7 @@ const schema = v.pipe(
     email: v.pipe(
       v.string(),
       v.nonEmpty('Please enter your email.'),
-      v.email('The email address is badly formatted.')
+      v.email('The email address is not valid.')
     ),
     password: v.pipe(
       v.string(),
@@ -61,7 +61,20 @@ async function onSubmit() {
   isLoading.value = true
   try {
     const res = await authCall.register(state.username, state.email, state.password)
-    auth.login(res.data.access_token, res.data.expires_in)
+    const accessToken = res.data?.access_token
+    const expiresIn = res.data?.expires_in
+
+    if (typeof accessToken != "string" || typeof expiresIn != "number") {
+      toast.add({
+        title: "Register Failed",
+        description: "Failed to Register please try again later",
+        color: "error",
+      })
+
+      return
+    }
+
+    auth.login(accessToken, expiresIn)
 
     await navigateTo('/')
   } catch (error: any) {

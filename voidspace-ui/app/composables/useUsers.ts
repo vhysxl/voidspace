@@ -48,7 +48,7 @@ export const useUsers = () => {
 
       return response;
     } catch (error: any) {
-      throw new Error(error.data?.detail || "Failed to get user");
+      throw new Error(error.statusMessage || "Failed to get user");
     }
   };
 
@@ -62,7 +62,7 @@ export const useUsers = () => {
 
       return response as ApiResponse<User>;
     } catch (error: any) {
-      throw new Error(error.data?.detail || "Failed to get current user");
+      throw new Error(error.statusMessage || "Failed to get current user");
     }
   };
 
@@ -78,7 +78,7 @@ export const useUsers = () => {
 
       return response as ApiResponse;
     } catch (error: any) {
-      throw new Error(error.data?.detail || "Failed to update profile");
+      throw new Error(error.statusMessage || "Failed to update profile");
     }
   };
 
@@ -88,9 +88,12 @@ export const useUsers = () => {
         method: "DELETE",
       });
 
+      const authCookie = useCookie("auth");
+      authCookie.value = null;
+
       return response as ApiResponse;
     } catch (error: any) {
-      throw new Error(error.data?.detail || "Failed to delete user");
+      throw new Error(error.statusMessage || "Failed to delete user");
     }
   };
 

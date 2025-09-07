@@ -3,8 +3,8 @@ import { authData } from "@/utils/authParser";
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const method = event.node.req.method?.toUpperCase();
-
   const authCookie = getCookie(event, "auth");
+  const postId = event.context.params?.id;
   let token;
 
   //decode cookie
@@ -17,12 +17,11 @@ export default defineEventHandler(async (event) => {
 
   try {
     if (method === "GET") {
-      return await $fetch(`${config.apiUrl}/users/me`, {
+      return await $fetch(`${config.apiUrl}/posts/${postId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "x-api-key": config.apiSecret,
-          ...(token && { Authorization: `Bearer ${token}` }),
         },
         credentials: "include",
       });
@@ -30,22 +29,20 @@ export default defineEventHandler(async (event) => {
 
     if (method === "PUT") {
       const body = await readBody(event);
-      const response = await $fetch(`${config.apiUrl}/users/me`, {
+      return await $fetch(`${config.apiUrl}/posts/${postId}`, {
         method: "PUT",
+        body: body,
         headers: {
           "Content-Type": "application/json",
           "x-api-key": config.apiSecret,
           ...(token && { Authorization: `Bearer ${token}` }),
         },
-        body: body,
         credentials: "include",
       });
-
-      return response;
     }
 
     if (method === "DELETE") {
-      const response = await $fetch(`${config.apiUrl}/users/me`, {
+      return await $fetch(`${config.apiUrl}/posts/${postId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -54,23 +51,13 @@ export default defineEventHandler(async (event) => {
         },
         credentials: "include",
       });
-
-      setCookie(event, "refresh_token", "", {
-        expires: new Date(0),
-        path: "/",
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-      });
-
-      return response;
     }
 
     throw createError({ statusCode: 405, statusMessage: "Method not allowed" });
   } catch (error: any) {
     throw createError({
       statusCode: error.status || 500,
-      statusMessage: error.data?.detail || "User request failed",
+      statusMessage: error.data?.detail || "Posts request failed",
     });
   }
 });

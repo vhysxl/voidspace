@@ -11,12 +11,11 @@ export interface ApiResponse {
 
 export const usePosts = () => {
   const { fetchWithAuth } = useApi();
-  const config = useRuntimeConfig();
-  const apiUrl = config.public.apiUrl;
+  const apiUrl = "/api";
 
   const createPost = async (req: CreatePostReq) => {
     try {
-      const res = await fetchWithAuth(`${apiUrl}/posts/`, {
+      const res = await fetchWithAuth(`${apiUrl}/posts/post`, {
         method: "POST",
         body: req,
         headers: { "Content-Type": "application/json" },
@@ -25,7 +24,7 @@ export const usePosts = () => {
 
       return res as ApiResponse;
     } catch (error: any) {
-      throw new Error(error.data?.detail || "Failed to create post");
+      throw new Error(error.statusMessage || "Failed to create post");
     }
   };
 
@@ -38,7 +37,7 @@ export const usePosts = () => {
 
       return response;
     } catch (error: any) {
-      throw new Error(error.data?.detail || "Failed to get post");
+      throw new Error(error.statusMessage || "Failed to get post");
     }
   };
 
@@ -54,7 +53,7 @@ export const usePosts = () => {
 
       return response;
     } catch (error: any) {
-      throw new Error(error.data?.detail || "Failed to get user posts");
+      throw new Error(error.statusMessage || "Failed to get user posts");
     }
   };
 
@@ -63,7 +62,7 @@ export const usePosts = () => {
     postId: string
   ): Promise<ApiResponse> => {
     try {
-      const res = await fetchWithAuth(`${apiUrl}/posts/${postId}`, {
+      const res = await fetchWithAuth(`${apiUrl}/post/${postId}`, {
         method: "PUT",
         body: req,
         headers: { "Content-Type": "application/json" },
@@ -72,11 +71,12 @@ export const usePosts = () => {
 
       return res as ApiResponse;
     } catch (error: any) {
-      throw new Error(error.data?.detail || "Failed to update post");
+      throw new Error(error.statusMessage || "Failed to update post");
     }
   };
 
   const deletePost = async (postId: string): Promise<ApiResponse> => {
+    console.log("func called");
     try {
       const res = await fetchWithAuth(`${apiUrl}/posts/${postId}`, {
         method: "DELETE",
@@ -86,7 +86,7 @@ export const usePosts = () => {
 
       return res as ApiResponse;
     } catch (error: any) {
-      throw new Error(error.data?.detail || "Failed to delete post");
+      throw new Error(error.statusMessage || "Failed to delete post");
     }
   };
 

@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthStore } from '@/stores/AuthStore'
-import { useAuth } from "~/composables/useAuth";
-
-const auth = useAuthStore()
-const authCall = useAuth()
 
 defineProps<{
     title: string
@@ -43,16 +38,6 @@ function followUser(userId: number) {
     }
 }
 
-//delete this
-const handleRefresh = async () => {
-    try {
-        const res = await authCall.refresh()
-        console.log(res)
-    } catch (error) {
-        console.error(error)
-
-    }
-}
 </script>
 
 <template>
@@ -89,5 +74,4 @@ const handleRefresh = async () => {
             Show more
         </button>
     </div>
-    <UButton class="mt-2 p-4" @click="handleRefresh">refresh</UButton>
 </template>

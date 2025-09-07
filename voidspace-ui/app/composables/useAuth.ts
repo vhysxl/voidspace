@@ -1,28 +1,21 @@
-export interface AuthResponse {
-  success: boolean;
-  detail: string;
-  data: {
-    access_token: string;
-    expires_in: number;
-  };
-}
+import type { ApiResponse, AuthResponse } from "@/types/index";
 
 export const useAuth = () => {
   const apiUrl = "/api";
+  type useAuthResponse = ApiResponse<AuthResponse>;
 
   const login = async (
     usernameoremail: string,
     password: string
-  ): Promise<AuthResponse> => {
+  ): Promise<useAuthResponse> => {
     try {
-      return await $fetch<AuthResponse>(`${apiUrl}/auth/login`, {
+      return await $fetch<useAuthResponse>(`${apiUrl}/auth/login`, {
         method: "POST",
         body: { usernameoremail, password },
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
     } catch (error: any) {
-      console.log(error);
       throw new Error(error.statusMessage || "Login failed");
     }
   };
@@ -31,9 +24,9 @@ export const useAuth = () => {
     username: string,
     email: string,
     password: string
-  ): Promise<AuthResponse> => {
+  ): Promise<useAuthResponse> => {
     try {
-      return await $fetch<AuthResponse>(`${apiUrl}/auth/register`, {
+      return await $fetch<useAuthResponse>(`${apiUrl}/auth/register`, {
         method: "POST",
         body: { username, email, password },
         headers: { "Content-Type": "application/json" },
@@ -52,23 +45,19 @@ export const useAuth = () => {
         credentials: "include",
       });
     } catch (error: any) {
-      throw new Error(
-        error.data?.message || error.data?.detail || "Logout failed"
-      );
+      throw new Error(error.statusMessage || "Logout failed");
     }
   };
 
-  const refresh = async (): Promise<AuthResponse> => {
+  const refresh = async (): Promise<useAuthResponse> => {
     try {
-      return await $fetch(`${apiUrl}/auth/refresh`, {
+      return await $fetch<useAuthResponse>(`${apiUrl}/auth/refresh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
     } catch (error: any) {
-      throw new Error(
-        error.data?.message || error.data?.detail || "Refresh failed"
-      );
+      throw new Error(error.statusMessage || "Refresh failed");
     }
   };
 

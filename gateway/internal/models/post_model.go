@@ -3,7 +3,7 @@ package models
 import "time"
 
 type PostRequest struct {
-	Content    string   `json:"content" validate:"required,min=1,max=500"`
+	Content    string   `json:"content" validate:"max=240"`
 	PostImages []string `json:"post_images" validate:"omitempty,dive,url"`
 }
 

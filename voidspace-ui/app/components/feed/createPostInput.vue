@@ -11,6 +11,7 @@ const auth = useAuthStore()
 const isPosting = ref(false)
 const toast = useToast();
 
+
 const schema = v.object({
     content: v.optional(
         v.pipe(
@@ -30,6 +31,11 @@ const schema = v.object({
 });
 
 //TODO: STUPID VALIBOT NEXT MAKE CUSTOM ERROR
+
+const emit = defineEmits<{
+    postCreated: [post: Post]
+}>()
+
 
 const handleSubmit = async () => {
     if (isPosting.value) return
@@ -56,7 +62,10 @@ const handleSubmit = async () => {
             post_images: uploadedUrls
         }
 
-        await createPost(createPostReq)
+        const newPost = await createPost(createPostReq)
+
+        // fix later
+        emit('postCreated', newPost.data as Post)
 
         state.content = '';
         state.postImages = undefined;
