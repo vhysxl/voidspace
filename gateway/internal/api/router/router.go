@@ -15,8 +15,9 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	postHandler := handlers.NewPostHandler(app.ContextTimeout, app.Logger, app.Validator, app.PostService)
 	likeHandler := handlers.NewLikeHandler(app.ContextTimeout, app.Logger, app.Validator, app.LikeService)
 	feedHandler := handlers.NewFeedHandler(app.ContextTimeout, app.Logger, app.Validator, app.FeedService)
-	uploadHanlder := handlers.NewUploadHandler(app.ContextTimeout, app.Logger, app.Validator, app.UploadService)
+	uploadHandler := handlers.NewUploadHandler(app.ContextTimeout, app.Logger, app.Validator, app.UploadService)
 	authMiddleware := middleware.AuthMiddleware((app.Config.PublicKey))
+	optionalAuthMiddleware := middleware.OptionalAuthMiddleware(app.Config.PublicKey)
 
 	api := e.Group("/api/v1")
 
@@ -32,6 +33,7 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	//user group
 	// Public routes
 	usersPublic := api.Group("/users")
+	usersPublic.Use(optionalAuthMiddleware)
 	usersPublic.GET("/:username", userHandler.GetUser)
 	// Protected routes
 	usersPrivate := api.Group("/users")
@@ -49,6 +51,7 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	// Posts group
 	// Public posts group
 	postsPublic := api.Group("/posts")
+	postsPublic.Use(optionalAuthMiddleware)
 	postsPublic.GET("/:id", postHandler.GetPost)
 	postsPublic.GET("/user/:username", postHandler.GetUserPosts)
 	// Protected posts group
@@ -60,6 +63,7 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 
 	// Feed group
 	feed := api.Group("/feed")
+	feed.Use(optionalAuthMiddleware)
 	feed.GET("/", feedHandler.GetGlobalFeed)
 	followFeed := api.Group("/feed")
 	followFeed.Use(authMiddleware)
@@ -67,7 +71,7 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 		return c.String(200, "follow feed")
 	})
 
-	// LIkes group
+	// Likes group
 	likes := api.Group("/likes")
 	likes.Use(authMiddleware)
 	likes.POST("/:postId", likeHandler.Like)
@@ -76,5 +80,5 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	// Upload Group
 	upload := api.Group("/upload/signed-url")
 	upload.Use(authMiddleware)
-	upload.POST("", uploadHanlder.GenerateSignedURL)
+	upload.POST("", uploadHandler.GenerateSignedURL)
 }

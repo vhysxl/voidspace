@@ -20,13 +20,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_GetCurrentUser_FullMethodName = "/users.v1.UserService/GetCurrentUser"
-	UserService_GetUser_FullMethodName        = "/users.v1.UserService/GetUser"
-	UserService_GetUsersByIds_FullMethodName  = "/users.v1.UserService/GetUsersByIds"
-	UserService_UpdateProfile_FullMethodName  = "/users.v1.UserService/UpdateProfile"
-	UserService_DeleteUser_FullMethodName     = "/users.v1.UserService/DeleteUser"
-	UserService_Follow_FullMethodName         = "/users.v1.UserService/Follow"
-	UserService_Unfollow_FullMethodName       = "/users.v1.UserService/Unfollow"
+	UserService_GetCurrentUser_FullMethodName       = "/users.v1.UserService/GetCurrentUser"
+	UserService_GetUser_FullMethodName              = "/users.v1.UserService/GetUser"
+	UserService_GetUserById_FullMethodName          = "/users.v1.UserService/GetUserById"
+	UserService_GetUsersByIds_FullMethodName        = "/users.v1.UserService/GetUsersByIds"
+	UserService_GetUsersFollowedById_FullMethodName = "/users.v1.UserService/GetUsersFollowedById"
+	UserService_UpdateProfile_FullMethodName        = "/users.v1.UserService/UpdateProfile"
+	UserService_DeleteUser_FullMethodName           = "/users.v1.UserService/DeleteUser"
+	UserService_Follow_FullMethodName               = "/users.v1.UserService/Follow"
+	UserService_Unfollow_FullMethodName             = "/users.v1.UserService/Unfollow"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -35,7 +37,9 @@ const (
 type UserServiceClient interface {
 	GetCurrentUser(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetUserResponse, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	GetUserById(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	GetUsersByIds(ctx context.Context, in *GetUserByUserIDsRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
+	GetUsersFollowedById(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*GetUsersFollowedResponse, error)
 	UpdateProfile(ctx context.Context, in *UpdateProfileRequest, opts ...grpc.CallOption) (*UserServiceResponse, error)
 	DeleteUser(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserServiceResponse, error)
 	Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*UserServiceResponse, error)
@@ -70,10 +74,30 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opt
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserById(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) GetUsersByIds(ctx context.Context, in *GetUserByUserIDsRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetUsersResponse)
 	err := c.cc.Invoke(ctx, UserService_GetUsersByIds_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetUsersFollowedById(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*GetUsersFollowedResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUsersFollowedResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUsersFollowedById_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +150,9 @@ func (c *userServiceClient) Unfollow(ctx context.Context, in *FollowRequest, opt
 type UserServiceServer interface {
 	GetCurrentUser(context.Context, *emptypb.Empty) (*GetUserResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+	GetUserById(context.Context, *GetUserByIDRequest) (*GetUserResponse, error)
 	GetUsersByIds(context.Context, *GetUserByUserIDsRequest) (*GetUsersResponse, error)
+	GetUsersFollowedById(context.Context, *GetUserByIDRequest) (*GetUsersFollowedResponse, error)
 	UpdateProfile(context.Context, *UpdateProfileRequest) (*UserServiceResponse, error)
 	DeleteUser(context.Context, *emptypb.Empty) (*UserServiceResponse, error)
 	Follow(context.Context, *FollowRequest) (*UserServiceResponse, error)
@@ -147,8 +173,14 @@ func (UnimplementedUserServiceServer) GetCurrentUser(context.Context, *emptypb.E
 func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
+func (UnimplementedUserServiceServer) GetUserById(context.Context, *GetUserByIDRequest) (*GetUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
+}
 func (UnimplementedUserServiceServer) GetUsersByIds(context.Context, *GetUserByUserIDsRequest) (*GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsersByIds not implemented")
+}
+func (UnimplementedUserServiceServer) GetUsersFollowedById(context.Context, *GetUserByIDRequest) (*GetUsersFollowedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersFollowedById not implemented")
 }
 func (UnimplementedUserServiceServer) UpdateProfile(context.Context, *UpdateProfileRequest) (*UserServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfile not implemented")
@@ -219,6 +251,24 @@ func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserById(ctx, req.(*GetUserByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_GetUsersByIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserByUserIDsRequest)
 	if err := dec(in); err != nil {
@@ -233,6 +283,24 @@ func _UserService_GetUsersByIds_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetUsersByIds(ctx, req.(*GetUserByUserIDsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetUsersFollowedById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUsersFollowedById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUsersFollowedById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUsersFollowedById(ctx, req.(*GetUserByIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -325,8 +393,16 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_GetUser_Handler,
 		},
 		{
+			MethodName: "GetUserById",
+			Handler:    _UserService_GetUserById_Handler,
+		},
+		{
 			MethodName: "GetUsersByIds",
 			Handler:    _UserService_GetUsersByIds_Handler,
+		},
+		{
+			MethodName: "GetUsersFollowedById",
+			Handler:    _UserService_GetUsersFollowedById_Handler,
 		},
 		{
 			MethodName: "UpdateProfile",

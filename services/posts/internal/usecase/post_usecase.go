@@ -17,11 +17,11 @@ type postUsecase struct {
 
 type PostUsecase interface {
 	CreatePost(ctx context.Context, post *domain.Post) (*domain.Post, error)
-	GetByID(ctx context.Context, id int32) (*domain.Post, error)
+	GetByID(ctx context.Context, userID, id int32) (*domain.Post, error)
 	GetAllUserPosts(ctx context.Context, userID int32) ([]*domain.Post, error)
 	UpdatePost(ctx context.Context, post *domain.Post) error
 	DeletePost(ctx context.Context, id int32, userID int32) error
-	GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID *int32) ([]*domain.Post, bool, error)
+	GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID *int32, userID int32) ([]*domain.Post, bool, error)
 	GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime *time.Time, cursorID *int32) ([]*domain.Post, bool, error)
 	AccountDeletionHandle(ctx context.Context, userId int32) error
 }
@@ -89,7 +89,7 @@ func (p *postUsecase) GetAllUserPosts(ctx context.Context, userID int32) ([]*dom
 }
 
 // GetByID implements PostUsecase.
-func (p *postUsecase) GetByID(ctx context.Context, id int32) (*domain.Post, error) {
+func (p *postUsecase) GetByID(ctx context.Context, userID, id int32) (*domain.Post, error) {
 	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
 	defer cancel()
 
@@ -97,16 +97,29 @@ func (p *postUsecase) GetByID(ctx context.Context, id int32) (*domain.Post, erro
 	if err != nil {
 		return nil, err
 	}
+
+	post.IsLiked = false
+
+	if userID > 0 {
+		isLiked, err := p.likeRepository.IsPostLikedByUser(ctx, userID, id)
+		if err != nil {
+			return nil, err
+		}
+
+		post.IsLiked = isLiked
+	}
+
 	return post, nil
 }
 
 // GetGlobalFeed implements PostUsecase.
-func (p *postUsecase) GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID *int32) ([]*domain.Post, bool, error) {
+func (p *postUsecase) GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID *int32, userID int32) ([]*domain.Post, bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
 	defer cancel()
 
 	var timeVal time.Time
 	var idVal int32
+	// using pointer because it will default 0 if no pointer
 	if cursorTime != nil && cursorID != nil && !cursorTime.IsZero() && *cursorID > 0 {
 		timeVal = *cursorTime
 		idVal = *cursorID
@@ -119,6 +132,27 @@ func (p *postUsecase) GetGlobalFeed(ctx context.Context, cursorTime *time.Time, 
 	if err != nil {
 		return nil, false, err
 	}
+
+	if userID > 0 {
+		postIDs := make([]int32, 0, len(posts))
+		for _, post := range posts {
+			postIDs = append(postIDs, int32(post.ID))
+		}
+
+		likes, err := p.likeRepository.IsPostsLikedByUser(ctx, userID, postIDs)
+		if err != nil {
+			return nil, false, err
+		}
+
+		for i, post := range posts {
+			if liked, ok := likes[int32(post.ID)]; ok {
+				posts[i].IsLiked = liked
+			} else {
+				posts[i].IsLiked = false
+			}
+		}
+	}
+
 	return posts, hasNext, nil
 }
 

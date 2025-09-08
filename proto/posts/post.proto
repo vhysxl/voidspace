@@ -60,6 +60,7 @@ message PostResponse {
   int32 likes_count = 5;
   google.protobuf.Timestamp created_at = 6;  
   google.protobuf.Timestamp updated_at = 7;  
+  bool is_liked = 8;
 }
 
 message GetFeedResponse {

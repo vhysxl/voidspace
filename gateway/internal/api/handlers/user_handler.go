@@ -64,6 +64,8 @@ func (uh *UserHandler) GetUser(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	username := c.Param("username")
+	userID, _ := c.Get("ID").(string)
+	usernameRequester, _ := c.Get("username").(string)
 
 	u := &models.GetUserRequest{
 		Username: username,
@@ -74,7 +76,7 @@ func (uh *UserHandler) GetUser(c echo.Context) error {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
 	}
 
-	user, err := uh.UserService.GetUser(ctx, username)
+	user, err := uh.UserService.GetUser(ctx, username, userID, usernameRequester)
 	if err != nil {
 		uh.Logger.Error("failed to get user", zap.Error(err))
 		code, msg := utils.GRPCErrorToHTTP(err)

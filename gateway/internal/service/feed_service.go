@@ -12,6 +12,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// TODO: Extract user enrichment logic to reduce duplication between GetGlobalFeed and GetFollowFeed
 type FeedService struct {
 	ContextTimeout time.Duration
 	Logger         *zap.Logger
@@ -28,9 +29,16 @@ func NewFeedService(timeout time.Duration, logger *zap.Logger, postClient postpb
 	}
 }
 
-func (fs *FeedService) GetGlobalFeed(ctx context.Context, req *models.GetGlobalFeedReq) (*models.GetFeedResponse, error) {
+func (fs *FeedService) GetGlobalFeed(ctx context.Context, req *models.GetGlobalFeedReq, username string, userID string) (*models.GetFeedResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, fs.ContextTimeout)
 	defer cancel()
+
+	md := metadata.New(map[string]string{
+		"user_id":  userID,
+		"username": username,
+	})
+
+	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	// 1. Call PostService to fetch the global feed posts.
 	//    This returns only post data (id, content, user_id, etc.),
@@ -124,6 +132,7 @@ func (fs *FeedService) GetGlobalFeed(ctx context.Context, req *models.GetGlobalF
 			LikesCount: int(post.GetLikesCount()),
 			CreatedAt:  post.GetCreatedAt().AsTime(),
 			UpdatedAt:  post.GetUpdatedAt().AsTime(),
+			IsLiked:    post.GetIsLiked(),
 		})
 	}
 
@@ -147,32 +156,99 @@ func (fs *FeedService) GetFollowFeed(ctx context.Context, username string, userI
 
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
+	//get follows
+
+	folRes, err := fs.UserClient.GetUsersFollowedById(ctx, &userpb.GetUserByIDRequest{})
+	if err != nil {
+		fs.Logger.Error("failed to call UserService.GetUserFollowedById", zap.Error(err))
+		return nil, err
+	}
+
 	data := &postpb.GetFeedByUserIDsRequest{
-		UserIds:  req.UserIDs,
+		UserIds:  folRes.UserIds,
 		Cursor:   timestamppb.New(req.Cursor),
 		CursorID: int32(req.CursorUserID),
 	}
 
-	res, err := fs.PostClient.GetFeedByUserIDs(ctx, data)
+	postRes, err := fs.PostClient.GetFeedByUserIDs(ctx, data)
 	if err != nil {
 		fs.Logger.Error("failed to call PostService.GetGlobalFeed", zap.Error(err))
 		return nil, err
 	}
 
-	posts := make([]models.Post, 0, len(res.GetPosts()))
-	for _, post := range res.GetPosts() {
+	if len(postRes.Posts) == 0 {
+		return &models.GetFeedResponse{
+			Posts:   nil,
+			HasMore: postRes.GetHasMore(),
+		}, nil
+	}
+
+	userIDSet := make(map[int32]struct{})
+	for _, post := range postRes.GetPosts() {
+		userIDSet[post.GetUserId()] = struct{}{}
+	}
+
+	userIDs := make([]int32, 0, len(userIDSet))
+	for id := range userIDSet {
+		userIDs = append(userIDs, id)
+	}
+
+	userRes, err := fs.UserClient.GetUsersByIds(ctx, &userpb.GetUserByUserIDsRequest{
+		UserID: userIDs,
+	})
+	if err != nil {
+		fs.Logger.Error("failed to call UserService.GetUsersByIds", zap.Error(err))
+		return nil, err
+	}
+
+	userMap := make(map[int32]*userpb.User)
+	for _, u := range userRes.GetUsers() {
+		userMap[u.GetId()] = u
+	}
+
+	posts := make([]models.Post, 0, len(postRes.GetPosts()))
+	for _, post := range postRes.GetPosts() {
+		u := userMap[post.GetUserId()]
+
+		var user *models.User
+		if u != nil {
+			var profile models.Profile
+			if u.GetProfile() != nil {
+				profile = models.Profile{
+					DisplayName: u.GetProfile().GetDisplayName(),
+					Bio:         u.GetProfile().GetBio(),
+					AvatarURL:   u.GetProfile().GetAvatarUrl(),
+					BannerURL:   u.GetProfile().GetBannerUrl(),
+					Location:    u.GetProfile().GetLocation(),
+					Followers:   u.GetProfile().GetFollowers(),
+					Following:   u.GetProfile().GetFollowing(),
+				}
+			}
+
+			user = &models.User{
+				ID:        u.GetId(),
+				Username:  u.GetUsername(),
+				Profile:   profile,
+				CreatedAt: u.GetCreatedAt().AsTime(),
+			}
+		}
+
 		posts = append(posts, models.Post{
 			ID:         int(post.GetId()),
 			Content:    post.GetContent(),
 			UserID:     int(post.GetUserId()),
+			Author:     user,
 			PostImages: post.GetPostImages(),
 			LikesCount: int(post.GetLikesCount()),
 			CreatedAt:  post.GetCreatedAt().AsTime(),
 			UpdatedAt:  post.GetUpdatedAt().AsTime(),
+			IsLiked:    post.GetIsLiked(),
 		})
 	}
+
 	return &models.GetFeedResponse{
 		Posts:   posts,
-		HasMore: res.GetHasMore(),
+		HasMore: postRes.GetHasMore(),
 	}, nil
+
 }

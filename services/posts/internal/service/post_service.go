@@ -82,7 +82,9 @@ func (ph *PostHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb
 	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
 	defer cancel()
 
-	post, err := ph.PostUsecase.GetByID(ctx, req.Id)
+	userId, _ := ctx.Value(interceptor.CtxKeyUserID).(int)
+
+	post, err := ph.PostUsecase.GetByID(ctx, int32(userId), req.Id)
 	if err != nil {
 		ph.Logger.Error(ErrUsecase, zap.Error(err))
 		switch err {
@@ -103,6 +105,7 @@ func (ph *PostHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb
 		LikesCount: post.LikesCount,
 		CreatedAt:  timestamppb.New(post.CreatedAt),
 		UpdatedAt:  timestamppb.New(post.UpdatedAt),
+		IsLiked:    post.IsLiked,
 	}, nil
 }
 
@@ -215,7 +218,9 @@ func (ph *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedR
 		cursorID = &req.CursorID
 	}
 
-	posts, hasNext, err := ph.PostUsecase.GetGlobalFeed(ctx, cursorTime, cursorID)
+	userId, _ := ctx.Value(interceptor.CtxKeyUserID).(int)
+
+	posts, hasNext, err := ph.PostUsecase.GetGlobalFeed(ctx, cursorTime, cursorID, int32(userId))
 	if err != nil {
 		ph.Logger.Error(ErrUsecase, zap.Error(err))
 		switch {
@@ -236,6 +241,7 @@ func (ph *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedR
 			LikesCount: post.LikesCount,
 			CreatedAt:  timestamppb.New(post.CreatedAt),
 			UpdatedAt:  timestamppb.New(post.UpdatedAt),
+			IsLiked:    post.IsLiked,
 		})
 	}
 

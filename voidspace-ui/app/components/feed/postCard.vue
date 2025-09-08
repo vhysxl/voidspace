@@ -10,11 +10,12 @@ defineProps<{
 
 const emit = defineEmits<{
     postDeleted: [postId: number]
+    postLiked: [postId: number]
 }>()
 
 const editModal = ref(false)
 const deleteModal = ref(false)
-const isDeleting = ref(false)
+const isSubmitting = ref(false)
 const postCall = usePosts()
 const toast = useToast()
 const selectedPostId = ref<number | null>(null)
@@ -45,10 +46,10 @@ const getMenuItems = (post: Post): DropdownMenuItem[] => [
 ]
 
 const handleDeletePost = async () => {
-    if (isDeleting.value || selectedPostId.value === null) return
+    if (isSubmitting.value || selectedPostId.value === null) return
 
     try {
-        isDeleting.value = true
+        isSubmitting.value = true
         await postCall.deletePost(selectedPostId.value.toString())
 
         emit('postDeleted', selectedPostId.value)
@@ -70,7 +71,38 @@ const handleDeletePost = async () => {
     } finally {
         selectedPostId.value = null
         selectedPost.value = null
-        isDeleting.value = false
+        isSubmitting.value = false
+    }
+}
+
+
+const handleLikePost = async () => {
+    if (isSubmitting.value || selectedPostId.value === null) return
+
+    try {
+        isSubmitting.value = true
+        await postCall.deletePost(selectedPostId.value.toString())
+
+        emit('postDeleted', selectedPostId.value)
+
+        toast.add({
+            title: "Post deleted",
+            description: "Your post has been removed",
+            color: "neutral",
+        })
+
+        deleteModal.value = false
+
+    } catch (error: any) {
+        toast.add({
+            title: "Delete failed",
+            description: error.message || "Failed to delete post",
+            color: "error",
+        })
+    } finally {
+        selectedPostId.value = null
+        selectedPost.value = null
+        isSubmitting.value = false
     }
 }
 
@@ -166,11 +198,11 @@ const closeModal = () => {
                 </p>
 
                 <div class="flex gap-3 justify-end">
-                    <UButton color="neutral" variant="ghost" @click="closeModal" :disabled="isDeleting">
+                    <UButton color="neutral" variant="ghost" @click="closeModal" :disabled="isSubmitting">
                         Cancel
                     </UButton>
 
-                    <UButton @click="handleDeletePost" color="error" :loading="isDeleting">
+                    <UButton @click="handleDeletePost" color="error" :loading="isSubmitting">
                         Delete
                     </UButton>
                 </div>

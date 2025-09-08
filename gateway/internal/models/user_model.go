@@ -24,10 +24,11 @@ type UpdateProfileRequest struct {
 }
 
 type User struct {
-	ID        int32     `json:"id"`
-	Username  string    `json:"username"`
-	Profile   Profile   `json:"profile"`
-	CreatedAt time.Time `json:"created_at"`
+	ID         int32     `json:"id"`
+	Username   string    `json:"username"`
+	Profile    Profile   `json:"profile"`
+	CreatedAt  time.Time `json:"created_at"`
+	IsFollowed bool      `json:"is_followed"`
 }
 
 type Profile struct {

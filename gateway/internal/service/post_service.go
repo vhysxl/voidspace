@@ -7,6 +7,7 @@ import (
 	"voidspaceGateway/internal/models"
 	postpb "voidspaceGateway/proto/generated/posts"
 	userpb "voidspaceGateway/proto/generated/users"
+	"voidspaceGateway/utils"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc/metadata"
@@ -63,27 +64,51 @@ func (ps *PostService) Create(ctx context.Context, username string, userID strin
 	}, nil
 }
 
-func (ps *PostService) GetPost(ctx context.Context, req *models.GetPostRequest) (*models.Post, error) {
+func (ps *PostService) GetPost(ctx context.Context, req *models.GetPostRequest, username string, userID string) (*models.Post, error) {
 	ctx, cancel := context.WithTimeout(ctx, ps.ContextTimeout)
 	defer cancel()
 
-	res, err := ps.PostClient.GetPost(ctx, &postpb.GetPostRequest{
-		Id: int32(req.ID),
+	md := metadata.New(map[string]string{
+		"user_id":  userID,
+		"username": username,
 	})
 
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
+	if md, ok := metadata.FromOutgoingContext(ctx); ok {
+		fmt.Println("outgoing metadata:", md)
+	} else {
+		fmt.Println("no outgoing metadata")
+	}
+
+	postRes, err := ps.PostClient.GetPost(ctx, &postpb.GetPostRequest{
+		Id: int32(req.ID),
+	})
 	if err != nil {
 		ps.Logger.Error("Failed to call PostService.GetPost")
 		return nil, err
 	}
 
+	userRes, err := ps.UserClient.GetUserById(ctx, &userpb.GetUserByIDRequest{
+		UserID: postRes.UserId,
+	})
+	if err != nil {
+		ps.Logger.Error("Failed to call UserService.GetUserByUserID")
+		return nil, err
+	}
+
+	user := utils.UserMapper(userRes)
+
 	return &models.Post{
-		ID:         int(res.GetId()),
-		Content:    res.GetContent(),
-		UserID:     int(res.GetUserId()),
-		PostImages: res.GetPostImages(),
-		LikesCount: int(res.GetLikesCount()),
-		CreatedAt:  res.GetCreatedAt().AsTime(),
-		UpdatedAt:  res.GetUpdatedAt().AsTime(),
+		ID:         int(postRes.GetId()),
+		Content:    postRes.GetContent(),
+		UserID:     int(postRes.GetUserId()),
+		PostImages: postRes.GetPostImages(),
+		LikesCount: int(postRes.GetLikesCount()),
+		CreatedAt:  postRes.GetCreatedAt().AsTime(),
+		UpdatedAt:  postRes.GetUpdatedAt().AsTime(),
+		Author:     &user,
+		IsLiked:    postRes.GetIsLiked(),
 	}, nil
 }
 

@@ -13,6 +13,7 @@ type Post struct {
 	LikesCount int32
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
+	IsLiked    bool
 }
 
 type PostRepository interface {

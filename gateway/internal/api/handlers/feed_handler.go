@@ -38,13 +38,16 @@ func NewFeedHandler(
 func (fh *FeedHandler) GetGlobalFeed(c echo.Context) error {
 	ctx := c.Request().Context()
 
+	userID, _ := c.Get("ID").(string)
+	username, _ := c.Get("username").(string)
+
 	f := new(models.GetGlobalFeedReq)
 	err := c.Bind(f)
 	if err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
 	}
 
-	res, err := fh.FeedService.GetGlobalFeed(ctx, f)
+	res, err := fh.FeedService.GetGlobalFeed(ctx, f, username, userID)
 	if err != nil {
 		fh.Logger.Error("failed to fetch feed", zap.Error(err))
 		code, msg := utils.GRPCErrorToHTTP(err)

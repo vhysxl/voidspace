@@ -66,13 +66,21 @@ func (us *UserService) GetCurrentUser(ctx context.Context, userID string, userna
 	}, nil
 }
 
-func (us *UserService) GetUser(ctx context.Context, username string) (*models.User, error) {
+func (us *UserService) GetUser(ctx context.Context, username string, userID string, usernameRequester string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, us.ContextTimeout)
 	defer cancel()
+
+	md := metadata.New(map[string]string{
+		"user_id":  userID,
+		"username": usernameRequester,
+	})
+
+	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	res, err := us.UserClient.GetUser(ctx, &userpb.GetUserRequest{
 		Username: username,
 	})
+
 	if err != nil {
 		us.Logger.Error("failed to call UserService.GetUser", zap.Error(err))
 		return nil, err
@@ -91,9 +99,10 @@ func (us *UserService) GetUser(ctx context.Context, username string) (*models.Us
 	}
 
 	return &models.User{
-		Username:  res.User.GetUsername(),
-		Profile:   *profile,
-		CreatedAt: res.User.GetCreatedAt().AsTime(),
+		Username:   res.User.GetUsername(),
+		Profile:    *profile,
+		CreatedAt:  res.User.GetCreatedAt().AsTime(),
+		IsFollowed: res.User.GetIsFollowed(),
 	}, nil
 }
 

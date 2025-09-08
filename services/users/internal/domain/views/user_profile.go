@@ -13,4 +13,5 @@ type UserProfile struct {
 	Followers   int       `json:"followers"`
 	Following   int       `json:"following"`
 	CreatedAt   time.Time `json:"created_at"`
+	IsFollowed  bool      `json:"is_followed"`
 }

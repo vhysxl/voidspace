@@ -23,6 +23,10 @@ type GetUserReq struct {
 	Username string `validate:"required,min=3,max=32,alphanum"`
 }
 
+type GetUserByIdReq struct {
+	UserID int32 `validate:"required"`
+}
+
 // UpdateUserReq represents a partial update payload for updating user profile.
 // All fields are optional and will only be updated if provided in the request.
 // Use pointers to differentiate between "field not provided" (nil) and "empty value" ("").
@@ -117,13 +121,67 @@ func (uh *UserHandler) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb
 		Username: req.GetUsername(),
 	}
 
+	userID, _ := ctx.Value(interceptor.CtxKeyUserID).(int)
+
 	err := uh.Validator.Struct(userReq)
 	if err != nil {
 		uh.Logger.Debug(ErrValidation, zap.Error(err))
 		return nil, status.Errorf(codes.InvalidArgument, "%s", validations.FormatValidationError(err))
 	}
 
-	existingUser, err := uh.UserUsecase.GetUser(ctx, userReq.Username)
+	existingUser, err := uh.UserUsecase.GetUser(ctx, userReq.Username, userID)
+	if err != nil {
+		uh.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		case domain.ErrUserNotFound:
+			return nil, status.Error(codes.NotFound, err.Error())
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	profile := &pb.Profile{
+		DisplayName: existingUser.DisplayName,
+		Bio:         existingUser.Bio,
+		AvatarUrl:   existingUser.AvatarUrl,
+		BannerUrl:   existingUser.BannerUrl,
+		Location:    existingUser.Location,
+		Followers:   int32(existingUser.Followers),
+		Following:   int32(existingUser.Following),
+	}
+
+	userIDInt32 := int32(existingUser.ID)
+	user := &pb.User{
+		Id:         &userIDInt32,
+		Username:   existingUser.Username,
+		Profile:    profile,
+		CreatedAt:  timestamppb.New(existingUser.CreatedAt),
+		IsFollowed: existingUser.IsFollowed,
+	}
+
+	return &pb.GetUserResponse{
+		Message: "success get user",
+		User:    user,
+	}, nil
+}
+
+func (uh *UserHandler) GetUserById(ctx context.Context, req *pb.GetUserByIDRequest) (*pb.GetUserResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, uh.ContextTimeout)
+	defer cancel()
+
+	userReq := GetUserByIdReq{
+		UserID: req.GetUserID(),
+	}
+
+	err := uh.Validator.Struct(userReq)
+	if err != nil {
+		uh.Logger.Debug(ErrValidation, zap.Error(err))
+		return nil, status.Errorf(codes.InvalidArgument, "%s", validations.FormatValidationError(err))
+	}
+
+	existingUser, err := uh.UserUsecase.GetUserByID(ctx, userReq.UserID)
 	if err != nil {
 		uh.Logger.Error(ErrUsecase, zap.Error(err))
 		switch err {
@@ -203,6 +261,35 @@ func (uh *UserHandler) GetUsersByIds(ctx context.Context, req *pb.GetUserByUserI
 		Message: "success get users",
 		Users:   pbUsers,
 	}, nil
+}
+
+func (uh *UserHandler) GetUsersFollowedById(ctx context.Context, req *pb.GetUsersFollowedResponse) (*pb.GetUsersFollowedResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, uh.ContextTimeout)
+	defer cancel()
+
+	userID, ok := ctx.Value(interceptor.CtxKeyUserID).(int)
+	if !ok {
+		uh.Logger.Error(ErrFailedGetUserID)
+		return nil, status.Error(codes.Internal, ErrFailedGetUserID)
+	}
+
+	res, err := uh.UserUsecase.GetUserFollowedByID(ctx, int32(userID))
+	if err != nil {
+		uh.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		case domain.ErrUserNotFound:
+			return nil, status.Error(codes.NotFound, err.Error())
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	return &pb.GetUsersFollowedResponse{
+		UserIds: res,
+	}, nil
+
 }
 
 func (uh *UserHandler) UpdateProfile(ctx context.Context, req *pb.UpdateProfileRequest) (*pb.UserServiceResponse, error) {

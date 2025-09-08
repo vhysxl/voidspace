@@ -292,6 +292,44 @@ func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.Use
 
 }
 
+// IsFollowed implements domain.UserRepository.
+func (u *userRepository) IsFollowed(ctx context.Context, userID int32, targetUserID int32) (bool, error) {
+	var dummy int
+	err := u.db.QueryRowContext(ctx,
+		`SELECT 1 FROM user_follows WHERE user_id = ? AND target_user_id = ?`,
+		userID, targetUserID,
+	).Scan(&dummy)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+
+		return false, err
+	}
+	return true, nil
+}
+
+// GetUserFollowedById implements domain.UserRepository.
+func (u *userRepository) GetUserFollowedById(ctx context.Context, userID int32) ([]int32, error) {
+	rows, err := u.db.QueryContext(ctx, `SELECT target_user_id FROM user_follows WHERE user_id = ?`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var userIDs []int32
+	for rows.Next() {
+		var id int32
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		userIDs = append(userIDs, id)
+	}
+
+	return userIDs, nil
+}
+
 // DeleteUser implements domain.UserRepository.
 func (u *userRepository) DeleteUser(ctx context.Context, id int) error {
 	result, err := u.db.ExecContext(

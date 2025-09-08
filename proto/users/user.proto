@@ -9,7 +9,9 @@ option go_package = "./users;users";
 service UserService {
   rpc GetCurrentUser(google.protobuf.Empty) returns (GetUserResponse);
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc GetUserById(GetUserByIDRequest) returns (GetUserResponse);
   rpc GetUsersByIds(GetUserByUserIDsRequest) returns (GetUsersResponse);
+  rpc GetUsersFollowedById(GetUserByIDRequest) returns (GetUsersFollowedResponse);
   rpc UpdateProfile(UpdateProfileRequest) returns (UserServiceResponse);
   rpc DeleteUser(google.protobuf.Empty) returns (UserServiceResponse);
   rpc Follow(FollowRequest) returns (UserServiceResponse);
@@ -18,6 +20,10 @@ service UserService {
 
 message GetUserRequest {
   string username = 1;
+}
+
+message GetUserByIDRequest {
+  int32 userID= 1;
 }
 
 message GetUserByUserIDsRequest {
@@ -51,11 +57,16 @@ message UserServiceResponse {
   string message = 1;
 }
 
+message GetUsersFollowedResponse {
+  repeated int32 user_ids = 1;
+}
+
 message User {
   optional int32 id = 1;
   string username = 2;  
   Profile profile = 3;
   google.protobuf.Timestamp created_at = 4;
+  bool is_followed = 5;
 }
 
 message Profile {

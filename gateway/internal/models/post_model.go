@@ -20,4 +20,5 @@ type Post struct {
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 	Author     *User     `json:"author"`
+	IsLiked    bool      `json:"is_liked"`
 }

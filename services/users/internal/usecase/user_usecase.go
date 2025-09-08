@@ -14,8 +14,10 @@ type userUsecase struct {
 
 type UserUsecase interface {
 	GetCurrentUser(ctx context.Context, ID int) (*views.UserProfile, error)
-	GetUser(ctx context.Context, username string) (*views.UserProfile, error)
+	GetUser(ctx context.Context, username string, userID int) (*views.UserProfile, error)
+	GetUserByID(ctx context.Context, userID int32) (*views.UserProfile, error)
 	GetUserByIds(ctx context.Context, UserIDs []int32) ([]*views.UserProfile, error)
+	GetUserFollowedByID(ctx context.Context, userID int32) ([]int32, error)
 	DeleteUser(ctx context.Context, ID int) error
 }
 
@@ -35,7 +37,7 @@ func (u *userUsecase) GetCurrentUser(ctx context.Context, ID int) (*views.UserPr
 }
 
 // GetUser implements UserUsecase.
-func (u *userUsecase) GetUser(ctx context.Context, username string) (*views.UserProfile, error) {
+func (u *userUsecase) GetUser(ctx context.Context, username string, userID int) (*views.UserProfile, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
@@ -44,7 +46,39 @@ func (u *userUsecase) GetUser(ctx context.Context, username string) (*views.User
 		return nil, err
 	}
 
-	return u.userRepository.GetUserProfile(ctx, user.ID)
+	fullUserData, err := u.userRepository.GetUserProfile(ctx, user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	fullUserData.IsFollowed = false
+
+	if userID > 0 {
+		isFollowed, err := u.userRepository.IsFollowed(ctx, int32(userID), int32(user.ID))
+		if err != nil {
+			return nil, err
+		}
+
+		fullUserData.IsFollowed = isFollowed
+	}
+
+	return fullUserData, nil
+}
+
+// GetUserFollowedByID implements UserUsecase.
+func (u *userUsecase) GetUserFollowedByID(ctx context.Context, userID int32) ([]int32, error) {
+	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
+	defer cancel()
+
+	return u.userRepository.GetUserFollowedById(ctx, userID)
+}
+
+// GetUserByID implements UserUsecase.
+func (u *userUsecase) GetUserByID(ctx context.Context, userID int32) (*views.UserProfile, error) {
+	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
+	defer cancel()
+
+	return u.userRepository.GetUserProfile(ctx, int(userID))
 }
 
 // GetUserByIds implements UserUsecase.

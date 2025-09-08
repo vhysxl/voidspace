@@ -2,6 +2,7 @@ package interceptor
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"google.golang.org/grpc"
@@ -25,38 +26,52 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (any, error) {
 
+		md, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			fmt.Println("meta data not found")
+		}
+
 		skipAuthMethods := map[string]bool{
 			"/posts.v1.PostService/GetPost":       true,
 			"/posts.v1.PostService/GetAllPosts":   true,
 			"/posts.v1.PostService/GetGlobalFeed": true,
 		}
-		if skipAuthMethods[info.FullMethod] {
+
+		isSkippedMethod := skipAuthMethods[info.FullMethod]
+
+		// Metadata optional for skipped methods
+		if isSkippedMethod {
+			// try to get metadata
+			if md != nil {
+				if userIDArr := md.Get("user_id"); len(userIDArr) > 0 {
+					if userID, err := strconv.Atoi(userIDArr[0]); err == nil {
+						ctx = context.WithValue(ctx, CtxKeyUserID, userID)
+					}
+				}
+
+				if usernameArr := md.Get("username"); len(usernameArr) > 0 {
+					ctx = context.WithValue(ctx, CtxKeyUsername, usernameArr[0])
+				}
+			}
 			return handler(ctx, req)
 		}
 
-		md, ok := metadata.FromIncomingContext(ctx)
-		if !ok {
-			return nil, status.Error(codes.Unauthenticated, "missing metadata")
-		}
-
-		//userid
 		userIDArr := md.Get("user_id")
 		if len(userIDArr) == 0 {
 			return nil, status.Error(codes.Unauthenticated, "missing user_id in metadata")
 		}
+
 		userID, err := strconv.Atoi(userIDArr[0])
 		if err != nil {
 			return nil, status.Error(codes.InvalidArgument, "invalid user_id format")
 		}
 
-		//username
 		usernameArr := md.Get("username")
 		if len(usernameArr) == 0 {
 			return nil, status.Error(codes.Unauthenticated, "missing username in metadata")
 		}
 		username := usernameArr[0]
 
-		// Simpan ke context
 		ctx = context.WithValue(ctx, CtxKeyUserID, userID)
 		ctx = context.WithValue(ctx, CtxKeyUsername, username)
 

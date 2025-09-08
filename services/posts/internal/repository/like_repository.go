@@ -18,6 +18,59 @@ func NewLikeRepository(db *sql.DB) domain.LikeRepository {
 	}
 }
 
+// IsPostsLikedByUser implements domain.LikeRepository.
+func (l *likeRepository) IsPostsLikedByUser(ctx context.Context, userID int32, postIDs []int32) (map[int32]bool, error) {
+	// prep data
+	result := make(map[int32]bool, len(postIDs))
+	for _, id := range postIDs {
+		result[id] = false
+	}
+
+	// query all
+	rows, err := l.db.QueryContext(ctx, `
+		SELECT post_id
+		FROM post_likes
+		WHERE user_id = $1 AND post_id = ANY($2)
+	`, userID, pq.Array(postIDs))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// mark found as true
+	for rows.Next() {
+		var postID int32
+		if err := rows.Scan(&postID); err != nil {
+			return nil, err
+		}
+		result[postID] = true
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// IsPostLikedByUser implements domain.LikeRepository.
+func (l *likeRepository) IsPostLikedByUser(ctx context.Context, userID int32, postID int32) (bool, error) {
+	var dummy int
+	err := l.db.QueryRowContext(ctx,
+		`SELECT 1 FROM post_likes WHERE user_id = $1 AND post_id = $2`,
+		userID, postID,
+	).Scan(&dummy)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+
+		return false, err
+	}
+	return true, nil
+}
+
 // LikePost implements domain.LikeRepository.
 func (l *likeRepository) LikePost(ctx context.Context, like *domain.Like) (int32, error) {
 	tx, err := l.db.BeginTx(ctx, nil)

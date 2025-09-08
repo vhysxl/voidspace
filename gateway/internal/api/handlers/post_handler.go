@@ -66,6 +66,9 @@ func (ph *PostHandler) Create(c echo.Context) error {
 func (ph *PostHandler) GetPost(c echo.Context) error {
 	ctx := c.Request().Context()
 
+	userID, _ := c.Get("ID").(string)
+	username, _ := c.Get("username").(string)
+
 	postId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
@@ -80,7 +83,7 @@ func (ph *PostHandler) GetPost(c echo.Context) error {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
 	}
 
-	res, err := ph.PostService.GetPost(ctx, p)
+	res, err := ph.PostService.GetPost(ctx, p, username, userID)
 	if err != nil {
 		ph.Logger.Error("failed to Get post", zap.Error(err))
 		code, msg := utils.GRPCErrorToHTTP(err)
