@@ -38,8 +38,6 @@ func (ps *PostService) Create(ctx context.Context, username string, userID strin
 		"username": username,
 	})
 
-	fmt.Println(req)
-
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	data := &postpb.CreatePostRequest{

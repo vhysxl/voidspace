@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+package comments.v1;
+option go_package = "./comments;comments";
+
+service CommentService {
+    rpc CreateComment(CreateCommentRequest) returns (CommentResponse);
+    rpc DeleteComment(DeleteCommentRequest) returns (google.protobuf.Empty);
+    rpc GetAllCommentsByPostID (GetAllCommentsByPostIDRequest) returns (GetBatchCommentsResponse);
+    rpc GetAllCommentsByUserID (GetAllCommentsByUserIDRequest) returns (GetBatchCommentsResponse);
+}
+
+// requests
+message CreateCommentRequest {
+    int32  postID = 1;
+    string content = 2;
+}
+
+message DeleteCommentRequest {
+    int32 comment_id = 1;
+}
+
+message GetAllCommentsByPostIDRequest {
+    int32 post_id = 1;
+}
+
+message GetAllCommentsByUserIDRequest {
+    int32 user_id = 1;
+}
+
+// response
+message CommentResponse {
+  int32 id = 1;
+  string content = 2;
+  int32 user_id = 3;
+  int32 post_id = 4;
+  google.protobuf.Timestamp created_at = 5;  
+}
+
+message GetBatchCommentsResponse {
+  repeated CommentResponse comments = 1;
+  bool has_more = 2;
+}

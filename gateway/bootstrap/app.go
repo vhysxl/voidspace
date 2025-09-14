@@ -7,6 +7,7 @@ import (
 	"voidspaceGateway/config"
 	"voidspaceGateway/internal/service"
 	logger "voidspaceGateway/loggger"
+	commentpb "voidspaceGateway/proto/generated/comments"
 	postpb "voidspaceGateway/proto/generated/posts"
 	userpb "voidspaceGateway/proto/generated/users"
 
@@ -28,6 +29,7 @@ type Application struct {
 	LikeService    *service.LikeService
 	FeedService    *service.FeedService
 	UploadService  *service.UploadService
+	CommentService *service.CommentsService
 }
 
 func App() (*Application, error) {
@@ -63,6 +65,10 @@ func App() (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
+	commentConn, err := grpc.NewClient(config.CommentServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
 
 	logger.Info("bucket name", zap.String("bucket", config.BucketName))
 
@@ -72,6 +78,7 @@ func App() (*Application, error) {
 	postService := service.NewPostService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn))
 	likeService := service.NewLikeService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewLikesServiceClient(likeConn))
 	feedService := service.NewFeedService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn))
+	commentService := service.NewCommentService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
 	uploadService, err := service.NewUploadService(context.Background(), config.BucketName, config.GCSCredentialPath)
 	if err != nil {
 		panic(err)
@@ -90,6 +97,6 @@ func App() (*Application, error) {
 		LikeService:    likeService,
 		FeedService:    feedService,
 		UploadService:  uploadService,
+		CommentService: commentService,
 	}, nil
-
 }

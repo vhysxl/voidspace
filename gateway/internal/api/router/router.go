@@ -15,6 +15,7 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	postHandler := handlers.NewPostHandler(app.ContextTimeout, app.Logger, app.Validator, app.PostService)
 	likeHandler := handlers.NewLikeHandler(app.ContextTimeout, app.Logger, app.Validator, app.LikeService)
 	feedHandler := handlers.NewFeedHandler(app.ContextTimeout, app.Logger, app.Validator, app.FeedService)
+	commentHandler := handlers.NewCommentHandler(app.ContextTimeout, app.Logger, app.Validator, app.CommentService)
 	uploadHandler := handlers.NewUploadHandler(app.ContextTimeout, app.Logger, app.Validator, app.UploadService)
 	authMiddleware := middleware.AuthMiddleware((app.Config.PublicKey))
 	optionalAuthMiddleware := middleware.OptionalAuthMiddleware(app.Config.PublicKey)
@@ -61,15 +62,14 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	postsPrivate.PUT("/:id", postHandler.Update)
 	postsPrivate.DELETE("/:id", postHandler.Delete)
 
-	// Feed group
+	// Global feed (bisa tanpa login)
 	feed := api.Group("/feed")
 	feed.Use(optionalAuthMiddleware)
 	feed.GET("/", feedHandler.GetGlobalFeed)
-	followFeed := api.Group("/feed")
+	// Follow feed (harus login)
+	followFeed := api.Group("/feed/following")
 	followFeed.Use(authMiddleware)
-	feed.GET("/followFeed", func(c echo.Context) error {
-		return c.String(200, "follow feed")
-	})
+	followFeed.GET("/", feedHandler.GetFollowFeed)
 
 	// Likes group
 	likes := api.Group("/likes")
@@ -81,4 +81,11 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	upload := api.Group("/upload/signed-url")
 	upload.Use(authMiddleware)
 	upload.POST("", uploadHandler.GenerateSignedURL)
+
+	//Comment Group
+	comment := api.Group("/comment")
+	comment.Use(authMiddleware)
+	comment.POST("", commentHandler.Create)
+	commentPublic := api.Group("/comment")
+	commentPublic.GET("/post/:id", commentHandler.GetAllByPostID)
 }

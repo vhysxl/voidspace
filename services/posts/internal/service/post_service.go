@@ -74,7 +74,7 @@ func (ph *PostHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest
 		PostImages: post.PostImages,
 		LikesCount: post.LikesCount,
 		CreatedAt:  timestamppb.New(post.CreatedAt),
-		UpdatedAt:  timestamppb.New(post.CreatedAt),
+		UpdatedAt:  timestamppb.New(post.CreatedAt), //using created at because its initial creation
 	}, nil
 }
 
@@ -263,10 +263,16 @@ func (ph *PostHandler) GetFeedByUserIDs(ctx context.Context, req *pb.GetFeedByUs
 		t := req.Cursor.AsTime()
 		cursorTime = &t
 	}
-	cursorID = &req.CursorID
 
+	userId, ok := ctx.Value(interceptor.CtxKeyUserID).(int)
+	if !ok {
+		ph.Logger.Error(ErrFailedGetUserID)
+		return nil, status.Error(codes.Unauthenticated, ErrFailedGetUserID)
+	}
+
+	cursorID = &req.CursorID
 	// ambil feed berdasarkan user_ids + cursor
-	posts, hasMore, err := ph.PostUsecase.GetFollowFeed(ctx, req.UserIds, cursorTime, cursorID)
+	posts, hasMore, err := ph.PostUsecase.GetFollowFeed(ctx, req.UserIds, cursorTime, cursorID, int32(userId))
 	if err != nil {
 		ph.Logger.Error(ErrUsecase, zap.Error(err))
 		switch {
@@ -288,6 +294,7 @@ func (ph *PostHandler) GetFeedByUserIDs(ctx context.Context, req *pb.GetFeedByUs
 			LikesCount: post.LikesCount,
 			CreatedAt:  timestamppb.New(post.CreatedAt),
 			UpdatedAt:  timestamppb.New(post.UpdatedAt),
+			IsLiked:    post.IsLiked,
 		})
 	}
 

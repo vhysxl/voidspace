@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 	"voidspaceGateway/internal/models"
 	postpb "voidspaceGateway/proto/generated/posts"
@@ -145,7 +146,7 @@ func (fs *FeedService) GetGlobalFeed(ctx context.Context, req *models.GetGlobalF
 	}, nil
 }
 
-func (fs *FeedService) GetFollowFeed(ctx context.Context, username string, userID string, req models.GetFollowFeedReq) (*models.GetFeedResponse, error) {
+func (fs *FeedService) GetFollowFeed(ctx context.Context, username string, userID string, req *models.GetFollowFeedReq) (*models.GetFeedResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, fs.ContextTimeout)
 	defer cancel()
 
@@ -164,17 +165,23 @@ func (fs *FeedService) GetFollowFeed(ctx context.Context, username string, userI
 		return nil, err
 	}
 
+	fmt.Println(folRes)
+
 	data := &postpb.GetFeedByUserIDsRequest{
 		UserIds:  folRes.UserIds,
 		Cursor:   timestamppb.New(req.Cursor),
 		CursorID: int32(req.CursorUserID),
 	}
 
+	fmt.Println(data)
+
 	postRes, err := fs.PostClient.GetFeedByUserIDs(ctx, data)
 	if err != nil {
 		fs.Logger.Error("failed to call PostService.GetGlobalFeed", zap.Error(err))
 		return nil, err
 	}
+
+	fmt.Println(postRes)
 
 	if len(postRes.Posts) == 0 {
 		return &models.GetFeedResponse{

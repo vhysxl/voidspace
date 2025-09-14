@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 	"voidspace/posts/internal/domain"
 
@@ -213,6 +214,8 @@ func (p *postRepository) GetFollowFeed(ctx context.Context, userIDs []int32, cur
 
 		posts = append(posts, post)
 	}
+
+	fmt.Println(posts)
 
 	hasMore := len(posts) > int(10)
 	if hasMore {

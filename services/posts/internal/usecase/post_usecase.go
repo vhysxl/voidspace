@@ -22,7 +22,7 @@ type PostUsecase interface {
 	UpdatePost(ctx context.Context, post *domain.Post) error
 	DeletePost(ctx context.Context, id int32, userID int32) error
 	GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID *int32, userID int32) ([]*domain.Post, bool, error)
-	GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime *time.Time, cursorID *int32) ([]*domain.Post, bool, error)
+	GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime *time.Time, cursorID *int32, userID int32) ([]*domain.Post, bool, error)
 	AccountDeletionHandle(ctx context.Context, userId int32) error
 }
 
@@ -157,24 +157,43 @@ func (p *postUsecase) GetGlobalFeed(ctx context.Context, cursorTime *time.Time, 
 }
 
 // GetFollowFeed implements PostUsecase.
-func (p *postUsecase) GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime *time.Time, cursorID *int32) ([]*domain.Post, bool, error) {
+func (p *postUsecase) GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime *time.Time, cursorID *int32, userID int32) ([]*domain.Post, bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
 	defer cancel()
 
 	var timeVal time.Time
 	var idVal int32
-	if cursorTime == nil || cursorID == nil {
-		timeVal = time.Now()
-		idVal = math.MaxInt32
-	} else {
+	if cursorTime != nil && cursorID != nil && !cursorTime.IsZero() && *cursorID > 0 {
 		timeVal = *cursorTime
 		idVal = *cursorID
+	} else {
+		timeVal = time.Now()
+		idVal = math.MaxInt32
 	}
 
 	posts, hasNext, err := p.postRepository.GetFollowFeed(ctx, userIDs, timeVal, idVal)
 	if err != nil {
 		return nil, false, err
 	}
+
+	postIDs := make([]int32, 0, len(posts))
+	for _, post := range posts {
+		postIDs = append(postIDs, int32(post.ID))
+	}
+
+	likes, err := p.likeRepository.IsPostsLikedByUser(ctx, userID, postIDs)
+	if err != nil {
+		return nil, false, err
+	}
+
+	for i, post := range posts {
+		if liked, ok := likes[int32(post.ID)]; ok {
+			posts[i].IsLiked = liked
+		} else {
+			posts[i].IsLiked = false
+		}
+	}
+
 	return posts, hasNext, nil
 }
 

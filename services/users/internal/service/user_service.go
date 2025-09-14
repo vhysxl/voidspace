@@ -263,7 +263,7 @@ func (uh *UserHandler) GetUsersByIds(ctx context.Context, req *pb.GetUserByUserI
 	}, nil
 }
 
-func (uh *UserHandler) GetUsersFollowedById(ctx context.Context, req *pb.GetUsersFollowedResponse) (*pb.GetUsersFollowedResponse, error) {
+func (uh *UserHandler) GetUsersFollowedById(ctx context.Context, req *pb.GetUserByIDRequest) (*pb.GetUsersFollowedResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, uh.ContextTimeout)
 	defer cancel()
 

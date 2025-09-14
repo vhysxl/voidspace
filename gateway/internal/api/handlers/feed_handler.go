@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 	"voidspaceGateway/internal/api/responses"
@@ -48,6 +49,30 @@ func (fh *FeedHandler) GetGlobalFeed(c echo.Context) error {
 	}
 
 	res, err := fh.FeedService.GetGlobalFeed(ctx, f, username, userID)
+	if err != nil {
+		fh.Logger.Error("failed to fetch feed", zap.Error(err))
+		code, msg := utils.GRPCErrorToHTTP(err)
+		return responses.ErrorResponseMessage(c, code, msg)
+	}
+
+	return responses.SuccessResponseMessage(c, http.StatusOK, "Get Feed Success", res)
+}
+
+func (fh *FeedHandler) GetFollowFeed(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	userID, _ := c.Get("ID").(string)
+	username, _ := c.Get("username").(string)
+
+	fmt.Println("hitted")
+
+	f := new(models.GetFollowFeedReq)
+	err := c.Bind(f)
+	if err != nil {
+		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
+	}
+
+	res, err := fh.FeedService.GetFollowFeed(ctx, username, userID, f)
 	if err != nil {
 		fh.Logger.Error("failed to fetch feed", zap.Error(err))
 		code, msg := utils.GRPCErrorToHTTP(err)

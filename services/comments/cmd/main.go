@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"voidspace/users/bootstrap"
-	"voidspace/users/internal/server"
+	"voidspace/comments/bootstrap"
+	"voidspace/comments/internal/server"
 
 	"go.uber.org/zap"
 )
@@ -23,7 +23,7 @@ func main() {
 
 	s := server.SetupGRPCServer(app)
 
-	app.Logger.Info("Users gRPC server starting", zap.String("port", app.Config.Port))
+	app.Logger.Info("Comments gRPC server starting", zap.String("port", app.Config.Port))
 	if err := s.Serve(lis); err != nil {
 		app.Logger.Fatal("Serve error", zap.Error(err))
 	}
