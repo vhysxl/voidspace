@@ -146,23 +146,21 @@ func (cs *CommentsService) GetAllByPostID(ctx context.Context, postID int32) ([]
 	return comments, nil
 }
 
-func (cs *CommentsService) GetAllByUserID(ctx context.Context, userID int32) ([]*models.Comments, error) {
+func (cs *CommentsService) GetAllByUser(ctx context.Context, username string) ([]*models.Comments, error) {
 	ctx, cancel := context.WithTimeout(ctx, cs.ContextTimeout)
 	defer cancel()
 
-	res, err := cs.CommentClient.GetAllCommentsByUserID(ctx, &commentpb.GetAllCommentsByUserIDRequest{
-		UserId: userID,
-	})
+	userRes, err := cs.UserClient.GetUser(ctx, &userpb.GetUserRequest{Username: username})
 	if err != nil {
-		cs.Logger.Error("failed to call CommentService.GetAllCommentsByUserID", zap.Error(err))
+		cs.Logger.Error("failed to call Userservice.GetUser", zap.Error(err))
 		return nil, err
 	}
 
-	userRes, err := cs.UserClient.GetUserById(ctx, &userpb.GetUserByIDRequest{
-		UserID: userID,
+	res, err := cs.CommentClient.GetAllCommentsByUserID(ctx, &commentpb.GetAllCommentsByUserIDRequest{
+		UserId: userRes.GetUser().GetId(),
 	})
 	if err != nil {
-		cs.Logger.Error("failed to call Userservice.GetUserById", zap.Error(err))
+		cs.Logger.Error("failed to call CommentService.GetAllCommentsByUserID", zap.Error(err))
 		return nil, err
 	}
 

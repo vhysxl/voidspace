@@ -9,6 +9,7 @@ option go_package = "./comments;comments";
 service CommentService {
     rpc CreateComment(CreateCommentRequest) returns (CommentResponse);
     rpc DeleteComment(DeleteCommentRequest) returns (google.protobuf.Empty);
+    rpc AccountDeletionHandle(google.protobuf.Empty) returns (google.protobuf.Empty);
     rpc GetAllCommentsByPostID (GetAllCommentsByPostIDRequest) returns (GetBatchCommentsResponse);
     rpc GetAllCommentsByUserID (GetAllCommentsByUserIDRequest) returns (GetBatchCommentsResponse);
 }

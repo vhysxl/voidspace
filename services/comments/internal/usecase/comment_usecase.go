@@ -14,6 +14,7 @@ type commentUsecase struct {
 // CommentUsecase defines the interface for comment-related business logic
 type CommentUsecase interface {
 	CreateComment(ctx context.Context, comment *domain.Comment) (*domain.Comment, error)
+	AccountDeletionHandle(ctx context.Context, userId int32) error
 	DeleteComment(ctx context.Context, commentID, userID int32) error
 	GetAllCommentsByPostID(ctx context.Context, postID int32) ([]*domain.Comment, error)
 	GetAllCommentsByUserID(ctx context.Context, userID int32) ([]*domain.Comment, error)
@@ -49,6 +50,13 @@ func (c *commentUsecase) DeleteComment(ctx context.Context, commentID, userID in
 	}
 
 	return c.commentRepository.Delete(ctx, commentID)
+}
+
+func (c *commentUsecase) AccountDeletionHandle(ctx context.Context, userId int32) error {
+	ctx, cancel := context.WithTimeout(ctx, c.contextTimeout)
+	defer cancel()
+
+	return c.commentRepository.DeleteAllComments(ctx, userId)
 }
 
 func (c *commentUsecase) GetAllCommentsByPostID(ctx context.Context, postID int32) ([]*domain.Comment, error) {

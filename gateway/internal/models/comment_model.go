@@ -3,7 +3,7 @@ package models
 import "time"
 
 type CreateCommentReq struct {
-	Content string `json:"content" validate:"required,min=1,max=100,alphanum"`
+	Content string `json:"content" validate:"required,min=1,max=100"`
 	PostID  int32  `json:"post_id" validate:"required"`
 }
 

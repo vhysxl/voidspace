@@ -41,7 +41,6 @@ func UserMapperFromUser(user *userpb.User) *models.User {
 	}
 
 	return &models.User{
-		ID:        user.GetId(),
 		Username:  user.GetUsername(),
 		CreatedAt: user.GetCreatedAt().AsTime(),
 		Profile:   *ProfileMapperFromProfile(user.GetProfile()),

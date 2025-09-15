@@ -361,10 +361,11 @@ const file_comments_comment_proto_rawDesc = "" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"o\n" +
 	"\x18GetBatchCommentsResponse\x128\n" +
 	"\bcomments\x18\x01 \x03(\v2\x1c.comments.v1.CommentResponseR\bcomments\x12\x19\n" +
-	"\bhas_more\x18\x02 \x01(\bR\ahasMore2\x88\x03\n" +
+	"\bhas_more\x18\x02 \x01(\bR\ahasMore2\xd1\x03\n" +
 	"\x0eCommentService\x12P\n" +
 	"\rCreateComment\x12!.comments.v1.CreateCommentRequest\x1a\x1c.comments.v1.CommentResponse\x12J\n" +
-	"\rDeleteComment\x12!.comments.v1.DeleteCommentRequest\x1a\x16.google.protobuf.Empty\x12k\n" +
+	"\rDeleteComment\x12!.comments.v1.DeleteCommentRequest\x1a\x16.google.protobuf.Empty\x12G\n" +
+	"\x15AccountDeletionHandle\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\x12k\n" +
 	"\x16GetAllCommentsByPostID\x12*.comments.v1.GetAllCommentsByPostIDRequest\x1a%.comments.v1.GetBatchCommentsResponse\x12k\n" +
 	"\x16GetAllCommentsByUserID\x12*.comments.v1.GetAllCommentsByUserIDRequest\x1a%.comments.v1.GetBatchCommentsResponseB\x15Z\x13./comments;commentsb\x06proto3"
 
@@ -396,14 +397,16 @@ var file_comments_comment_proto_depIdxs = []int32{
 	4, // 1: comments.v1.GetBatchCommentsResponse.comments:type_name -> comments.v1.CommentResponse
 	0, // 2: comments.v1.CommentService.CreateComment:input_type -> comments.v1.CreateCommentRequest
 	1, // 3: comments.v1.CommentService.DeleteComment:input_type -> comments.v1.DeleteCommentRequest
-	2, // 4: comments.v1.CommentService.GetAllCommentsByPostID:input_type -> comments.v1.GetAllCommentsByPostIDRequest
-	3, // 5: comments.v1.CommentService.GetAllCommentsByUserID:input_type -> comments.v1.GetAllCommentsByUserIDRequest
-	4, // 6: comments.v1.CommentService.CreateComment:output_type -> comments.v1.CommentResponse
-	7, // 7: comments.v1.CommentService.DeleteComment:output_type -> google.protobuf.Empty
-	5, // 8: comments.v1.CommentService.GetAllCommentsByPostID:output_type -> comments.v1.GetBatchCommentsResponse
-	5, // 9: comments.v1.CommentService.GetAllCommentsByUserID:output_type -> comments.v1.GetBatchCommentsResponse
-	6, // [6:10] is the sub-list for method output_type
-	2, // [2:6] is the sub-list for method input_type
+	7, // 4: comments.v1.CommentService.AccountDeletionHandle:input_type -> google.protobuf.Empty
+	2, // 5: comments.v1.CommentService.GetAllCommentsByPostID:input_type -> comments.v1.GetAllCommentsByPostIDRequest
+	3, // 6: comments.v1.CommentService.GetAllCommentsByUserID:input_type -> comments.v1.GetAllCommentsByUserIDRequest
+	4, // 7: comments.v1.CommentService.CreateComment:output_type -> comments.v1.CommentResponse
+	7, // 8: comments.v1.CommentService.DeleteComment:output_type -> google.protobuf.Empty
+	7, // 9: comments.v1.CommentService.AccountDeletionHandle:output_type -> google.protobuf.Empty
+	5, // 10: comments.v1.CommentService.GetAllCommentsByPostID:output_type -> comments.v1.GetBatchCommentsResponse
+	5, // 11: comments.v1.CommentService.GetAllCommentsByUserID:output_type -> comments.v1.GetBatchCommentsResponse
+	7, // [7:12] is the sub-list for method output_type
+	2, // [2:7] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
 	2, // [2:2] is the sub-list for extension extendee
 	0, // [0:2] is the sub-list for field type_name

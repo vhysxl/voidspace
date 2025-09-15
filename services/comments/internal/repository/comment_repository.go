@@ -87,7 +87,7 @@ func (r *commentRepository) GetCommentByID(ctx context.Context, commentID int32)
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, sql.ErrNoRows
+			return nil, domain.ErrCommentsNotFound
 		}
 		return nil, err
 	}
@@ -164,4 +164,18 @@ func (r *commentRepository) GetAllByUserID(ctx context.Context, userID int32) ([
 	}
 
 	return comments, nil
+}
+
+func (r *commentRepository) DeleteAllComments(ctx context.Context, userId int32) error {
+	_, err := r.db.ExecContext(
+		ctx,
+		`DELETE FROM comments WHERE user_id = ?`,
+		userId,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

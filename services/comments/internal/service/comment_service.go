@@ -71,12 +71,14 @@ func (ch *CommentHandler) DeleteComment(ctx context.Context, req *pb.DeleteComme
 		return nil, status.Error(codes.Internal, ErrFailedGetUserID)
 	}
 
-	err := ch.CommentUsecase.DeleteComment(ctx, int32(userID), req.CommentId)
+	err := ch.CommentUsecase.DeleteComment(ctx, req.CommentId, int32(userID))
 	if err != nil {
 		ch.Logger.Error(ErrUsecase, zap.Error(err))
 		switch err {
 		case ctx.Err():
 			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		case domain.ErrCommentsNotFound:
+			return nil, status.Error(codes.NotFound, err.Error())
 		default:
 			return nil, status.Error(codes.Internal, ErrInternalServer)
 		}
@@ -133,4 +135,28 @@ func (ch *CommentHandler) GetAllCommentsByUserID(ctx context.Context, req *pb.Ge
 	return &pb.GetBatchCommentsResponse{
 		Comments: pbComments,
 	}, nil
+}
+
+func (ch *CommentHandler) AccountDeletionHandle(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	ctx, cancel := context.WithTimeout(ctx, ch.ContextTimeout)
+	defer cancel()
+
+	userID, ok := ctx.Value(interceptor.CtxKeyUserID).(int)
+	if !ok {
+		ch.Logger.Error(ErrFailedGetUserID)
+		return nil, status.Error(codes.Internal, ErrFailedGetUserID)
+	}
+
+	err := ch.CommentUsecase.AccountDeletionHandle(ctx, int32(userID))
+	if err != nil {
+		ch.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	return &emptypb.Empty{}, nil
 }

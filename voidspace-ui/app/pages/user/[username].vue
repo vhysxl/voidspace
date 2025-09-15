@@ -147,8 +147,8 @@ const resetForm = () => {
 
 const onSubmit = async (event: FormSubmitEvent<any>) => {
     if (isSubmitting.value) return
-
     isSubmitting.value = true
+
     // Prepare an array of promises, each promise resolves to a [key, value] tuple
     // Example: ["avatar", uploadResult] or ["banner", uploadResult]
     try {
@@ -188,6 +188,12 @@ const onSubmit = async (event: FormSubmitEvent<any>) => {
 
         await updateProfile(profileData)
         await user.refreshUser()
+
+        toast.add({
+            title: "Profile Updated",
+            description: "Your profile has been updated successfully",
+            color: "neutral",
+        });
 
     } catch (error: any) {
         toast.add({

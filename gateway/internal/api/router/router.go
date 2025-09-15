@@ -86,6 +86,10 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	comment := api.Group("/comment")
 	comment.Use(authMiddleware)
 	comment.POST("", commentHandler.Create)
+	comment.DELETE("/:id", commentHandler.Delete)
 	commentPublic := api.Group("/comment")
 	commentPublic.GET("/post/:id", commentHandler.GetAllByPostID)
+	commentPublic.GET("/user/:username", commentHandler.GetAllByUser)
+
+	//Moderation Group (soon)
 }

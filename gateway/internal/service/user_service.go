@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 	"voidspaceGateway/internal/models"
+	commentpb "voidspaceGateway/proto/generated/comments"
 	postpb "voidspaceGateway/proto/generated/posts"
 	userpb "voidspaceGateway/proto/generated/users"
 
@@ -18,14 +19,22 @@ type UserService struct {
 	Logger         *zap.Logger
 	UserClient     userpb.UserServiceClient
 	PostClient     postpb.PostServiceClient
+	CommentClient  commentpb.CommentServiceClient
 }
 
-func NewUserService(timeout time.Duration, logger *zap.Logger, userClient userpb.UserServiceClient, postClient postpb.PostServiceClient) *UserService {
+func NewUserService(
+	timeout time.Duration,
+	logger *zap.Logger,
+	userClient userpb.UserServiceClient,
+	postClient postpb.PostServiceClient,
+	CommentClient commentpb.CommentServiceClient,
+) *UserService {
 	return &UserService{
 		ContextTimeout: timeout,
 		Logger:         logger,
 		UserClient:     userClient,
 		PostClient:     postClient,
+		CommentClient:  CommentClient,
 	}
 }
 
@@ -132,6 +141,7 @@ func (us *UserService) UpdateProfile(ctx context.Context, userID string, usernam
 	return err
 }
 
+// distributed trx
 func (us *UserService) DeleteUser(ctx context.Context, userID string, username string) error {
 	ctx, cancel := context.WithTimeout(ctx, us.ContextTimeout)
 	defer cancel()
@@ -158,6 +168,14 @@ func (us *UserService) DeleteUser(ctx context.Context, userID string, username s
 		_, err := us.PostClient.AccountDeletionHandle(ctx, &emptypb.Empty{})
 		if err != nil {
 			us.Logger.Error("failed to call PostService.AccountDeletionHandle", zap.Error(err))
+		}
+		return err
+	})
+
+	g.Go(func() error {
+		_, err := us.CommentClient.AccountDeletionHandle(ctx, &emptypb.Empty{})
+		if err != nil {
+			us.Logger.Error("failed to call CommentService.AccountDeletionHandle", zap.Error(err))
 		}
 		return err
 	})

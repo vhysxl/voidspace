@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	CommentService_CreateComment_FullMethodName          = "/comments.v1.CommentService/CreateComment"
 	CommentService_DeleteComment_FullMethodName          = "/comments.v1.CommentService/DeleteComment"
+	CommentService_AccountDeletionHandle_FullMethodName  = "/comments.v1.CommentService/AccountDeletionHandle"
 	CommentService_GetAllCommentsByPostID_FullMethodName = "/comments.v1.CommentService/GetAllCommentsByPostID"
 	CommentService_GetAllCommentsByUserID_FullMethodName = "/comments.v1.CommentService/GetAllCommentsByUserID"
 )
@@ -32,6 +33,7 @@ const (
 type CommentServiceClient interface {
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
 	DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	AccountDeletionHandle(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetAllCommentsByPostID(ctx context.Context, in *GetAllCommentsByPostIDRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error)
 	GetAllCommentsByUserID(ctx context.Context, in *GetAllCommentsByUserIDRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error)
 }
@@ -64,6 +66,16 @@ func (c *commentServiceClient) DeleteComment(ctx context.Context, in *DeleteComm
 	return out, nil
 }
 
+func (c *commentServiceClient) AccountDeletionHandle(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, CommentService_AccountDeletionHandle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *commentServiceClient) GetAllCommentsByPostID(ctx context.Context, in *GetAllCommentsByPostIDRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetBatchCommentsResponse)
@@ -90,6 +102,7 @@ func (c *commentServiceClient) GetAllCommentsByUserID(ctx context.Context, in *G
 type CommentServiceServer interface {
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
 	DeleteComment(context.Context, *DeleteCommentRequest) (*emptypb.Empty, error)
+	AccountDeletionHandle(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	GetAllCommentsByPostID(context.Context, *GetAllCommentsByPostIDRequest) (*GetBatchCommentsResponse, error)
 	GetAllCommentsByUserID(context.Context, *GetAllCommentsByUserIDRequest) (*GetBatchCommentsResponse, error)
 	mustEmbedUnimplementedCommentServiceServer()
@@ -107,6 +120,9 @@ func (UnimplementedCommentServiceServer) CreateComment(context.Context, *CreateC
 }
 func (UnimplementedCommentServiceServer) DeleteComment(context.Context, *DeleteCommentRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteComment not implemented")
+}
+func (UnimplementedCommentServiceServer) AccountDeletionHandle(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountDeletionHandle not implemented")
 }
 func (UnimplementedCommentServiceServer) GetAllCommentsByPostID(context.Context, *GetAllCommentsByPostIDRequest) (*GetBatchCommentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllCommentsByPostID not implemented")
@@ -171,6 +187,24 @@ func _CommentService_DeleteComment_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommentService_AccountDeletionHandle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentServiceServer).AccountDeletionHandle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommentService_AccountDeletionHandle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentServiceServer).AccountDeletionHandle(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CommentService_GetAllCommentsByPostID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetAllCommentsByPostIDRequest)
 	if err := dec(in); err != nil {
@@ -221,6 +255,10 @@ var CommentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteComment",
 			Handler:    _CommentService_DeleteComment_Handler,
+		},
+		{
+			MethodName: "AccountDeletionHandle",
+			Handler:    _CommentService_AccountDeletionHandle_Handler,
 		},
 		{
 			MethodName: "GetAllCommentsByPostID",

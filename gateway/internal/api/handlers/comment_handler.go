@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -44,6 +45,7 @@ func (ch *CommentHandler) Create(c echo.Context) error {
 	username := c.Get("username").(string)
 
 	p := new(models.CreateCommentReq)
+	fmt.Println(p)
 	err := c.Bind(p)
 	if err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
@@ -82,7 +84,7 @@ func (ch *CommentHandler) Delete(c echo.Context) error {
 		return responses.ErrorResponseMessage(c, code, msg)
 	}
 
-	return responses.SuccessResponseMessage(c, http.StatusNoContent, constants.CommentDeleteSuccess, nil)
+	return responses.SuccessResponseMessage(c, http.StatusOK, constants.CommentDeleteSuccess, nil)
 }
 
 func (ch *CommentHandler) GetAllByPostID(c echo.Context) error {
@@ -104,15 +106,15 @@ func (ch *CommentHandler) GetAllByPostID(c echo.Context) error {
 	return responses.SuccessResponseMessage(c, http.StatusOK, constants.GetCommentsSuccess, res)
 }
 
-func (ch *CommentHandler) GetAllByUserID(c echo.Context) error {
+func (ch *CommentHandler) GetAllByUser(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	userId, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
+	username := c.Param("username")
+	if username == "" {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
 	}
 
-	res, err := ch.CommentService.GetAllByUserID(ctx, int32(userId))
+	res, err := ch.CommentService.GetAllByUser(ctx, username)
 	if err != nil {
 		ch.Logger.Error("failed to get comments by user ID", zap.Error(err))
 		code, msg := utils.GRPCErrorToHTTP(err)

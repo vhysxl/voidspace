@@ -6,7 +6,7 @@ import (
 	"time"
 	"voidspaceGateway/config"
 	"voidspaceGateway/internal/service"
-	logger "voidspaceGateway/loggger"
+	logger "voidspaceGateway/logger"
 	commentpb "voidspaceGateway/proto/generated/comments"
 	postpb "voidspaceGateway/proto/generated/posts"
 	userpb "voidspaceGateway/proto/generated/users"
@@ -74,7 +74,7 @@ func App() (*Application, error) {
 
 	// Services
 	authService := service.NewAuthService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewAuthServiceClient(authConn), *config.PublicKey)
-	userService := service.NewUserService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewUserServiceClient(userConn), postpb.NewPostServiceClient(postConn))
+	userService := service.NewUserService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewUserServiceClient(userConn), postpb.NewPostServiceClient(postConn), commentpb.NewCommentServiceClient(commentConn))
 	postService := service.NewPostService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn))
 	likeService := service.NewLikeService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewLikesServiceClient(likeConn))
 	feedService := service.NewFeedService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn))
