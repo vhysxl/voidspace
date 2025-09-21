@@ -32,7 +32,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommentServiceClient interface {
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
-	DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error)
 	AccountDeletionHandle(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetAllCommentsByPostID(ctx context.Context, in *GetAllCommentsByPostIDRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error)
 	GetAllCommentsByUserID(ctx context.Context, in *GetAllCommentsByUserIDRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error)
@@ -56,9 +56,9 @@ func (c *commentServiceClient) CreateComment(ctx context.Context, in *CreateComm
 	return out, nil
 }
 
-func (c *commentServiceClient) DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *commentServiceClient) DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(DeleteCommentResponse)
 	err := c.cc.Invoke(ctx, CommentService_DeleteComment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func (c *commentServiceClient) GetAllCommentsByUserID(ctx context.Context, in *G
 // for forward compatibility.
 type CommentServiceServer interface {
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
-	DeleteComment(context.Context, *DeleteCommentRequest) (*emptypb.Empty, error)
+	DeleteComment(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error)
 	AccountDeletionHandle(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	GetAllCommentsByPostID(context.Context, *GetAllCommentsByPostIDRequest) (*GetBatchCommentsResponse, error)
 	GetAllCommentsByUserID(context.Context, *GetAllCommentsByUserIDRequest) (*GetBatchCommentsResponse, error)
@@ -118,7 +118,7 @@ type UnimplementedCommentServiceServer struct{}
 func (UnimplementedCommentServiceServer) CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateComment not implemented")
 }
-func (UnimplementedCommentServiceServer) DeleteComment(context.Context, *DeleteCommentRequest) (*emptypb.Empty, error) {
+func (UnimplementedCommentServiceServer) DeleteComment(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteComment not implemented")
 }
 func (UnimplementedCommentServiceServer) AccountDeletionHandle(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {

@@ -4,16 +4,21 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
   const authCookie = getCookie(event, "auth");
-  let token;
+  let token: string | undefined;
 
-  //decode cookie
   if (authCookie) {
     const auth = authData(authCookie);
     token = auth.accessToken;
   }
 
+  const query = getQuery(event);
+  const queryString = new URLSearchParams(
+    query as Record<string, string>
+  ).toString();
+  const url = `${config.apiUrl}/feed/${queryString ? `?${queryString}` : ""}`;
+
   try {
-    const response = await $fetch(`${config.apiUrl}/feed/`, {
+    const response = await $fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

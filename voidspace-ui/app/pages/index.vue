@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import CreatePostInput from '~/components/feed/createPostInput.vue'
+import { ref, watch } from 'vue'
+import CreatePostInput from '~/components/feed/CreatePostInput.vue'
+import type { Post } from '@/types'
+import PostCard from '~/components/feed/PostCard.vue'
+import { useFeedAction } from '~/composables/useFeedAction'
 
-const { getGlobalFeed } = useFeed()
 const posts = ref<Post[] | null>(null)
-const loading = ref(false)
+const { feedState, activeTab, refreshFeed, setupInfiniteScroll, loadInitialPosts, loadMorePosts } = useFeedAction(posts)
+const scrollContainer = ref<HTMLElement | null>(null);
 const route = useRoute()
-const auth = useAuthStore()
 const router = useRouter()
+setupInfiniteScroll(scrollContainer)
 
-// Tab configuration with query params
 const tabs = [
   {
     key: 'for-you',
@@ -21,11 +23,6 @@ const tabs = [
   }
 ]
 
-// Get current active tab from query params
-const activeTab = computed(() => {
-  return route.query.tab === 'following' ? 'following' : 'for-you'
-})
-
 const switchTab = (tabKey: string) => {
   router.push({
     query: {
@@ -35,55 +32,37 @@ const switchTab = (tabKey: string) => {
   })
 }
 
-const fetchGlobalFeed = async () => {
-  loading.value = true
-  try {
-    const res = await getGlobalFeed()
-    posts.value = res.data.posts
-
-  } catch (error) {
-    console.error('Error fetching global feed:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
-const fetchFollowingFeed = async () => {
-  loading.value = true
-  try {
-    const res = await getGlobalFeed()
-    posts.value = res.data.posts
-  } catch (error) {
-    console.error('Error fetching following feed:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
+onMounted(() => {
+  loadInitialPosts();
+});
 
 // Watch for tab changes
 watch(() => activeTab.value, (newTab) => {
-  if (newTab === 'following') {
-    fetchFollowingFeed()
-  } else {
-    fetchGlobalFeed()
+  try {
+    feedState.initialLoading = true;
+  } catch (error) {
+
   }
+
+  refreshFeed();
 }, { immediate: true })
 
 const handlePostCreated = (newPost: Post) => {
-  //  Prepend new post
-  if (posts.value) {
-    posts.value.unshift(newPost) //unshift add first element of array
+  // Only add to current active tab if it makes sense
+  if (posts.value && activeTab.value === 'for-you') {
+    posts.value.unshift(newPost)
   }
+  // Don't add to Following tab unless user follows the author
+  // OR refresh the current tab to get updated data
+  else if (activeTab.value === 'following') {
+    // Option 1: Refresh following feed to get proper data
+    refreshFeed()
 
-  // Option B: Refresh entire feed
-  if (activeTab.value === 'for-you') {
-    fetchGlobalFeed()
+    // Option 2: Or just don't add it locally, let next refresh handle it
   }
 }
-
-const handlePostDeleted = (postId: number) => {  // Accept the parameter
-  // Option 1: Remove from local array (instant UI update)
+const handlePostDeleted = (postId: number) => {
+  // Remove from local array
   if (posts.value) {
     posts.value = posts.value.filter(p => p.id !== postId)
   }
@@ -93,7 +72,7 @@ const handlePostDeleted = (postId: number) => {  // Accept the parameter
 <template>
   <ClientOnly v-if="!$colorMode?.forced">
     <!-- Sticky Nav -->
-    <nav class="sticky  top-0 z-20 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800">
+    <nav class="sticky top-0 z-20 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800">
       <div class="flex">
         <button v-for="tab in tabs" :key="tab.key" @click="switchTab(tab.key)" :class="[
           'flex-1 px-4 py-4 text-center font-medium text-sm transition-all relative hover:bg-neutral-50 dark:hover:bg-neutral-950',
@@ -108,16 +87,12 @@ const handlePostDeleted = (postId: number) => {  // Accept the parameter
       </div>
     </nav>
 
-    <!-- Feed Container -->
-    <div class="min-h-screen scrollbar-hide">
+    <div ref="scrollContainer" class="min-h-screen scrollbar-hide">
 
-
-      <!-- Loading -->
-      <div v-if="loading" class="p-8 text-center">
+      <div v-if="feedState.initialLoading" class="p-8 text-center">
         <ExtrasLoadingState :title="`Loading ${activeTab === 'following' ? 'Following' : 'For You'} Feed`" />
       </div>
 
-      <!-- Empty -->
       <div v-else-if="!posts?.length" class="p-8 text-center">
         <div class="max-w-md mx-auto">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
@@ -129,36 +104,43 @@ const handlePostDeleted = (postId: number) => {  // Accept the parameter
               : 'Check back later for new content.'
             }}
           </p>
-          <UButton v-if="activeTab === 'following'" to="/profile/yogi" color="neutral">
+          <UButton v-if="activeTab === 'following'" to="/user/yogi" color="neutral">
             Find People to Follow
           </UButton>
         </div>
       </div>
 
+      <div v-else>
+        <PostCard :posts="posts || []" @post-deleted="handlePostDeleted" />
 
-      <!-- Has posts -->
-      <FeedPostCard v-else :posts="posts || []" @post-deleted="handlePostDeleted" />
-      <div class="pb-14 lg:pb-36">p</div>
+        <div v-if="feedState.loadingMore" class="p-8 text-center">
+          <div class="flex items-center justify-center space-x-2">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-neutral-500"></div>
+            <span class="text-gray-500">Loading more posts...</span>
+          </div>
+        </div>
+
+        <div v-else-if="feedState.isEndOfFeed" class="p-8 text-center">
+          <p class="text-gray-500 text-sm">You've reached the end of the void</p>
+        </div>
+      </div>
+
+      <div class="pb-14 lg:pb-36"></div>
     </div>
 
-    <!-- Floating Button (Mobile Only) -->
     <button
       class="lg:hidden fixed bottom-24 right-6 z-30 bg-black dark:bg-white text-white dark:text-black rounded-full shadow-lg w-14 h-14 flex items-center justify-center transition-colors">
       <Icon name="i-lucide-plus" class="w-6 h-6" />
     </button>
 
-    <!--Create Post -->
     <div class="hidden lg:flex fixed bottom-0 inset-x-0 z-20">
       <div class="mx-auto w-full max-w-screen-xl flex">
-        <!-- Spacer left (biar sejajar sidebar) -->
         <div class="hidden lg:block w-64"></div>
 
-        <!-- Actual input -->
         <div class="flex-1">
           <CreatePostInput @post-created="handlePostCreated" />
         </div>
 
-        <!-- Spacer right (biar sejajar sidebar kanan) -->
         <div class="hidden lg:block w-2/8"></div>
       </div>
     </div>

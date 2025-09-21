@@ -36,6 +36,9 @@ func NewCommentService(
 	}
 }
 
+// todo: update this distributed trx, saga or 2pc
+
+// distributed trx
 func (cs *CommentsService) Create(ctx context.Context, req *models.CreateCommentReq, userID, username string) (*models.Comments, error) {
 	ctx, cancel := context.WithTimeout(ctx, cs.ContextTimeout)
 	defer cancel()
@@ -58,6 +61,12 @@ func (cs *CommentsService) Create(ctx context.Context, req *models.CreateComment
 		return nil, err
 	}
 
+	_, err = cs.PostClient.IncrementCommentCount(ctx, &postpb.UpdateCommentReq{Id: req.PostID})
+	if err != nil {
+		cs.Logger.Error("failed to call PostService.UpdateCommentCount", zap.Error(err))
+		return nil, err
+	}
+
 	userRes, err := cs.UserClient.GetUserById(ctx, &userpb.GetUserByIDRequest{
 		UserID: res.UserId,
 	})
@@ -77,6 +86,7 @@ func (cs *CommentsService) Create(ctx context.Context, req *models.CreateComment
 	}, nil
 }
 
+// dtributed trx
 func (cs *CommentsService) Delete(ctx context.Context, commentID int32, userID, username string) error {
 	ctx, cancel := context.WithTimeout(ctx, cs.ContextTimeout)
 	defer cancel()
@@ -88,11 +98,17 @@ func (cs *CommentsService) Delete(ctx context.Context, commentID int32, userID, 
 
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	_, err := cs.CommentClient.DeleteComment(ctx, &commentpb.DeleteCommentRequest{
+	res, err := cs.CommentClient.DeleteComment(ctx, &commentpb.DeleteCommentRequest{
 		CommentId: commentID,
 	})
 	if err != nil {
 		cs.Logger.Error("failed to call CommentService.DeleteComment", zap.Error(err))
+		return err
+	}
+
+	_, err = cs.PostClient.DecrementCommentCount(ctx, &postpb.UpdateCommentReq{Id: res.GetPostId()})
+	if err != nil {
+		cs.Logger.Error("failed to call PostService.UpdateCommentCount", zap.Error(err))
 		return err
 	}
 
@@ -111,6 +127,11 @@ func (cs *CommentsService) GetAllByPostID(ctx context.Context, postID int32) ([]
 		return nil, err
 	}
 
+	// if empty return empty
+	if len(res.Comments) <= 0 {
+		return []*models.Comments{}, nil
+	}
+
 	userIDs := make([]int32, 0, len(res.Comments))
 	for _, c := range res.Comments {
 		userIDs = append(userIDs, c.UserId)
@@ -127,7 +148,7 @@ func (cs *CommentsService) GetAllByPostID(ctx context.Context, postID int32) ([]
 
 	userMap := make(map[int32]models.User)
 	for _, u := range usersRes.GetUsers() {
-		userMap[u.GetId()] = *utils.UserMapperFromUser(u)
+		userMap[u.GetId()] = utils.UserMapperFromUser(u)
 	}
 
 	comments := make([]*models.Comments, 0, len(res.GetComments()))
@@ -164,7 +185,7 @@ func (cs *CommentsService) GetAllByUser(ctx context.Context, username string) ([
 		return nil, err
 	}
 
-	user := *utils.UserMapperFromUser(userRes.GetUser())
+	user := utils.UserMapperFromUser(userRes.GetUser())
 
 	comments := make([]*models.Comments, 0, len(res.GetComments()))
 	for _, c := range res.GetComments() {

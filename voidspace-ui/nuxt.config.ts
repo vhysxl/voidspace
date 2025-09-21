@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     "@nuxt/fonts",
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
+    "@vueuse/nuxt",
   ],
   css: ["~/assets/css/main.css"],
   pinia: {

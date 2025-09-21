@@ -7,6 +7,7 @@ import (
 	"voidspace/posts/internal/domain"
 	"voidspace/posts/internal/usecase"
 	pb "voidspace/posts/proto/generated/posts"
+	utils "voidspace/posts/utils/common"
 	"voidspace/posts/utils/interceptor"
 
 	"github.com/go-playground/validator/v10"
@@ -14,7 +15,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type PostHandler struct {
@@ -67,15 +67,7 @@ func (ph *PostHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest
 		}
 	}
 
-	return &pb.PostResponse{
-		Id:         post.ID,
-		Content:    post.Content,
-		UserId:     post.UserID,
-		PostImages: post.PostImages,
-		LikesCount: post.LikesCount,
-		CreatedAt:  timestamppb.New(post.CreatedAt),
-		UpdatedAt:  timestamppb.New(post.CreatedAt), //using created at because its initial creation
-	}, nil
+	return utils.PostMapper(post), nil
 }
 
 func (ph *PostHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.PostResponse, error) {
@@ -97,16 +89,7 @@ func (ph *PostHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb
 		}
 	}
 
-	return &pb.PostResponse{
-		Id:         post.ID,
-		Content:    post.Content,
-		UserId:     post.UserID,
-		PostImages: post.PostImages,
-		LikesCount: post.LikesCount,
-		CreatedAt:  timestamppb.New(post.CreatedAt),
-		UpdatedAt:  timestamppb.New(post.UpdatedAt),
-		IsLiked:    post.IsLiked,
-	}, nil
+	return utils.PostMapper(post), nil
 }
 
 func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*emptypb.Empty, error) {
@@ -142,6 +125,46 @@ func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest
 	}
 
 	return nil, err
+}
+
+func (ph *PostHandler) IncrementCommentCount(ctx context.Context, req *pb.UpdateCommentReq) (*pb.CommentResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
+	defer cancel()
+
+	res, err := ph.PostUsecase.IncrementCommentsCount(ctx, int(req.GetId()))
+	if err != nil {
+		ph.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		case domain.ErrPostNotFound:
+			return nil, status.Error(codes.NotFound, err.Error())
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	return &pb.CommentResponse{Success: true, NewCommentsCount: int32(res)}, nil
+}
+
+func (ph *PostHandler) DecrementCommentCount(ctx context.Context, req *pb.UpdateCommentReq) (*pb.CommentResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
+	defer cancel()
+
+	res, err := ph.PostUsecase.DecrementCommentsCount(ctx, int(req.GetId()))
+	if err != nil {
+		ph.Logger.Error(ErrUsecase, zap.Error(err))
+		switch err {
+		case ctx.Err():
+			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
+		case domain.ErrPostNotFound:
+			return nil, status.Error(codes.NotFound, err.Error())
+		default:
+			return nil, status.Error(codes.Internal, ErrInternalServer)
+		}
+	}
+
+	return &pb.CommentResponse{Success: true, NewCommentsCount: int32(res)}, nil
 }
 
 func (ph *PostHandler) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*emptypb.Empty, error) {
@@ -189,15 +212,7 @@ func (ph *PostHandler) GetAllPosts(ctx context.Context, req *pb.GetAllPostsReque
 
 	var postResponses []*pb.PostResponse
 	for _, post := range posts {
-		postResponses = append(postResponses, &pb.PostResponse{
-			Id:         post.ID,
-			Content:    post.Content,
-			UserId:     post.UserID,
-			PostImages: post.PostImages,
-			LikesCount: post.LikesCount,
-			CreatedAt:  timestamppb.New(post.CreatedAt),
-			UpdatedAt:  timestamppb.New(post.UpdatedAt),
-		})
+		postResponses = append(postResponses, utils.PostMapper(post))
 	}
 
 	return &pb.GetFeedResponse{Posts: postResponses}, nil
@@ -206,7 +221,6 @@ func (ph *PostHandler) GetAllPosts(ctx context.Context, req *pb.GetAllPostsReque
 func (ph *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedRequest) (*pb.GetFeedResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, ph.contextTimeout)
 	defer cancel()
-
 	var cursorTime *time.Time
 	var cursorID *int32
 
@@ -233,16 +247,7 @@ func (ph *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedR
 
 	postResponses := make([]*pb.PostResponse, 0, len(posts))
 	for _, post := range posts {
-		postResponses = append(postResponses, &pb.PostResponse{
-			Id:         post.ID,
-			Content:    post.Content,
-			UserId:     post.UserID,
-			PostImages: post.PostImages,
-			LikesCount: post.LikesCount,
-			CreatedAt:  timestamppb.New(post.CreatedAt),
-			UpdatedAt:  timestamppb.New(post.UpdatedAt),
-			IsLiked:    post.IsLiked,
-		})
+		postResponses = append(postResponses, utils.PostMapper(post))
 	}
 
 	return &pb.GetFeedResponse{
@@ -286,16 +291,7 @@ func (ph *PostHandler) GetFeedByUserIDs(ctx context.Context, req *pb.GetFeedByUs
 	// mapping ke response
 	postResponses := make([]*pb.PostResponse, 0, len(posts))
 	for _, post := range posts {
-		postResponses = append(postResponses, &pb.PostResponse{
-			Id:         post.ID,
-			Content:    post.Content,
-			UserId:     post.UserID,
-			PostImages: post.PostImages,
-			LikesCount: post.LikesCount,
-			CreatedAt:  timestamppb.New(post.CreatedAt),
-			UpdatedAt:  timestamppb.New(post.UpdatedAt),
-			IsLiked:    post.IsLiked,
-		})
+		postResponses = append(postResponses, utils.PostMapper(post))
 	}
 
 	return &pb.GetFeedResponse{

@@ -1,50 +1,57 @@
-export type Post = {
-  id: number;
-  content: string;
-  user_id: number;
-  post_images: string[] | null;
-  likes_count: number;
-  created_at: string;
-  updated_at: string;
-  author: User;
-};
+import type { Feed } from "@/types";
+import type { ApiResponse } from "@/types/index";
+import { handleApiError } from "@/utils/apiErrorHandler";
+import { defaultOptions, defaultAuthOptions } from "@/utils/apiDefaults";
 
-type FeedResponse = {
-  success: boolean;
-  detail: string;
-  data: {
-    posts: Post[];
-    hasmore: boolean;
-  };
-};
+/**
+ * Feed service hooks
+ * Provides GET operations for feed with cursor-based pagination
+ */
+
+type FeedResponse = ApiResponse<Feed>;
 
 export const useFeed = () => {
   const auth = useAuthStore();
   const { fetchWithAuth } = useApi();
 
-  const getGlobalFeed = async (): Promise<FeedResponse> => {
+  const getGlobalFeed = async (
+    params?: Record<string, string | number>
+  ): Promise<FeedResponse> => {
     try {
-      let response;
+      const query = params ? `?${new URLSearchParams(params as any)}` : "";
+      const url = `/api/feed/global${query}`;
 
       if (auth.isLoggedIn) {
-        response = await fetchWithAuth(`/api/feed/global`, {
+        return await fetchWithAuth<FeedResponse>(url, {
+          ...defaultAuthOptions,
           method: "GET",
-          headers: { "Content-Type": "application/json" },
         });
       } else {
-        response = await $fetch<FeedResponse>(`/api/feed/`, {
+        return await $fetch<FeedResponse>(url, {
+          ...defaultOptions,
           method: "GET",
-          headers: { "Content-Type": "application/json" },
         });
       }
-
-      return response as FeedResponse;
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to get feed");
+    } catch (error: unknown) {
+      handleApiError(error, "Failed to get feed");
     }
   };
 
-  //follow feed
+  const getFollowFeed = async (
+    params?: Record<string, string | number>
+  ): Promise<FeedResponse> => {
+    try {
+      const query = params ? `?${new URLSearchParams(params as any)}` : "";
+      const url = `/api/feed/followfeed${query}`;
 
-  return { getGlobalFeed };
+      return await fetchWithAuth<FeedResponse>(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error: unknown) {
+      handleApiError(error, "Failed to get feed");
+    }
+  };
+
+  return { getFollowFeed, getGlobalFeed };
 };

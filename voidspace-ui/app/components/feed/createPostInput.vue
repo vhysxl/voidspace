@@ -2,15 +2,16 @@
 import { resolveAvatar } from '@/utils/userResolver'
 import { ref } from 'vue'
 import * as v from "valibot";
+import type { CreatePostReq, Post } from '@/types';
 
 const { uploadFile } = useUpload()
-const { createPost } = usePosts()
+const { createPost } = usePost()
+const router = useRouter()
 const maxLength = 240
 const remainingChars = computed(() => maxLength - state.content.length)
 const auth = useAuthStore()
 const isPosting = ref(false)
 const toast = useToast();
-
 
 const schema = v.object({
     content: v.optional(
@@ -35,7 +36,6 @@ const schema = v.object({
 const emit = defineEmits<{
     postCreated: [post: Post]
 }>()
-
 
 const handleSubmit = async () => {
     if (isPosting.value) return
@@ -80,18 +80,22 @@ const handleSubmit = async () => {
     }
 }
 
+const handleLoginRedirect = async () => {
+    await router.push('/auth/login')
+}
+
 const state = reactive({
     content: "",
     postImages: undefined as File[] | undefined,
 });
-
 </script>
 
 <template>
-    <div :class="{ 'opacity-50': isPosting }" class="border-t border-neutral-500 bg-white dark:bg-black">
+    <div v-if="auth.isLoggedIn" :class="{ 'opacity-50': isPosting }"
+        class="border-t border-neutral-500 bg-white dark:bg-black">
         <div class="flex items-start gap-3 p-4">
-            <UAvatar :src="resolveAvatar(auth.user?.profile.avatarUrl, auth.user?.username!)" :alt="auth.user?.username"
-                size="md" />
+            <UAvatar :src="resolveAvatar(auth.user?.profile.avatar_url, auth.user?.username!)"
+                :alt="auth.user?.username" size="md" />
 
             <div class="flex-1">
                 <UForm :schema="schema" :state="state" @submit="handleSubmit">
@@ -118,8 +122,20 @@ const state = reactive({
                         </div>
                     </div>
                 </UForm>
-
             </div>
         </div>
     </div>
+
+    <div v-else
+        class="border-t border-neutral-500 bg-white dark:bg-black flex justify-center items-center min-h-[150px]">
+        <div class="flex flex-col items-center gap-3 p-4">
+            <p class="text-gray-500 dark:text-gray-400 text-base mb-3 text-center">
+                Sign in to start posting to the void
+            </p>
+            <UButton class="hover:cursor-pointer" size="md" color="neutral" @click="handleLoginRedirect">
+                Sign in to post
+            </UButton>
+        </div>
+    </div>
+
 </template>

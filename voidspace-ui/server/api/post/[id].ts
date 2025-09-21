@@ -11,8 +11,6 @@ export default defineEventHandler(async (event) => {
   if (authCookie) {
     const auth = authData(authCookie);
     token = auth.accessToken;
-  } else {
-    throw createError({ statusCode: 401, statusMessage: "Unaothired" });
   }
 
   try {
@@ -22,6 +20,7 @@ export default defineEventHandler(async (event) => {
         headers: {
           "Content-Type": "application/json",
           "x-api-key": config.apiSecret,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
         credentials: "include",
       });

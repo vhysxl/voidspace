@@ -78,7 +78,7 @@ func (p *postRepository) GetByID(ctx context.Context, id int32) (*domain.Post, e
 
 	err := p.db.QueryRowContext(
 		ctx,
-		`SELECT id, content, user_id, post_images, likes_count, created_at, updated_at
+		`SELECT id, content, user_id, post_images, likes_count, comments_count, created_at, updated_at
         FROM posts WHERE id = $1`,
 		id,
 	).Scan(
@@ -87,6 +87,7 @@ func (p *postRepository) GetByID(ctx context.Context, id int32) (*domain.Post, e
 		&post.UserID,
 		&jsonRaw,
 		&post.LikesCount,
+		&post.CommentsCount,
 		&post.CreatedAt,
 		&post.UpdatedAt,
 	)
@@ -119,8 +120,8 @@ func (p *postRepository) GetAllUserPosts(ctx context.Context, userID int32) ([]*
 
 	rows, err := p.db.QueryContext(
 		ctx,
-		`SELECT id, content, user_id, post_images, likes_count, created_at, updated_at
-		 FROM posts WHERE user_id = $1 ORDER BY created_at DESC`,
+		`SELECT id, content, user_id, post_images, likes_count, comments_count, created_at, updated_at
+		FROM posts WHERE user_id = $1 ORDER BY created_at DESC`,
 		userID,
 	)
 	if err != nil {
@@ -137,6 +138,7 @@ func (p *postRepository) GetAllUserPosts(ctx context.Context, userID int32) ([]*
 			&post.UserID,
 			&jsonRaw,
 			&post.LikesCount,
+			&post.CommentsCount,
 			&post.CreatedAt,
 			&post.UpdatedAt,
 		)
@@ -167,14 +169,13 @@ func (p *postRepository) GetFollowFeed(ctx context.Context, userIDs []int32, cur
 	var jsonRaw sql.NullString
 
 	query := `
-        SELECT id, content, user_id, post_images, likes_count, created_at, updated_at
-        FROM posts
-        WHERE user_id = ANY($1)
-          AND ((created_at < $2) OR (created_at = $2 AND id < $3))
-        ORDER BY created_at DESC, id DESC
-        LIMIT $4
-    `
-
+	SELECT id, content, user_id, post_images, likes_count, comments_count, created_at, updated_at
+	FROM posts
+	WHERE user_id = ANY($1)
+	  AND ((created_at < $2) OR (created_at = $2 AND id < $3))
+	ORDER BY created_at DESC, id DESC
+	LIMIT $4
+	`
 	rows, err := p.db.QueryContext(
 		ctx,
 		query,
@@ -197,6 +198,7 @@ func (p *postRepository) GetFollowFeed(ctx context.Context, userIDs []int32, cur
 			&post.UserID,
 			&jsonRaw,
 			&post.LikesCount,
+			&post.CommentsCount,
 			&post.CreatedAt,
 			&post.UpdatedAt,
 		)
@@ -230,12 +232,12 @@ func (p *postRepository) GetGlobalFeed(ctx context.Context, cursorTime time.Time
 	var jsonRaw sql.NullString
 
 	query := `
-		SELECT id, content, user_id, post_images, likes_count, created_at, updated_at
-		FROM posts
-		WHERE (created_at < $1)
-		   OR (created_at = $1 AND id < $2)
-		ORDER BY created_at DESC, id DESC
-		LIMIT $3
+	SELECT id, content, user_id, post_images, likes_count, comments_count, created_at, updated_at
+	FROM posts
+	WHERE (created_at < $1)
+	   OR (created_at = $1 AND id < $2)
+	ORDER BY created_at DESC, id DESC
+	LIMIT $3
 	`
 
 	rows, err := p.db.QueryContext(ctx, query, cursorTime, cursorID, 10+1)
@@ -254,6 +256,7 @@ func (p *postRepository) GetGlobalFeed(ctx context.Context, cursorTime time.Time
 			&post.UserID,
 			&jsonRaw,
 			&post.LikesCount,
+			&post.CommentsCount,
 			&post.CreatedAt,
 			&post.UpdatedAt,
 		)
@@ -307,6 +310,50 @@ func (p *postRepository) Update(ctx context.Context, post *domain.Post) error {
 		return domain.ErrPostNotFound
 	}
 	return err
+}
+
+func (p *postRepository) IncrementCommentsCount(ctx context.Context, postId int) (int, error) {
+	var newCount int
+	err := p.db.QueryRowContext(
+		ctx,
+		`UPDATE posts 
+		 SET comments_count = comments_count + 1, 
+		     updated_at = NOW() 
+		 WHERE id = $1
+		 RETURNING comments_count`,
+		postId,
+	).Scan(&newCount)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, domain.ErrPostNotFound
+		}
+		return 0, err
+	}
+
+	return newCount, nil
+}
+
+func (p *postRepository) DecrementCommentsCount(ctx context.Context, postId int) (int, error) {
+	var newCount int
+	err := p.db.QueryRowContext(
+		ctx,
+		`UPDATE posts 
+		 SET comments_count = GREATEST(comments_count - 1, 0), 
+		     updated_at = NOW() 
+		 WHERE id = $1
+		 RETURNING comments_count`,
+		postId,
+	).Scan(&newCount)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, domain.ErrPostNotFound
+		}
+		return 0, err
+	}
+
+	return newCount, nil
 }
 
 // Delete implements domain.PostRepository.

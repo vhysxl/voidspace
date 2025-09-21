@@ -20,6 +20,8 @@ type PostUsecase interface {
 	GetByID(ctx context.Context, userID, id int32) (*domain.Post, error)
 	GetAllUserPosts(ctx context.Context, userID int32) ([]*domain.Post, error)
 	UpdatePost(ctx context.Context, post *domain.Post) error
+	IncrementCommentsCount(ctx context.Context, postID int) (int, error)
+	DecrementCommentsCount(ctx context.Context, postID int) (int, error)
 	DeletePost(ctx context.Context, id int32, userID int32) error
 	GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID *int32, userID int32) ([]*domain.Post, bool, error)
 	GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime *time.Time, cursorID *int32, userID int32) ([]*domain.Post, bool, error)
@@ -57,6 +59,22 @@ func (p *postUsecase) UpdatePost(ctx context.Context, post *domain.Post) error {
 	}
 
 	return p.postRepository.Update(ctx, post)
+}
+
+// IncrementCommentsCount implements PostUsecase.
+func (p *postUsecase) IncrementCommentsCount(ctx context.Context, postID int) (int, error) {
+	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
+	defer cancel()
+
+	return p.postRepository.IncrementCommentsCount(ctx, postID)
+}
+
+// DecrementCommentsCount implements PostUsecase.
+func (p *postUsecase) DecrementCommentsCount(ctx context.Context, postID int) (int, error) {
+	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
+	defer cancel()
+
+	return p.postRepository.DecrementCommentsCount(ctx, postID)
 }
 
 // DeletePost implements PostUsecase.

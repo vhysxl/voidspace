@@ -29,12 +29,11 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const successData = data as RegisterResponse;
-    return successData;
+    return data;
   } catch (error: any) {
     throw createError({
-      statusCode: error.status || 500,
-      statusMessage: error.detail || error.message || "Register failed",
+      statusCode: error.statusCode || 500,
+      statusMessage: error.statusMessage || error.message || "Register failed",
     });
   }
 });

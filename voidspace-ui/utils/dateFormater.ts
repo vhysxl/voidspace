@@ -12,10 +12,17 @@ export function formatPostDate(dateStr: string) {
     return `${diffSeconds}s ago`;
   }
 
-  // lebih dari 24 jam → tampil tanggal
   return postDate.toLocaleDateString("us-EN", {
     day: "numeric",
     month: "long",
     year: "numeric",
+  });
+}
+
+export function formatJoinDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
   });
 }

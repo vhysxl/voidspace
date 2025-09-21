@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
   try {
-    const response = await $fetch(`${config.apiUrl}/auth/logout`, {
+    return await $fetch(`${config.apiUrl}/auth/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -10,8 +10,6 @@ export default defineEventHandler(async (event) => {
       },
       credentials: "include",
     });
-
-    return response;
   } catch (error: any) {
     throw createError({
       statusCode: error.status || 500,

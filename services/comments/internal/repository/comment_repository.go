@@ -50,25 +50,38 @@ func (r *commentRepository) Create(ctx context.Context, comment *domain.Comment)
 }
 
 // Delete removes a comment by its ID
-func (r *commentRepository) Delete(ctx context.Context, commentID int32) error {
+func (r *commentRepository) Delete(ctx context.Context, commentID int32) (int, error) {
+	var postId int
+	err := r.db.QueryRowContext(
+		ctx,
+		`SELECT post_id FROM comments WHERE id = ?`,
+		commentID,
+	).Scan(&postId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, domain.ErrCommentsNotFound
+		}
+		return 0, err
+	}
+
 	result, err := r.db.ExecContext(
 		ctx,
 		`DELETE FROM comments WHERE id = ?`,
 		commentID,
 	)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return domain.ErrCommentsNotFound
+		return 0, err
 	}
 	if rowsAffected == 0 {
-		return sql.ErrNoRows
+		return 0, domain.ErrCommentsNotFound
 	}
 
-	return nil
+	return postId, nil
 }
 
 func (r *commentRepository) GetCommentByID(ctx context.Context, commentID int32) (*domain.Comment, error) {

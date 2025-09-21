@@ -1,22 +1,30 @@
 import type { ApiResponse, AuthResponse } from "@/types/index";
+import { handleApiError } from "@/utils/apiErrorHandler";
+import { defaultOptions } from "@/utils/apiDefaults";
+
+/**
+ * Authentication service hooks
+ * Wraps API calls related to authentication (login, register, logout, refresh).
+ * Each method returns a typed ApiResponse or throws an error handled by handleApiError.
+ */
+
+type UseAuthResponse = ApiResponse<AuthResponse>;
 
 export const useAuth = () => {
-  const apiUrl = "/api";
-  type useAuthResponse = ApiResponse<AuthResponse>;
+  const apiUrl = "/api/auth";
 
   const login = async (
     usernameoremail: string,
     password: string
-  ): Promise<useAuthResponse> => {
+  ): Promise<UseAuthResponse> => {
     try {
-      return await $fetch<useAuthResponse>(`${apiUrl}/auth/login`, {
+      return await $fetch<UseAuthResponse>(`${apiUrl}/login`, {
+        ...defaultOptions,
         method: "POST",
         body: { usernameoremail, password },
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
       });
-    } catch (error: any) {
-      throw new Error(error.statusMessage || "Login failed");
+    } catch (error: unknown) {
+      handleApiError(error, "Login failed");
     }
   };
 
@@ -24,40 +32,37 @@ export const useAuth = () => {
     username: string,
     email: string,
     password: string
-  ): Promise<useAuthResponse> => {
+  ): Promise<UseAuthResponse> => {
     try {
-      return await $fetch<useAuthResponse>(`${apiUrl}/auth/register`, {
+      return await $fetch<UseAuthResponse>(`${apiUrl}/register`, {
+        ...defaultOptions,
         method: "POST",
         body: { username, email, password },
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
       });
-    } catch (error: any) {
-      throw new Error(error.statusMessage || "Register failed");
+    } catch (error: unknown) {
+      handleApiError(error, "Register failed");
     }
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     try {
-      return await $fetch(`${apiUrl}/auth/logout`, {
+      await $fetch(`${apiUrl}/logout`, {
+        ...defaultOptions,
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
       });
-    } catch (error: any) {
-      throw new Error(error.statusMessage || "Logout failed");
+    } catch (error: unknown) {
+      handleApiError(error, "Logout failed");
     }
   };
 
-  const refresh = async (): Promise<useAuthResponse> => {
+  const refresh = async (): Promise<UseAuthResponse> => {
     try {
-      return await $fetch<useAuthResponse>(`${apiUrl}/auth/refresh`, {
+      return await $fetch<UseAuthResponse>(`${apiUrl}/refresh`, {
+        ...defaultOptions,
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
       });
-    } catch (error: any) {
-      throw new Error(error.statusMessage || "Refresh failed");
+    } catch (error: unknown) {
+      handleApiError(error, "Refresh token failed");
     }
   };
 

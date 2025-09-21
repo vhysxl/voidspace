@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { resolveAvatar } from '@/utils/userResolver';
 import { formatPostDate } from '@/utils/dateFormater';
-import type { Post } from '~/composables/useFeed';
 import type { DropdownMenuItem } from '@nuxt/ui'
+import type { Post } from '@/types';
 
 defineProps<{
     posts: Post[]
@@ -16,10 +16,11 @@ const emit = defineEmits<{
 const editModal = ref(false)
 const deleteModal = ref(false)
 const isSubmitting = ref(false)
-const postCall = usePosts()
+const postCall = usePost()
 const toast = useToast()
 const selectedPostId = ref<number | null>(null)
 const selectedPost = ref<Post | null>(null)
+const { toggleLike, isSubmitting: isLikeSubmitting } = useToggleLike()
 
 const openDeleteModal = (post: Post) => {
     selectedPostId.value = post.id
@@ -30,6 +31,15 @@ const openDeleteModal = (post: Post) => {
 const openEditModal = (post: Post) => {
     selectedPost.value = post
     editModal.value = true
+}
+
+const navigateToPost = async (postId: number) => {
+    await navigateTo(`/post/${postId}`)
+}
+
+const navigateToUser = async (username: string, event: Event) => {
+    event.stopPropagation() // Prevent triggering parent click event
+    await navigateTo(`/user/${username}`)
 }
 
 const getMenuItems = (post: Post): DropdownMenuItem[] => [
@@ -76,36 +86,6 @@ const handleDeletePost = async () => {
 }
 
 
-const handleLikePost = async () => {
-    if (isSubmitting.value || selectedPostId.value === null) return
-
-    try {
-        isSubmitting.value = true
-        await postCall.deletePost(selectedPostId.value.toString())
-
-        emit('postDeleted', selectedPostId.value)
-
-        toast.add({
-            title: "Post deleted",
-            description: "Your post has been removed",
-            color: "neutral",
-        })
-
-        deleteModal.value = false
-
-    } catch (error: any) {
-        toast.add({
-            title: "Delete failed",
-            description: error.message || "Failed to delete post",
-            color: "error",
-        })
-    } finally {
-        selectedPostId.value = null
-        selectedPost.value = null
-        isSubmitting.value = false
-    }
-}
-
 const closeModal = () => {
     deleteModal.value = false
     selectedPostId.value = null
@@ -115,20 +95,28 @@ const closeModal = () => {
 
 <template>
     <div class="divide-y border-b border-neutral-500 divide-neutral-500">
-        <article v-for="post in posts" :key="post.id" class="w-full hover:bg-neutral-500/10 transition-colors">
+        <article @click="navigateToPost(post.id)" v-for="post in posts" :key="post.id"
+            class="w-full hover:cursor-pointer hover:bg-neutral-500/10 transition-colors">
             <!-- Header -->
             <header class="flex items-center justify-between p-4">
                 <div class="flex items-center gap-3">
-                    <UAvatar :src="resolveAvatar(post.author.profile.avatar_url, post.author.username)"
-                        :alt="post.author.username" size="md" />
+                    <!-- Avatar - clickable to user profile -->
+                    <UserAvatar :user="post.author" />
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="font-semibold text-sm">
+                            <!-- Display name - clickable to user profile -->
+                            <h3 class="font-semibold text-sm cursor-pointer hover:underline"
+                                @click="navigateToUser(post.author.username, $event)">
                                 {{ post.author.profile.display_name || post.author.username }}
                             </h3>
                         </div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">
-                            @{{ post.author.username }} • {{ formatPostDate(post.created_at) }}
+                            <!-- Username - clickable to user profile -->
+                            <span class="cursor-pointer hover:underline"
+                                @click="navigateToUser(post.author.username, $event)">
+                                @{{ post.author.username }}
+                            </span>
+                            • {{ formatPostDate(post.created_at) }}
                         </p>
                     </div>
                 </div>
@@ -141,28 +129,62 @@ const closeModal = () => {
                 </UDropdownMenu>
             </header>
 
-            <!-- Content -->
-            <div class="px-4 pb-3">
+            <!-- Content - clickable to post detail -->
+            <div class="px-4 pb-3 cursor-pointer">
                 <p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed">
                     {{ post.content }}
                 </p>
             </div>
 
             <!-- Images -->
-            <div v-if="post.post_images?.length" class="grid grid-cols-2 gap-2">
-                <img v-for="(img, index) in post.post_images" :key="index" :src="img"
-                    :alt="`Post by ${post.author.username} image ${index + 1}`" class="w-full h-64 object-cover" />
+            <div v-if="post.post_images?.length" class="cursor-pointer" @click.stop>
+                <UModal :ui="{
+                    content: 'w-fit max-w-[1200px] max-h-[90vh] rounded-lg'
+                }">
+                    <UCarousel v-slot="{ item }" :dots="post.post_images.length > 1" :items="post.post_images"
+                        class="w-full max-w-4xl mx-auto p-5">
+                        <div class="w-full">
+                            <img :src="item" :alt="`Post image`"
+                                class="w-full h-auto max-h-[480px] md:max-h-[600px] object-cover rounded-lg"
+                                loading="lazy">
+                        </div>
+                    </UCarousel>
+
+                    <template #content>
+                        <div class="w-full h-full flex items-center justify-center p-4">
+                            <UCarousel v-slot="{ item }" :dots="post.post_images.length > 1" :items="post.post_images"
+                                class="w-full flex items-center justify-center">
+                                <div class="flex items-center justify-center w-full">
+                                    <img :src="item" alt="Post image"
+                                        class="max-w-full max-h-[80vh] w-auto h-auto object-contain rounded-lg"
+                                        loading="lazy" />
+                                </div>
+                            </UCarousel>
+                        </div>
+                    </template>
+                </UModal>
             </div>
 
-            <!-- Actions -->
-            <footer class="flex items-center justify-between px-4 py-3">
+
+            <!-- Actions - clickable to post detail -->
+            <footer class="flex items-center justify-between px-4 py-3 cursor-pointer" @click="navigateToPost(post.id)">
                 <div class="flex items-center gap-6">
-                    <!-- Like -->
-                    <button class="flex items-center gap-2 group">
+                    <!-- Like Button -->
+                    <button @click="toggleLike(post, $event)" class="flex items-center gap-2 hover:cursor-pointer group"
+                        :disabled="isLikeSubmitting">
                         <UIcon name="i-heroicons-heart-solid"
-                            class="w-5 h-5 text-gray-500 group-hover:text-red-500 transition-colors" />
+                            :class="[!post.is_liked ? 'w-5 h-5 text-gray-500 group-hover:text-red-500 transition-colors' : 'w-5 h-5 text-red-500 group-hover:text-red-800 transition-colors']" />
                         <span class="text-sm text-gray-600 dark:text-gray-400">
                             {{ post.likes_count }}
+                        </span>
+                    </button>
+
+                    <!-- Comment Button -->
+                    <button class="flex items-center gap-2 group">
+                        <UIcon name="i-heroicons-chat-bubble-oval-left"
+                            class="w-5 h-5 text-gray-500 group-hover:text-blue-500 transition-colors" />
+                        <span class="text-sm text-gray-600 dark:text-gray-400">
+                            {{ post.comments_count }}
                         </span>
                     </button>
                 </div>
@@ -206,7 +228,9 @@ const closeModal = () => {
                         Delete
                     </UButton>
                 </div>
+
             </div>
+
         </template>
     </UModal>
 </template>

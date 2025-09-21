@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import * as v from "valibot";
+import { loginSchema } from '@/validations'
 import loginImage from '~/assets/images/auth.jpg'
 import logoDark from '~/assets/images/logo_dark.png'
 import logoLight from '~/assets/images/logo_light.png'
@@ -16,11 +16,6 @@ const isLoading = ref(false)
 const auth = useAuthStore()
 const authCall = useAuth()
 const toast = useToast();
-
-const schema = v.object({
-  credential: v.pipe(v.string(), v.nonEmpty("Username or Email is required")),
-  password: v.pipe(v.string(), v.nonEmpty("Password is required")),
-});
 
 const state = reactive({
   credential: "",
@@ -50,9 +45,9 @@ async function onSubmit() {
 
     await navigateTo('/')
   } catch (error: any) {
-    toast.add({
+    toast?.add?.({
       title: "Login Failed",
-      description: error.message || "Failed to login please try again later",
+      description: error?.message?.toString() || "Failed to login please try again later",
       color: "error",
     })
   } finally {
@@ -72,7 +67,7 @@ async function onSubmit() {
         </div>
 
         <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
-        <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+        <UForm :schema="loginSchema" :state="state" class="space-y-4" @submit="onSubmit">
           <UFormField label="Username or Email" name="credential">
             <UInput v-model="state.credential" color="neutral" placeholder="Enter username or email" class="w-full"
               size="lg" />

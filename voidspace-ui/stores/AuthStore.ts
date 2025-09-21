@@ -1,13 +1,7 @@
 import { defineStore } from "pinia";
 import { jwtDecode } from "jwt-decode";
-import { useUsers, type User as UserRes } from "~/composables/useUsers";
-
-interface User {
-  id?: number;
-  username: string;
-  profile: Profile;
-  createdAt?: string;
-}
+import { useUser } from "~/composables/useUser";
+import type { User } from "@/types";
 
 interface JWTClaims {
   ID: string;
@@ -15,42 +9,21 @@ interface JWTClaims {
   exp: number;
 }
 
-interface User {
-  id?: number;
-  username: string;
-  profile: Profile;
-}
-
-interface Profile {
-  displayName: string;
-  bio: string;
-  avatarUrl: string;
-  location: string;
-  bannerUrl: string;
-  followers: string;
-  following: string;
-}
-
-interface JWTClaims {
-  ID: string;
-  Username: string;
-  exp: number;
-}
-
-function mapUser(resData: UserRes): User {
+function mapUser(resData: User): User {
   return {
     id: resData.id,
     username: resData.username,
     profile: {
-      displayName: resData.profile.display_name,
+      display_name: resData.profile.display_name,
       bio: resData.profile.bio,
-      avatarUrl: resData.profile.avatar_url,
-      bannerUrl: resData.profile.banner_url,
+      avatar_url: resData.profile.avatar_url,
+      banner_url: resData.profile.banner_url,
       location: resData.profile.location,
-      followers: resData.profile.followers.toString(),
-      following: resData.profile.following.toString(),
+      followers: resData.profile.followers,
+      following: resData.profile.following,
     },
-    createdAt: resData.created_at,
+    created_at: resData.created_at,
+    is_followed: false,
   };
 }
 
@@ -62,7 +35,7 @@ export const useAuthStore = defineStore(
     const expiresIn = ref(0);
     const isLoggedIn = ref(false);
     const authApi = useAuth();
-    const usersApi = useUsers();
+    const usersApi = useUser();
 
     async function login(token: string, expires: number) {
       accessToken.value = token;
@@ -74,14 +47,16 @@ export const useAuthStore = defineStore(
       user.value = {
         id: Number(decoded.ID),
         username: decoded.Username,
+        is_followed: false,
+        created_at: "",
         profile: {
-          displayName: "",
+          display_name: "",
           bio: "",
-          avatarUrl: "",
+          avatar_url: "",
           location: "",
-          bannerUrl: "",
-          followers: "0",
-          following: "0",
+          banner_url: "",
+          followers: 0,
+          following: 0,
         },
       };
 

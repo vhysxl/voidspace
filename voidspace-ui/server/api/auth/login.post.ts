@@ -23,7 +23,6 @@ export default defineEventHandler(async (event) => {
       setHeader(event, "set-cookie", setCookieHeader);
     }
 
-    //langsung masuk block catch pake custom biar bisa baca astoge
     if (!response.ok || !data.success) {
       throw createError({
         statusCode: response.status,
@@ -31,12 +30,11 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const successData = data as LoginResponse;
-    return successData;
+    return data;
   } catch (error: any) {
     throw createError({
-      statusCode: error.status || 500,
-      statusMessage: error.detail || "Login failed",
+      statusCode: error.statusCode || 500,
+      statusMessage: error.statusMessage || error.message || "Login failed",
     });
   }
 });

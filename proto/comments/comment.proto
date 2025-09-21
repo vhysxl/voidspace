@@ -8,7 +8,7 @@ option go_package = "./comments;comments";
 
 service CommentService {
     rpc CreateComment(CreateCommentRequest) returns (CommentResponse);
-    rpc DeleteComment(DeleteCommentRequest) returns (google.protobuf.Empty);
+    rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse);
     rpc AccountDeletionHandle(google.protobuf.Empty) returns (google.protobuf.Empty);
     rpc GetAllCommentsByPostID (GetAllCommentsByPostIDRequest) returns (GetBatchCommentsResponse);
     rpc GetAllCommentsByUserID (GetAllCommentsByUserIDRequest) returns (GetBatchCommentsResponse);
@@ -39,6 +39,10 @@ message CommentResponse {
   int32 user_id = 3;
   int32 post_id = 4;
   google.protobuf.Timestamp created_at = 5;  
+}
+
+message DeleteCommentResponse {
+  int32 postId = 1;
 }
 
 message GetBatchCommentsResponse {

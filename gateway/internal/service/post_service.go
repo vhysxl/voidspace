@@ -52,13 +52,14 @@ func (ps *PostService) Create(ctx context.Context, username string, userID strin
 	}
 
 	return &models.Post{
-		ID:         int(res.GetId()),
-		Content:    res.GetContent(),
-		UserID:     int(res.GetUserId()),
-		PostImages: res.GetPostImages(),
-		LikesCount: int(res.GetLikesCount()),
-		CreatedAt:  res.GetCreatedAt().AsTime(),
-		UpdatedAt:  res.GetUpdatedAt().AsTime(),
+		ID:            int(res.GetId()),
+		Content:       res.GetContent(),
+		UserID:        int(res.GetUserId()),
+		PostImages:    res.GetPostImages(),
+		LikesCount:    int(res.GetLikesCount()),
+		CommentsCount: int(res.GetCommentsCount()),
+		CreatedAt:     res.GetCreatedAt().AsTime(),
+		UpdatedAt:     res.GetUpdatedAt().AsTime(),
 	}, nil
 }
 
@@ -97,17 +98,8 @@ func (ps *PostService) GetPost(ctx context.Context, req *models.GetPostRequest, 
 
 	user := utils.UserMapper(userRes)
 
-	return &models.Post{
-		ID:         int(postRes.GetId()),
-		Content:    postRes.GetContent(),
-		UserID:     int(postRes.GetUserId()),
-		PostImages: postRes.GetPostImages(),
-		LikesCount: int(postRes.GetLikesCount()),
-		CreatedAt:  postRes.GetCreatedAt().AsTime(),
-		UpdatedAt:  postRes.GetUpdatedAt().AsTime(),
-		Author:     &user,
-		IsLiked:    postRes.GetIsLiked(),
-	}, nil
+	post := utils.PostMapper(postRes, &user)
+	return &post, nil
 }
 
 func (ps *PostService) Update(ctx context.Context, req *models.PostRequest, postID int, username string, userID string) error {
@@ -185,13 +177,14 @@ func (ps *PostService) GetUserPosts(ctx context.Context, username string) (*mode
 	posts := make([]models.Post, 0, len(res.GetPosts()))
 	for _, post := range res.GetPosts() {
 		posts = append(posts, models.Post{
-			ID:         int(post.GetId()),
-			Content:    post.GetContent(),
-			UserID:     int(post.GetUserId()),
-			PostImages: post.GetPostImages(),
-			LikesCount: int(post.GetLikesCount()),
-			CreatedAt:  post.GetCreatedAt().AsTime(),
-			UpdatedAt:  post.GetUpdatedAt().AsTime(),
+			ID:            int(post.GetId()),
+			Content:       post.GetContent(),
+			UserID:        int(post.GetUserId()),
+			PostImages:    post.GetPostImages(),
+			CommentsCount: int(post.GetCommentsCount()),
+			LikesCount:    int(post.GetLikesCount()),
+			CreatedAt:     post.GetCreatedAt().AsTime(),
+			UpdatedAt:     post.GetUpdatedAt().AsTime(),
 		})
 	}
 	return &models.GetFeedResponse{

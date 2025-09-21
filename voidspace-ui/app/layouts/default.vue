@@ -11,7 +11,6 @@ const auth = useAuthStore()
 const activePath = route.path
 const menuItems = computed(() => [
   { label: "Home", href: "/", icon: HomeIcon },
-  { label: "Notifications", href: "/notifications", icon: BellIcon, badge: 3 },
   { label: "Likes", href: "/likes", icon: HandThumbUpIcon },
   { label: "Profile", href: auth.isLoggedIn ? `/user/${auth.user?.username}` : `/auth/login`, icon: UserCircleIcon },
 ])
@@ -27,7 +26,7 @@ const isDark = computed({
   },
 });
 
-const items = ref < DropdownMenuItem[] > ([
+const items = ref<DropdownMenuItem[]>([
   {
     label: 'Logout',
     icon: 'i-lucide-log-out',
@@ -61,12 +60,10 @@ const items = ref < DropdownMenuItem[] > ([
               <!-- Trigger button untuk dropdown -->
               <div
                 class="flex items-center space-x-3 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg p-2 transition-colors">
-                <UAvatar size="lg"
-                  :src="auth.user?.profile?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.profile?.displayName || auth.user?.username || 'U')}`"
-                  :alt="auth.user?.profile?.displayName || auth.user?.username" />
+                <UserAvatar v-if="auth.user" size="xl" :user="auth.user" />
                 <div class="flex flex-col min-w-0 flex-1">
                   <span class="font-semibold text-sm truncate">
-                    {{ auth.user?.profile?.displayName || auth.user?.username }}
+                    {{ auth.user?.profile?.display_name || auth.user?.username }}
                   </span>
                   <span class="text-xs text-neutral-500 truncate">
                     @{{ auth.user?.username }}

@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"time"
 	"voidspaceGateway/internal/models"
 	postpb "voidspaceGateway/proto/generated/posts"
 	userpb "voidspaceGateway/proto/generated/users"
+	"voidspaceGateway/utils"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc/metadata"
@@ -45,7 +45,7 @@ func (fs *FeedService) GetGlobalFeed(ctx context.Context, req *models.GetGlobalF
 	//    This returns only post data (id, content, user_id, etc.),
 	//    but it does not include the full user info (username, profile).
 	postRes, err := fs.PostClient.GetGlobalFeed(ctx, &postpb.GetGlobalFeedRequest{
-		CursorID: int32(req.CursorUserID),
+		CursorID: int32(req.CursorID),
 		Cursor:   timestamppb.New(req.Cursor),
 	})
 	if err != nil {
@@ -124,17 +124,7 @@ func (fs *FeedService) GetGlobalFeed(ctx context.Context, req *models.GetGlobalF
 		}
 
 		// Combine post data with enriched author info.
-		posts = append(posts, models.Post{
-			ID:         int(post.GetId()),
-			Content:    post.GetContent(),
-			UserID:     int(post.GetUserId()),
-			Author:     user, // This is the enriched user info
-			PostImages: post.GetPostImages(),
-			LikesCount: int(post.GetLikesCount()),
-			CreatedAt:  post.GetCreatedAt().AsTime(),
-			UpdatedAt:  post.GetUpdatedAt().AsTime(),
-			IsLiked:    post.GetIsLiked(),
-		})
+		posts = append(posts, utils.PostMapper(post, user))
 	}
 
 	// 7. Return aggregated response containing posts + author details.
@@ -157,31 +147,23 @@ func (fs *FeedService) GetFollowFeed(ctx context.Context, username string, userI
 
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	//get follows
-
 	folRes, err := fs.UserClient.GetUsersFollowedById(ctx, &userpb.GetUserByIDRequest{})
 	if err != nil {
 		fs.Logger.Error("failed to call UserService.GetUserFollowedById", zap.Error(err))
 		return nil, err
 	}
 
-	fmt.Println(folRes)
-
 	data := &postpb.GetFeedByUserIDsRequest{
 		UserIds:  folRes.UserIds,
 		Cursor:   timestamppb.New(req.Cursor),
-		CursorID: int32(req.CursorUserID),
+		CursorID: int32(req.CursorID),
 	}
-
-	fmt.Println(data)
 
 	postRes, err := fs.PostClient.GetFeedByUserIDs(ctx, data)
 	if err != nil {
 		fs.Logger.Error("failed to call PostService.GetGlobalFeed", zap.Error(err))
 		return nil, err
 	}
-
-	fmt.Println(postRes)
 
 	if len(postRes.Posts) == 0 {
 		return &models.GetFeedResponse{
@@ -240,22 +222,11 @@ func (fs *FeedService) GetFollowFeed(ctx context.Context, username string, userI
 			}
 		}
 
-		posts = append(posts, models.Post{
-			ID:         int(post.GetId()),
-			Content:    post.GetContent(),
-			UserID:     int(post.GetUserId()),
-			Author:     user,
-			PostImages: post.GetPostImages(),
-			LikesCount: int(post.GetLikesCount()),
-			CreatedAt:  post.GetCreatedAt().AsTime(),
-			UpdatedAt:  post.GetUpdatedAt().AsTime(),
-			IsLiked:    post.GetIsLiked(),
-		})
+		posts = append(posts, utils.PostMapper(post, user))
 	}
 
 	return &models.GetFeedResponse{
 		Posts:   posts,
 		HasMore: postRes.GetHasMore(),
 	}, nil
-
 }

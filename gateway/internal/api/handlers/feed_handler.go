@@ -1,11 +1,10 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 	"voidspaceGateway/internal/api/responses"
-	"voidspaceGateway/internal/constants"
 	"voidspaceGateway/internal/models"
 	"voidspaceGateway/internal/service"
 	"voidspaceGateway/utils"
@@ -42,10 +41,34 @@ func (fh *FeedHandler) GetGlobalFeed(c echo.Context) error {
 	userID, _ := c.Get("ID").(string)
 	username, _ := c.Get("username").(string)
 
-	f := new(models.GetGlobalFeedReq)
-	err := c.Bind(f)
-	if err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
+	cursor := c.QueryParam("cursor")
+	cursorID := c.QueryParam("cursorid")
+
+	var cursorTime time.Time
+	var cursorIDInt int
+
+	// Convert cursor string to time.Time
+	if cursor != "" {
+		if parsedTime, err := time.Parse(time.RFC3339, cursor); err == nil {
+			cursorTime = parsedTime
+		} else {
+			// Jika gagal parse RFC3339, coba parse sebagai Unix timestamp
+			if timestamp, err := strconv.ParseInt(cursor, 10, 64); err == nil {
+				parsedTime := time.Unix(timestamp, 0)
+				cursorTime = parsedTime
+			}
+		}
+	}
+
+	if cursorID != "" {
+		if id, err := strconv.Atoi(cursorID); err == nil {
+			cursorIDInt = id
+		}
+	}
+
+	f := &models.GetGlobalFeedReq{
+		Cursor:   cursorTime,
+		CursorID: cursorIDInt,
 	}
 
 	res, err := fh.FeedService.GetGlobalFeed(ctx, f, username, userID)
@@ -64,12 +87,34 @@ func (fh *FeedHandler) GetFollowFeed(c echo.Context) error {
 	userID, _ := c.Get("ID").(string)
 	username, _ := c.Get("username").(string)
 
-	fmt.Println("hitted")
+	cursor := c.QueryParam("cursor")
+	cursorID := c.QueryParam("cursorid")
 
-	f := new(models.GetFollowFeedReq)
-	err := c.Bind(f)
-	if err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
+	var cursorTime time.Time
+	var cursorIDInt int
+
+	// Convert cursor string to time.Time
+	if cursor != "" {
+		if parsedTime, err := time.Parse(time.RFC3339, cursor); err == nil {
+			cursorTime = parsedTime
+		} else {
+			// Jika gagal parse RFC3339, coba parse sebagai Unix timestamp
+			if timestamp, err := strconv.ParseInt(cursor, 10, 64); err == nil {
+				parsedTime := time.Unix(timestamp, 0)
+				cursorTime = parsedTime
+			}
+		}
+	}
+
+	if cursorID != "" {
+		if id, err := strconv.Atoi(cursorID); err == nil {
+			cursorIDInt = id
+		}
+	}
+
+	f := &models.GetFollowFeedReq{
+		Cursor:   cursorTime,
+		CursorID: cursorIDInt,
 	}
 
 	res, err := fh.FeedService.GetFollowFeed(ctx, username, userID, f)

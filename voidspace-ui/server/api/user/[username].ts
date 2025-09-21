@@ -1,9 +1,24 @@
+import { authData } from "@/utils/authParser";
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const username = event.context.params?.username;
 
+  const authCookie = getCookie(event, "auth");
+  let token;
+
   if (!username) {
     throw createError({ statusCode: 400, statusMessage: "Username required" });
+  }
+
+  //decode cookie
+  if (authCookie) {
+    const auth = authData(authCookie);
+    {
+    }
+    token = auth.accessToken;
+  } else {
+    throw createError({ statusCode: 401, statusMessage: "Unauthorized" });
   }
 
   try {
@@ -12,6 +27,7 @@ export default defineEventHandler(async (event) => {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": config.apiSecret,
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       credentials: "include",
     });

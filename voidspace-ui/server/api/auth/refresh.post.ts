@@ -7,20 +7,15 @@ export default defineEventHandler(async (event) => {
   try {
     const clientCookies = getHeader(event, "cookie");
 
-    const response: RefreshResponse = await $fetch(
-      `${config.apiUrl}/auth/refresh`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": config.apiSecret,
-          ...(clientCookies && { cookie: clientCookies }),
-        },
-        credentials: "include",
-      }
-    );
-
-    return response;
+    return await $fetch<RefreshResponse>(`${config.apiUrl}/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": config.apiSecret,
+        ...(clientCookies && { cookie: clientCookies }),
+      },
+      credentials: "include",
+    });
   } catch (error: any) {
     throw createError({
       statusCode: error.status || 500,

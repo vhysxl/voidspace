@@ -19,12 +19,13 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	uploadHandler := handlers.NewUploadHandler(app.ContextTimeout, app.Logger, app.Validator, app.UploadService)
 	authMiddleware := middleware.AuthMiddleware((app.Config.PublicKey))
 	optionalAuthMiddleware := middleware.OptionalAuthMiddleware(app.Config.PublicKey)
+	apiMiddleware := middleware.ApiMiddleware(app.Config.ApiSecret)
 
 	api := e.Group("/api/v1")
+	api.Use(apiMiddleware)
 
 	// Auth group
 	auth := api.Group("/auth")
-	auth.Use(middleware.ApiMiddleware("palalobautai"))
 	auth.POST("/register", authHandler.Register)
 	auth.POST("/login", authHandler.Login)
 	auth.POST("/logout", authHandler.Logout)
@@ -83,13 +84,14 @@ func SetupRoutes(app *bootstrap.Application, e *echo.Echo) {
 	upload.POST("", uploadHandler.GenerateSignedURL)
 
 	//Comment Group
+	//protected
 	comment := api.Group("/comment")
 	comment.Use(authMiddleware)
 	comment.POST("", commentHandler.Create)
 	comment.DELETE("/:id", commentHandler.Delete)
+
+	// comment public
 	commentPublic := api.Group("/comment")
 	commentPublic.GET("/post/:id", commentHandler.GetAllByPostID)
 	commentPublic.GET("/user/:username", commentHandler.GetAllByUser)
-
-	//Moderation Group (soon)
 }

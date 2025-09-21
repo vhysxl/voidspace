@@ -12,13 +12,14 @@ type GetPostRequest struct {
 }
 
 type Post struct {
-	ID         int       `json:"id"`
-	Content    string    `json:"content"`
-	UserID     int       `json:"user_id"`
-	PostImages []string  `json:"post_images"`
-	LikesCount int       `json:"likes_count"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	Author     *User     `json:"author"`
-	IsLiked    bool      `json:"is_liked"`
+	ID            int       `json:"id"`
+	Content       string    `json:"content"`
+	UserID        int       `json:"user_id"`
+	PostImages    []string  `json:"post_images"`
+	LikesCount    int       `json:"likes_count"`
+	CommentsCount int       `json:"comments_count"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	Author        *User     `json:"author"`
+	IsLiked       bool      `json:"is_liked"`
 }

@@ -285,6 +285,50 @@ func (x *CommentResponse) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type DeleteCommentResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PostId        int32                  `protobuf:"varint,1,opt,name=postId,proto3" json:"postId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCommentResponse) Reset() {
+	*x = DeleteCommentResponse{}
+	mi := &file_comments_comment_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCommentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCommentResponse) ProtoMessage() {}
+
+func (x *DeleteCommentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_comments_comment_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCommentResponse.ProtoReflect.Descriptor instead.
+func (*DeleteCommentResponse) Descriptor() ([]byte, []int) {
+	return file_comments_comment_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *DeleteCommentResponse) GetPostId() int32 {
+	if x != nil {
+		return x.PostId
+	}
+	return 0
+}
+
 type GetBatchCommentsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Comments      []*CommentResponse     `protobuf:"bytes,1,rep,name=comments,proto3" json:"comments,omitempty"`
@@ -295,7 +339,7 @@ type GetBatchCommentsResponse struct {
 
 func (x *GetBatchCommentsResponse) Reset() {
 	*x = GetBatchCommentsResponse{}
-	mi := &file_comments_comment_proto_msgTypes[5]
+	mi := &file_comments_comment_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -307,7 +351,7 @@ func (x *GetBatchCommentsResponse) String() string {
 func (*GetBatchCommentsResponse) ProtoMessage() {}
 
 func (x *GetBatchCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_comments_comment_proto_msgTypes[5]
+	mi := &file_comments_comment_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -320,7 +364,7 @@ func (x *GetBatchCommentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBatchCommentsResponse.ProtoReflect.Descriptor instead.
 func (*GetBatchCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_comments_comment_proto_rawDescGZIP(), []int{5}
+	return file_comments_comment_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetBatchCommentsResponse) GetComments() []*CommentResponse {
@@ -358,13 +402,15 @@ const file_comments_comment_proto_rawDesc = "" +
 	"\auser_id\x18\x03 \x01(\x05R\x06userId\x12\x17\n" +
 	"\apost_id\x18\x04 \x01(\x05R\x06postId\x129\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"o\n" +
+	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"/\n" +
+	"\x15DeleteCommentResponse\x12\x16\n" +
+	"\x06postId\x18\x01 \x01(\x05R\x06postId\"o\n" +
 	"\x18GetBatchCommentsResponse\x128\n" +
 	"\bcomments\x18\x01 \x03(\v2\x1c.comments.v1.CommentResponseR\bcomments\x12\x19\n" +
-	"\bhas_more\x18\x02 \x01(\bR\ahasMore2\xd1\x03\n" +
+	"\bhas_more\x18\x02 \x01(\bR\ahasMore2\xdd\x03\n" +
 	"\x0eCommentService\x12P\n" +
-	"\rCreateComment\x12!.comments.v1.CreateCommentRequest\x1a\x1c.comments.v1.CommentResponse\x12J\n" +
-	"\rDeleteComment\x12!.comments.v1.DeleteCommentRequest\x1a\x16.google.protobuf.Empty\x12G\n" +
+	"\rCreateComment\x12!.comments.v1.CreateCommentRequest\x1a\x1c.comments.v1.CommentResponse\x12V\n" +
+	"\rDeleteComment\x12!.comments.v1.DeleteCommentRequest\x1a\".comments.v1.DeleteCommentResponse\x12G\n" +
 	"\x15AccountDeletionHandle\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\x12k\n" +
 	"\x16GetAllCommentsByPostID\x12*.comments.v1.GetAllCommentsByPostIDRequest\x1a%.comments.v1.GetBatchCommentsResponse\x12k\n" +
 	"\x16GetAllCommentsByUserID\x12*.comments.v1.GetAllCommentsByUserIDRequest\x1a%.comments.v1.GetBatchCommentsResponseB\x15Z\x13./comments;commentsb\x06proto3"
@@ -381,30 +427,31 @@ func file_comments_comment_proto_rawDescGZIP() []byte {
 	return file_comments_comment_proto_rawDescData
 }
 
-var file_comments_comment_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_comments_comment_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_comments_comment_proto_goTypes = []any{
 	(*CreateCommentRequest)(nil),          // 0: comments.v1.CreateCommentRequest
 	(*DeleteCommentRequest)(nil),          // 1: comments.v1.DeleteCommentRequest
 	(*GetAllCommentsByPostIDRequest)(nil), // 2: comments.v1.GetAllCommentsByPostIDRequest
 	(*GetAllCommentsByUserIDRequest)(nil), // 3: comments.v1.GetAllCommentsByUserIDRequest
 	(*CommentResponse)(nil),               // 4: comments.v1.CommentResponse
-	(*GetBatchCommentsResponse)(nil),      // 5: comments.v1.GetBatchCommentsResponse
-	(*timestamppb.Timestamp)(nil),         // 6: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                 // 7: google.protobuf.Empty
+	(*DeleteCommentResponse)(nil),         // 5: comments.v1.DeleteCommentResponse
+	(*GetBatchCommentsResponse)(nil),      // 6: comments.v1.GetBatchCommentsResponse
+	(*timestamppb.Timestamp)(nil),         // 7: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                 // 8: google.protobuf.Empty
 }
 var file_comments_comment_proto_depIdxs = []int32{
-	6, // 0: comments.v1.CommentResponse.created_at:type_name -> google.protobuf.Timestamp
+	7, // 0: comments.v1.CommentResponse.created_at:type_name -> google.protobuf.Timestamp
 	4, // 1: comments.v1.GetBatchCommentsResponse.comments:type_name -> comments.v1.CommentResponse
 	0, // 2: comments.v1.CommentService.CreateComment:input_type -> comments.v1.CreateCommentRequest
 	1, // 3: comments.v1.CommentService.DeleteComment:input_type -> comments.v1.DeleteCommentRequest
-	7, // 4: comments.v1.CommentService.AccountDeletionHandle:input_type -> google.protobuf.Empty
+	8, // 4: comments.v1.CommentService.AccountDeletionHandle:input_type -> google.protobuf.Empty
 	2, // 5: comments.v1.CommentService.GetAllCommentsByPostID:input_type -> comments.v1.GetAllCommentsByPostIDRequest
 	3, // 6: comments.v1.CommentService.GetAllCommentsByUserID:input_type -> comments.v1.GetAllCommentsByUserIDRequest
 	4, // 7: comments.v1.CommentService.CreateComment:output_type -> comments.v1.CommentResponse
-	7, // 8: comments.v1.CommentService.DeleteComment:output_type -> google.protobuf.Empty
-	7, // 9: comments.v1.CommentService.AccountDeletionHandle:output_type -> google.protobuf.Empty
-	5, // 10: comments.v1.CommentService.GetAllCommentsByPostID:output_type -> comments.v1.GetBatchCommentsResponse
-	5, // 11: comments.v1.CommentService.GetAllCommentsByUserID:output_type -> comments.v1.GetBatchCommentsResponse
+	5, // 8: comments.v1.CommentService.DeleteComment:output_type -> comments.v1.DeleteCommentResponse
+	8, // 9: comments.v1.CommentService.AccountDeletionHandle:output_type -> google.protobuf.Empty
+	6, // 10: comments.v1.CommentService.GetAllCommentsByPostID:output_type -> comments.v1.GetBatchCommentsResponse
+	6, // 11: comments.v1.CommentService.GetAllCommentsByUserID:output_type -> comments.v1.GetBatchCommentsResponse
 	7, // [7:12] is the sub-list for method output_type
 	2, // [2:7] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -423,7 +470,7 @@ func file_comments_comment_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_comments_comment_proto_rawDesc), len(file_comments_comment_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

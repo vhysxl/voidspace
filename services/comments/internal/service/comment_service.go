@@ -61,7 +61,7 @@ func (ch *CommentHandler) CreateComment(ctx context.Context, req *pb.CreateComme
 	return utils.CommentMapper(comment), nil
 }
 
-func (ch *CommentHandler) DeleteComment(ctx context.Context, req *pb.DeleteCommentRequest) (*emptypb.Empty, error) {
+func (ch *CommentHandler) DeleteComment(ctx context.Context, req *pb.DeleteCommentRequest) (*pb.DeleteCommentResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, ch.ContextTimeout)
 	defer cancel()
 
@@ -71,7 +71,7 @@ func (ch *CommentHandler) DeleteComment(ctx context.Context, req *pb.DeleteComme
 		return nil, status.Error(codes.Internal, ErrFailedGetUserID)
 	}
 
-	err := ch.CommentUsecase.DeleteComment(ctx, req.CommentId, int32(userID))
+	res, err := ch.CommentUsecase.DeleteComment(ctx, req.CommentId, int32(userID))
 	if err != nil {
 		ch.Logger.Error(ErrUsecase, zap.Error(err))
 		switch err {
@@ -84,7 +84,7 @@ func (ch *CommentHandler) DeleteComment(ctx context.Context, req *pb.DeleteComme
 		}
 	}
 
-	return &emptypb.Empty{}, nil
+	return &pb.DeleteCommentResponse{PostId: int32(res)}, nil
 }
 
 func (ch *CommentHandler) GetAllCommentsByPostID(ctx context.Context, req *pb.GetAllCommentsByPostIDRequest) (*pb.GetBatchCommentsResponse, error) {

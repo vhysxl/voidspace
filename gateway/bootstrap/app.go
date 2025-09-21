@@ -20,6 +20,7 @@ import (
 
 type Application struct {
 	Config         *config.Config
+	ApiSecret      string
 	ContextTimeout time.Duration
 	Validator      *validator.Validate
 	Logger         *zap.Logger
@@ -88,6 +89,7 @@ func App() (*Application, error) {
 
 	return &Application{
 		Config:         config,
+		ApiSecret:      config.ApiSecret,
 		ContextTimeout: time.Duration(config.ContextTimeout) * time.Second,
 		Validator:      validator,
 		Logger:         logger,

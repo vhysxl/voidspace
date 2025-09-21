@@ -15,7 +15,7 @@ type commentUsecase struct {
 type CommentUsecase interface {
 	CreateComment(ctx context.Context, comment *domain.Comment) (*domain.Comment, error)
 	AccountDeletionHandle(ctx context.Context, userId int32) error
-	DeleteComment(ctx context.Context, commentID, userID int32) error
+	DeleteComment(ctx context.Context, commentID, userID int32) (int, error)
 	GetAllCommentsByPostID(ctx context.Context, postID int32) ([]*domain.Comment, error)
 	GetAllCommentsByUserID(ctx context.Context, userID int32) ([]*domain.Comment, error)
 }
@@ -36,17 +36,17 @@ func (c *commentUsecase) CreateComment(ctx context.Context, comment *domain.Comm
 	return c.commentRepository.Create(ctx, comment)
 }
 
-func (c *commentUsecase) DeleteComment(ctx context.Context, commentID, userID int32) error {
+func (c *commentUsecase) DeleteComment(ctx context.Context, commentID, userID int32) (int, error) {
 	ctx, cancel := context.WithTimeout(ctx, c.contextTimeout)
 	defer cancel()
 
 	comment, err := c.commentRepository.GetCommentByID(ctx, commentID)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	if comment.UserID != userID {
-		return domain.ErrUnauthorizedAction
+		return 0, domain.ErrUnauthorizedAction
 	}
 
 	return c.commentRepository.Delete(ctx, commentID)

@@ -15,7 +15,7 @@ type Comment struct {
 
 type CommentRepository interface {
 	Create(ctx context.Context, comment *Comment) (*Comment, error)
-	Delete(ctx context.Context, commentID int32) error
+	Delete(ctx context.Context, commentID int32) (int, error)
 	DeleteAllComments(ctx context.Context, userId int32) error
 	GetCommentByID(ctx context.Context, commentID int32) (*Comment, error)
 	GetAllByPostID(ctx context.Context, postID int32) ([]*Comment, error)
