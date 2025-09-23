@@ -8,11 +8,11 @@ import (
 	"time"
 	"voidspace/users/config"
 	"voidspace/users/database"
+	"voidspace/users/internal/domain"
 	"voidspace/users/internal/repository"
 	"voidspace/users/internal/usecase"
 	"voidspace/users/logger"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
@@ -21,17 +21,16 @@ import (
 type Application struct {
 	Config               *config.Config
 	DB                   *sql.DB
-	Validator            *validator.Validate
 	ContextTimeout       time.Duration
 	AccessTokenDuration  time.Duration
 	RefreshTokenDuration time.Duration
 	PrivateKey           *rsa.PrivateKey
 	Logger               *zap.Logger
-	//use case
-	FollowUsecase  usecase.FollowUsecase
+	// use cases
+	FollowUsecase  domain.FollowUsecase
 	AuthUsecase    usecase.AuthUsecase
-	ProfileUsecase usecase.ProfileUsecase
-	UserUsecase    usecase.UserUsecase
+	ProfileUsecase domain.ProfileUsecase
+	UserUsecase    domain.UserUsecase
 }
 
 func App() (*Application, error) {
@@ -72,7 +71,7 @@ func App() (*Application, error) {
 		return nil, err
 	}
 
-	//registering repos, usecases and deps to the app
+	// registering repos, usecases and deps to the app
 	userRepo := repository.NewUserRepository(db)
 	profileRepo := repository.NewProfileRepository(db)
 	followRepo := repository.NewFollowRepository(db)
@@ -85,7 +84,6 @@ func App() (*Application, error) {
 	return &Application{
 		Config:               cfg,
 		DB:                   db,
-		Validator:            validator.New(),
 		ContextTimeout:       time.Duration(cfg.ContextTimeout) * time.Second,
 		AccessTokenDuration:  time.Duration(cfg.AccessTokenDuration) * time.Minute,
 		RefreshTokenDuration: time.Duration(cfg.RefreshTokenDuration) * 24 * time.Hour,

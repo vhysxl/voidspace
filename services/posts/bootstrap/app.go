@@ -7,6 +7,7 @@ import (
 	"time"
 	"voidspace/posts/config"
 	"voidspace/posts/database"
+	"voidspace/posts/internal/domain"
 	"voidspace/posts/internal/repository"
 	"voidspace/posts/internal/usecase"
 	"voidspace/posts/logger"
@@ -23,8 +24,8 @@ type Application struct {
 	Logger         *zap.Logger
 	DB             *sql.DB
 	// usecase
-	LikeUsecase usecase.LikeUsecase
-	PostUsecase usecase.PostUsecase
+	LikeUsecase domain.LikeUsecase
+	PostUsecase domain.PostUsecase
 }
 
 func App() (*Application, error) {

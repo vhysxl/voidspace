@@ -33,6 +33,27 @@ export const registerSchema = v.pipe(
   )
 );
 
+export const createPostSchema = v.object({
+  content: v.optional(
+    v.pipe(
+      v.string(),
+      v.maxLength(240, "Display name must be 240 characters or less")
+    )
+  ),
+  postImages: v.optional(
+    v.array(
+      v.pipe(
+        v.file(),
+        v.mimeType(
+          ["image/jpeg", "image/png", "image/webp"],
+          "Format must be JPEG, PNG, or WebP"
+        ),
+        v.maxSize(5 * 1024 * 1024, "File must be maximum 5MB")
+      )
+    )
+  ),
+});
+
 export const editProfileSchema = v.object({
   displayName: v.optional(
     v.pipe(

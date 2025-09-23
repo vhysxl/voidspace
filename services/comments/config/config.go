@@ -19,7 +19,7 @@ type Config struct {
 
 var (
 	envs Config
-	once sync.Once //run once per runtime
+	once sync.Once
 )
 
 func GetConfig() *Config {
@@ -27,7 +27,7 @@ func GetConfig() *Config {
 		envs = initConfig()
 	})
 
-	return &envs //return pointer so envs are One Source of Truth (singleton)
+	return &envs
 }
 
 func initConfig() Config {
@@ -42,15 +42,15 @@ func initConfig() Config {
 	}
 }
 
-func getEnv(key, fallback string) string { //lookup env
+func getEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
 
-	return fallback //use fallback not from .env
+	return fallback
 }
 
-func getIntEnv(key string, fallback int) int { //to parse env to int
+func getIntEnv(key string, fallback int) int {
 	if value, ok := os.LookupEnv(key); ok {
 		if value, err := strconv.Atoi(value); err == nil {
 			return value

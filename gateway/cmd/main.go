@@ -16,6 +16,7 @@ func main() {
 	}
 
 	e := echo.New()
+	e.Use(middleware.BodyLimit("2M"))
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     []string{"http://localhost:3000"},

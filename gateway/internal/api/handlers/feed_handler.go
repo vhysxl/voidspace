@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 	"voidspaceGateway/internal/api/responses"
 	"voidspaceGateway/internal/models"
@@ -38,44 +37,25 @@ func NewFeedHandler(
 func (fh *FeedHandler) GetGlobalFeed(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	userID, _ := c.Get("ID").(string)
-	username, _ := c.Get("username").(string)
+	val := c.Get("authUser")
+	user, _ := val.(*models.AuthUser)
+	if user == nil {
+		user = &models.AuthUser{}
+	}
 
 	cursor := c.QueryParam("cursor")
 	cursorID := c.QueryParam("cursorid")
 
-	var cursorTime time.Time
-	var cursorIDInt int
+	cursorTime, cursorIDInt := utils.ExtractCursor(cursor, cursorID)
 
-	// Convert cursor string to time.Time
-	if cursor != "" {
-		if parsedTime, err := time.Parse(time.RFC3339, cursor); err == nil {
-			cursorTime = parsedTime
-		} else {
-			// Jika gagal parse RFC3339, coba parse sebagai Unix timestamp
-			if timestamp, err := strconv.ParseInt(cursor, 10, 64); err == nil {
-				parsedTime := time.Unix(timestamp, 0)
-				cursorTime = parsedTime
-			}
-		}
-	}
-
-	if cursorID != "" {
-		if id, err := strconv.Atoi(cursorID); err == nil {
-			cursorIDInt = id
-		}
-	}
-
-	f := &models.GetGlobalFeedReq{
+	f := &models.GetGlobalFeedRequest{
 		Cursor:   cursorTime,
 		CursorID: cursorIDInt,
 	}
 
-	res, err := fh.FeedService.GetGlobalFeed(ctx, f, username, userID)
+	res, err := fh.FeedService.GetGlobalFeed(ctx, f, user.ID, user.Username)
 	if err != nil {
-		fh.Logger.Error("failed to fetch feed", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(fh.Logger, c, err, "failed to fetch feed")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, "Get Feed Success", res)
@@ -84,44 +64,25 @@ func (fh *FeedHandler) GetGlobalFeed(c echo.Context) error {
 func (fh *FeedHandler) GetFollowFeed(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	userID, _ := c.Get("ID").(string)
-	username, _ := c.Get("username").(string)
+	val := c.Get("authUser")
+	user, _ := val.(*models.AuthUser)
+	if user == nil {
+		user = &models.AuthUser{}
+	}
 
 	cursor := c.QueryParam("cursor")
 	cursorID := c.QueryParam("cursorid")
 
-	var cursorTime time.Time
-	var cursorIDInt int
+	cursorTime, cursorIDInt := utils.ExtractCursor(cursor, cursorID)
 
-	// Convert cursor string to time.Time
-	if cursor != "" {
-		if parsedTime, err := time.Parse(time.RFC3339, cursor); err == nil {
-			cursorTime = parsedTime
-		} else {
-			// Jika gagal parse RFC3339, coba parse sebagai Unix timestamp
-			if timestamp, err := strconv.ParseInt(cursor, 10, 64); err == nil {
-				parsedTime := time.Unix(timestamp, 0)
-				cursorTime = parsedTime
-			}
-		}
-	}
-
-	if cursorID != "" {
-		if id, err := strconv.Atoi(cursorID); err == nil {
-			cursorIDInt = id
-		}
-	}
-
-	f := &models.GetFollowFeedReq{
+	f := &models.GetFollowFeedRequest{
 		Cursor:   cursorTime,
 		CursorID: cursorIDInt,
 	}
 
-	res, err := fh.FeedService.GetFollowFeed(ctx, username, userID, f)
+	res, err := fh.FeedService.GetFollowFeed(ctx, user.ID, user.Username, f)
 	if err != nil {
-		fh.Logger.Error("failed to fetch feed", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(fh.Logger, c, err, "failed to fetch follow feed")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, "Get Feed Success", res)

@@ -24,7 +24,7 @@ type UpdateProfileRequest struct {
 }
 
 type User struct {
-	ID         int32     `json:"id"`
+	ID         int       `json:"id"`
 	Username   string    `json:"username"`
 	Profile    Profile   `json:"profile"`
 	CreatedAt  time.Time `json:"created_at"`
@@ -37,6 +37,6 @@ type Profile struct {
 	AvatarURL   string `json:"avatar_url"`
 	BannerURL   string `json:"banner_url"`
 	Location    string `json:"location"`
-	Followers   int32  `json:"followers"`
-	Following   int32  `json:"following"`
+	Followers   int    `json:"followers"`
+	Following   int    `json:"following"`
 }

@@ -1,7 +1,7 @@
 package models
 
 type LoginRequest struct {
-	UsernameOrEmail string `json:"usernameoremail" validate:"required,min=3,max=30,alphanum"`
+	UsernameOrEmail string `json:"usernameoremail" validate:"required,min=3,max=50"`
 	Password        string `json:"password" validate:"required"`
 }
 
@@ -15,4 +15,10 @@ type AuthResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 	ExpiresIn    int64  `json:"expires_in"`
+}
+
+// used in middleware
+type AuthUser struct {
+	ID       string
+	Username string
 }

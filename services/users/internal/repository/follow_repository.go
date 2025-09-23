@@ -13,22 +13,16 @@ type followRepository struct {
 }
 
 func NewFollowRepository(db *sql.DB) domain.FollowRepository {
-	return &followRepository{
-		db: db,
-	}
+	return &followRepository{db: db}
 }
 
-// Follow implements domain.FollowRepository.
 func (f *followRepository) Follow(ctx context.Context, updates *domain.Follow) error {
 	result, err := f.db.ExecContext(
 		ctx,
-		`INSERT into user_follows 
-		(user_id, target_user_id) VALUES (?, ?)`,
-		updates.UserID,
-		updates.TargetUserID,
+		`INSERT INTO user_follows (user_id, target_user_id) VALUES (?, ?)`,
+		updates.UserId,
+		updates.TargetUserId,
 	)
-
-	// Handle specific MySQL error such as duplicate entry or foreign key violation
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			switch mysqlErr.Number {
@@ -45,7 +39,6 @@ func (f *followRepository) Follow(ctx context.Context, updates *domain.Follow) e
 	if err != nil {
 		return err
 	}
-
 	if rowsAffected == 0 {
 		return domain.ErrUserNotFound
 	}
@@ -53,18 +46,12 @@ func (f *followRepository) Follow(ctx context.Context, updates *domain.Follow) e
 	return nil
 }
 
-// Unfollow implements domain.FollowRepository.
 func (f *followRepository) Unfollow(ctx context.Context, updates *domain.Follow) error {
 	_, err := f.db.ExecContext(
 		ctx,
 		`DELETE FROM user_follows WHERE user_id = ? AND target_user_id = ?`,
-		updates.UserID,
-		updates.TargetUserID,
+		updates.UserId,
+		updates.TargetUserId,
 	)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

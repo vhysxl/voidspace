@@ -6,6 +6,7 @@ const (
 	ErrInvalidRequest = "Invalid request"
 	ErrInternalServer = "Internal server error"
 	ErrUnauthorized   = "Unauthorized"
+	ErrNoField        = "No fields to update"
 
 	// Auth
 	TokenRefresh    = "Token refreshed successfully"

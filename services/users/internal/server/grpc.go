@@ -2,7 +2,7 @@ package server
 
 import (
 	"voidspace/users/bootstrap"
-	handler "voidspace/users/internal/service"
+	handler "voidspace/users/internal/handler"
 	pb "voidspace/users/proto/generated/users"
 	"voidspace/users/utils/interceptor"
 
@@ -17,7 +17,6 @@ func SetupGRPCServer(app *bootstrap.Application) *grpc.Server {
 
 	authHandler := handler.NewAuthHandler(
 		app.AuthUsecase,
-		app.Validator,
 		app.PrivateKey,
 		app.ContextTimeout,
 		app.AccessTokenDuration,
@@ -29,7 +28,6 @@ func SetupGRPCServer(app *bootstrap.Application) *grpc.Server {
 		app.UserUsecase,
 		app.ProfileUsecase,
 		app.FollowUsecase,
-		app.Validator,
 		app.ContextTimeout,
 		app.Logger,
 	)

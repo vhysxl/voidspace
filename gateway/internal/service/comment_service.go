@@ -37,33 +37,22 @@ func NewCommentService(
 }
 
 // todo: update this distributed trx, saga or 2pc
-
 // distributed trx
-func (cs *CommentsService) Create(ctx context.Context, req *models.CreateCommentReq, userID, username string) (*models.Comments, error) {
+func (cs *CommentsService) Create(ctx context.Context, req *models.CreateCommentRequest, userID, username string) (*models.Comment, error) {
 	ctx, cancel := context.WithTimeout(ctx, cs.ContextTimeout)
 	defer cancel()
 
-	md := metadata.New(map[string]string{
-		"user_id":  userID,
-		"username": username,
-	})
-
+	md := utils.MetaDataHandler(userID, username)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	data := &commentpb.CreateCommentRequest{
-		PostID:  req.PostID,
+		PostId:  int32(req.PostID),
 		Content: req.Content,
 	}
 
 	res, err := cs.CommentClient.CreateComment(ctx, data)
 	if err != nil {
 		cs.Logger.Error("failed to call CommentService.CreateComment", zap.Error(err))
-		return nil, err
-	}
-
-	_, err = cs.PostClient.IncrementCommentCount(ctx, &postpb.UpdateCommentReq{Id: req.PostID})
-	if err != nil {
-		cs.Logger.Error("failed to call PostService.UpdateCommentCount", zap.Error(err))
 		return nil, err
 	}
 
@@ -77,13 +66,7 @@ func (cs *CommentsService) Create(ctx context.Context, req *models.CreateComment
 
 	user := utils.UserMapper(userRes)
 
-	return &models.Comments{
-		CommentID: res.Id,
-		PostID:    res.PostId,
-		Content:   res.Content,
-		Author:    &user,
-		CreatedAt: res.CreatedAt.AsTime(),
-	}, nil
+	return utils.CommentMapper(res, user), nil
 }
 
 // dtributed trx
@@ -91,14 +74,10 @@ func (cs *CommentsService) Delete(ctx context.Context, commentID int32, userID, 
 	ctx, cancel := context.WithTimeout(ctx, cs.ContextTimeout)
 	defer cancel()
 
-	md := metadata.New(map[string]string{
-		"user_id":  userID,
-		"username": username,
-	})
-
+	md := utils.MetaDataHandler(userID, username)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	res, err := cs.CommentClient.DeleteComment(ctx, &commentpb.DeleteCommentRequest{
+	_, err := cs.CommentClient.DeleteComment(ctx, &commentpb.DeleteCommentRequest{
 		CommentId: commentID,
 	})
 	if err != nil {
@@ -106,20 +85,14 @@ func (cs *CommentsService) Delete(ctx context.Context, commentID int32, userID, 
 		return err
 	}
 
-	_, err = cs.PostClient.DecrementCommentCount(ctx, &postpb.UpdateCommentReq{Id: res.GetPostId()})
-	if err != nil {
-		cs.Logger.Error("failed to call PostService.UpdateCommentCount", zap.Error(err))
-		return err
-	}
-
 	return nil
 }
 
-func (cs *CommentsService) GetAllByPostID(ctx context.Context, postID int32) ([]*models.Comments, error) {
+func (cs *CommentsService) GetAllByPostID(ctx context.Context, postID int32) ([]*models.Comment, error) {
 	ctx, cancel := context.WithTimeout(ctx, cs.ContextTimeout)
 	defer cancel()
 
-	res, err := cs.CommentClient.GetAllCommentsByPostID(ctx, &commentpb.GetAllCommentsByPostIDRequest{
+	res, err := cs.CommentClient.GetAllCommentsByPostId(ctx, &commentpb.GetAllCommentsByPostIdRequest{
 		PostId: postID,
 	})
 	if err != nil {
@@ -129,7 +102,7 @@ func (cs *CommentsService) GetAllByPostID(ctx context.Context, postID int32) ([]
 
 	// if empty return empty
 	if len(res.Comments) <= 0 {
-		return []*models.Comments{}, nil
+		return []*models.Comment{}, nil
 	}
 
 	userIDs := make([]int32, 0, len(res.Comments))
@@ -148,26 +121,20 @@ func (cs *CommentsService) GetAllByPostID(ctx context.Context, postID int32) ([]
 
 	userMap := make(map[int32]models.User)
 	for _, u := range usersRes.GetUsers() {
-		userMap[u.GetId()] = utils.UserMapperFromUser(u)
+		userMap[u.GetId()] = *utils.UserMapperFromUser(u)
 	}
 
-	comments := make([]*models.Comments, 0, len(res.GetComments()))
+	comments := make([]*models.Comment, 0, len(res.GetComments()))
 	for _, c := range res.GetComments() {
 		u := userMap[c.GetUserId()]
 
-		comments = append(comments, &models.Comments{
-			CommentID: c.GetId(),
-			PostID:    c.GetPostId(),
-			Content:   c.GetContent(),
-			CreatedAt: c.CreatedAt.AsTime(),
-			Author:    &u,
-		})
+		comments = append(comments, utils.CommentMapper(c, &u))
 	}
 
 	return comments, nil
 }
 
-func (cs *CommentsService) GetAllByUser(ctx context.Context, username string) ([]*models.Comments, error) {
+func (cs *CommentsService) GetAllByUser(ctx context.Context, username string) ([]*models.Comment, error) {
 	ctx, cancel := context.WithTimeout(ctx, cs.ContextTimeout)
 	defer cancel()
 
@@ -177,7 +144,7 @@ func (cs *CommentsService) GetAllByUser(ctx context.Context, username string) ([
 		return nil, err
 	}
 
-	res, err := cs.CommentClient.GetAllCommentsByUserID(ctx, &commentpb.GetAllCommentsByUserIDRequest{
+	res, err := cs.CommentClient.GetAllCommentsByUserId(ctx, &commentpb.GetAllCommentsByUserIdRequest{
 		UserId: userRes.GetUser().GetId(),
 	})
 	if err != nil {
@@ -187,15 +154,9 @@ func (cs *CommentsService) GetAllByUser(ctx context.Context, username string) ([
 
 	user := utils.UserMapperFromUser(userRes.GetUser())
 
-	comments := make([]*models.Comments, 0, len(res.GetComments()))
+	comments := make([]*models.Comment, 0, len(res.GetComments()))
 	for _, c := range res.GetComments() {
-		comments = append(comments, &models.Comments{
-			CommentID: c.GetId(),
-			PostID:    c.GetPostId(),
-			Content:   c.GetContent(),
-			CreatedAt: c.CreatedAt.AsTime(),
-			Author:    &user,
-		})
+		comments = append(comments, utils.CommentMapper(c, user))
 	}
 
 	return comments, nil

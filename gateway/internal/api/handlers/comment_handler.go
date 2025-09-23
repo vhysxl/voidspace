@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -41,26 +40,20 @@ func NewCommentHandler(
 func (ch *CommentHandler) Create(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	ID := c.Get("ID").(string)
-	username := c.Get("username").(string)
+	user := c.Get("authUser").(*models.AuthUser)
 
-	p := new(models.CreateCommentReq)
-	fmt.Println(p)
-	err := c.Bind(p)
-	if err != nil {
+	p := new(models.CreateCommentRequest)
+	if err := c.Bind(p); err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
 	}
 
-	err = ch.Validator.Struct(p)
-	if err != nil {
+	if err := ch.Validator.Struct(p); err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
 	}
 
-	res, err := ch.CommentService.Create(ctx, p, ID, username)
+	res, err := ch.CommentService.Create(ctx, p, user.ID, user.Username)
 	if err != nil {
-		ch.Logger.Error("failed to create comment", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(ch.Logger, c, err, "failed to create comment")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusCreated, constants.CommentSuccess, res)
@@ -69,19 +62,16 @@ func (ch *CommentHandler) Create(c echo.Context) error {
 func (ch *CommentHandler) Delete(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	ID := c.Get("ID").(string)
-	username := c.Get("username").(string)
+	user := c.Get("authUser").(*models.AuthUser)
 
 	commentId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
 	}
 
-	err = ch.CommentService.Delete(ctx, int32(commentId), ID, username)
+	err = ch.CommentService.Delete(ctx, int32(commentId), user.ID, user.Username)
 	if err != nil {
-		ch.Logger.Error("failed to delete comment", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(ch.Logger, c, err, "failed to delete comment")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, constants.CommentDeleteSuccess, nil)
@@ -90,7 +80,6 @@ func (ch *CommentHandler) Delete(c echo.Context) error {
 func (ch *CommentHandler) GetAllByPostID(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	// Get postID from URL parameter
 	postId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
@@ -98,9 +87,7 @@ func (ch *CommentHandler) GetAllByPostID(c echo.Context) error {
 
 	res, err := ch.CommentService.GetAllByPostID(ctx, int32(postId))
 	if err != nil {
-		ch.Logger.Error("failed to get comments by post ID", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(ch.Logger, c, err, "failed to get comments by post ID")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, constants.GetCommentsSuccess, res)
@@ -116,9 +103,7 @@ func (ch *CommentHandler) GetAllByUser(c echo.Context) error {
 
 	res, err := ch.CommentService.GetAllByUser(ctx, username)
 	if err != nil {
-		ch.Logger.Error("failed to get comments by user ID", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(ch.Logger, c, err, "failed to get comments by user ID")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, constants.GetCommentsSuccess, res)

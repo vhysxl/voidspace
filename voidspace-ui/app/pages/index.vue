@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import CreatePostInput from '~/components/feed/CreatePostInput.vue'
 import type { Post } from '@/types'
 import PostCard from '~/components/feed/PostCard.vue'
 import { useFeedAction } from '~/composables/useFeedAction'
@@ -46,27 +45,6 @@ watch(() => activeTab.value, (newTab) => {
 
   refreshFeed();
 }, { immediate: true })
-
-const handlePostCreated = (newPost: Post) => {
-  // Only add to current active tab if it makes sense
-  if (posts.value && activeTab.value === 'for-you') {
-    posts.value.unshift(newPost)
-  }
-  // Don't add to Following tab unless user follows the author
-  // OR refresh the current tab to get updated data
-  else if (activeTab.value === 'following') {
-    // Option 1: Refresh following feed to get proper data
-    refreshFeed()
-
-    // Option 2: Or just don't add it locally, let next refresh handle it
-  }
-}
-const handlePostDeleted = (postId: number) => {
-  // Remove from local array
-  if (posts.value) {
-    posts.value = posts.value.filter(p => p.id !== postId)
-  }
-}
 </script>
 
 <template>
@@ -110,8 +88,10 @@ const handlePostDeleted = (postId: number) => {
         </div>
       </div>
 
+
+
       <div v-else>
-        <PostCard :posts="posts || []" @post-deleted="handlePostDeleted" />
+        <PostCard :posts="posts || []" />
 
         <div v-if="feedState.loadingMore" class="p-8 text-center">
           <div class="flex items-center justify-center space-x-2">
@@ -125,26 +105,9 @@ const handlePostDeleted = (postId: number) => {
         </div>
       </div>
 
-      <div class="pb-14 lg:pb-36"></div>
+      <div class="mb-20 lg:mb-0" />
     </div>
-
-    <button
-      class="lg:hidden fixed bottom-24 right-6 z-30 bg-black dark:bg-white text-white dark:text-black rounded-full shadow-lg w-14 h-14 flex items-center justify-center transition-colors">
-      <Icon name="i-lucide-plus" class="w-6 h-6" />
-    </button>
-
-    <div class="hidden lg:flex fixed bottom-0 inset-x-0 z-20">
-      <div class="mx-auto w-full max-w-screen-xl flex">
-        <div class="hidden lg:block w-64"></div>
-
-        <div class="flex-1">
-          <CreatePostInput @post-created="handlePostCreated" />
-        </div>
-
-        <div class="hidden lg:block w-2/8"></div>
-      </div>
-    </div>
-
+    <FeedCreatePostInput />
     <template #fallback>
       <ExtrasLoadingState title="Loading Feed" />
     </template>

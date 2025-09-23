@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HomeIcon, BellIcon, HandThumbUpIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
+import { HomeIcon, HandThumbUpIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/AuthStore'
 import MobileNavigation from '~/components/nav/mobileNavigation.vue'
 import type { DropdownMenuItem } from '@nuxt/ui'
@@ -8,11 +8,10 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-const activePath = route.path
 const menuItems = computed(() => [
   { label: "Home", href: "/", icon: HomeIcon },
   { label: "Likes", href: "/likes", icon: HandThumbUpIcon },
-  { label: "Profile", href: auth.isLoggedIn ? `/user/${auth.user?.username}` : `/auth/login`, icon: UserCircleIcon },
+  { label: auth.user ? "Profile" : "Login", href: auth.isLoggedIn ? `/user/${auth.user?.username}` : `/auth/login`, icon: UserCircleIcon },
 ])
 
 const colorMode = useColorMode();
@@ -47,7 +46,7 @@ const items = ref<DropdownMenuItem[]>([
     <aside class="hidden z-100 lg:flex w-64 flex-shrink-0">
       <div
         class="sticky top-0 h-screen w-full p-5 border-r border-neutral-500 flex flex-col justify-between overflow-y-auto">
-        <NavSidebar :menu-items="menuItems" :active-path="activePath" />
+        <NavSidebar :menu-items="menuItems" />
         <div class="flex items-center space-x-2 mt-auto">
           <template v-if="auth.isLoggedIn">
             <UDropdownMenu :items="items" class="mouse-pointer" :content="{
@@ -103,6 +102,6 @@ const items = ref<DropdownMenuItem[]>([
     </aside>
 
     <!-- Mobile Nav -->
-    <MobileNavigation :menu-items="menuItems" :active-path="activePath" class="lg:hidden" />
+    <MobileNavigation :-user="auth.user" :menu-items="menuItems" class="lg:hidden" />
   </div>
 </template>

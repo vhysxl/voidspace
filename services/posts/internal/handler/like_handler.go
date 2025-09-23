@@ -4,27 +4,25 @@ import (
 	"context"
 	"time"
 	"voidspace/posts/internal/domain"
-	"voidspace/posts/internal/usecase"
 	pb "voidspace/posts/proto/generated/posts"
+	errorutils "voidspace/posts/utils/error"
 	"voidspace/posts/utils/interceptor"
 
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type LikeHandler struct {
 	pb.UnimplementedLikesServiceServer
 
-	LikeUsecase    usecase.LikeUsecase
+	LikeUsecase    domain.LikeUsecase
 	Logger         *zap.Logger
 	Validator      *validator.Validate
 	ContextTimeout time.Duration
 }
 
 func NewLikeHandler(
-	likeUsecase usecase.LikeUsecase,
+	likeUsecase domain.LikeUsecase,
 	validator *validator.Validate,
 	timeout time.Duration,
 	logger *zap.Logger,
@@ -41,10 +39,9 @@ func (lh *LikeHandler) Like(ctx context.Context, req *pb.LikeRequest) (*pb.LikeR
 	ctx, cancel := context.WithTimeout(ctx, lh.ContextTimeout)
 	defer cancel()
 
-	userId, ok := ctx.Value(interceptor.CtxKeyUserID).(int)
-	if !ok {
-		lh.Logger.Error(ErrFailedGetUserID)
-		return nil, status.Error(codes.Unauthenticated, ErrFailedGetUserID)
+	userId, err := errorutils.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
+	if err != nil {
+		return nil, errorutils.HandleAuthError(nil, lh.Logger)
 	}
 
 	data := &domain.Like{
@@ -55,32 +52,22 @@ func (lh *LikeHandler) Like(ctx context.Context, req *pb.LikeRequest) (*pb.LikeR
 
 	likeCount, err := lh.LikeUsecase.LikePost(ctx, data)
 	if err != nil {
-		lh.Logger.Error(ErrUsecase, zap.Error(err))
-		switch err {
-		case ctx.Err():
-			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
-		case domain.ErrPostNotFound:
-			return nil, status.Error(codes.NotFound, err.Error())
-		default:
-			return nil, status.Error(codes.Internal, ErrInternalServer)
-		}
+		return nil, errorutils.HandleError(err, lh.Logger, "Like")
 	}
 
 	return &pb.LikeResponse{
 		Success:       true,
 		NewLikesCount: likeCount,
 	}, nil
-
 }
 
 func (lh *LikeHandler) Unlike(ctx context.Context, req *pb.LikeRequest) (*pb.LikeResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, lh.ContextTimeout)
 	defer cancel()
 
-	userId, ok := ctx.Value(interceptor.CtxKeyUserID).(int)
-	if !ok {
-		lh.Logger.Error(ErrFailedGetUserID)
-		return nil, status.Error(codes.Unauthenticated, ErrFailedGetUserID)
+	userId, err := errorutils.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
+	if err != nil {
+		return nil, errorutils.HandleAuthError(nil, lh.Logger)
 	}
 
 	data := &domain.Like{
@@ -90,20 +77,11 @@ func (lh *LikeHandler) Unlike(ctx context.Context, req *pb.LikeRequest) (*pb.Lik
 
 	likeCount, err := lh.LikeUsecase.UnlikePost(ctx, data)
 	if err != nil {
-		lh.Logger.Error(ErrUsecase, zap.Error(err))
-		switch err {
-		case ctx.Err():
-			return nil, status.Error(codes.DeadlineExceeded, ErrRequestTimeout)
-		case domain.ErrPostNotFound:
-			return nil, status.Error(codes.NotFound, err.Error())
-		default:
-			return nil, status.Error(codes.Internal, ErrInternalServer)
-		}
+		return nil, errorutils.HandleError(err, lh.Logger, "Unlike")
 	}
 
 	return &pb.LikeResponse{
 		Success:       true,
 		NewLikesCount: likeCount,
 	}, nil
-
 }

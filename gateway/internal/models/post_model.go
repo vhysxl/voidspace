@@ -4,11 +4,11 @@ import "time"
 
 type PostRequest struct {
 	Content    string   `json:"content" validate:"max=240"`
-	PostImages []string `json:"post_images" validate:"omitempty,dive,url"`
+	PostImages []string `json:"post_images" validate:"omitempty,max=5,dive,url"`
 }
 
 type GetPostRequest struct {
-	ID int `validate:"required,gt=0"`
+	ID int `json:"id" validate:"required,gt=0"`
 }
 
 type Post struct {

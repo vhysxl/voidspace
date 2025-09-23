@@ -6,9 +6,14 @@ import (
 )
 
 type Follow struct {
-	UserID       int
-	TargetUserID int
+	UserId       int32
+	TargetUserId int32
 	CreatedAt    time.Time
+}
+
+type FollowUsecase interface {
+	Follow(ctx context.Context, followId int32, username string) error
+	Unfollow(ctx context.Context, followerId int32, username string) error
 }
 
 type FollowRepository interface {

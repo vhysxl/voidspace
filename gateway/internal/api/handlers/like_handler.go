@@ -39,8 +39,7 @@ func NewLikeHandler(
 func (lh *LikeHandler) Like(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	ID := c.Get("ID").(string)
-	username := c.Get("username").(string)
+	user := c.Get("authUser").(*models.AuthUser)
 
 	postId, err := strconv.Atoi(c.Param("postId"))
 	if err != nil {
@@ -49,8 +48,8 @@ func (lh *LikeHandler) Like(c echo.Context) error {
 
 	l := &models.LikeRequest{
 		PostID:   postId,
-		UserID:   ID,
-		Username: username,
+		UserID:   user.ID,
+		Username: user.Username,
 	}
 
 	err = lh.Validator.Struct(l)
@@ -60,9 +59,7 @@ func (lh *LikeHandler) Like(c echo.Context) error {
 
 	res, err := lh.LikeService.Like(ctx, l)
 	if err != nil {
-		lh.Logger.Error("failed to Like post", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(lh.Logger, c, err, "Failed to like post")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusCreated, constants.LikeSuccess, res)
@@ -71,8 +68,7 @@ func (lh *LikeHandler) Like(c echo.Context) error {
 func (lh *LikeHandler) Unlike(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	ID := c.Get("ID").(string)
-	username := c.Get("username").(string)
+	user := c.Get("authUser").(*models.AuthUser)
 
 	postId, err := strconv.Atoi(c.Param("postId"))
 	if err != nil {
@@ -81,8 +77,8 @@ func (lh *LikeHandler) Unlike(c echo.Context) error {
 
 	l := &models.LikeRequest{
 		PostID:   postId,
-		UserID:   ID,
-		Username: username,
+		UserID:   user.ID,
+		Username: user.Username,
 	}
 
 	err = lh.Validator.Struct(l)
@@ -92,10 +88,8 @@ func (lh *LikeHandler) Unlike(c echo.Context) error {
 
 	res, err := lh.LikeService.Unlike(ctx, l)
 	if err != nil {
-		lh.Logger.Error("failed to Like post", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(lh.Logger, c, err, "Failed to unlike post")
 	}
 
-	return responses.SuccessResponseMessage(c, http.StatusCreated, constants.LikeSuccess, res)
+	return responses.SuccessResponseMessage(c, http.StatusCreated, constants.UnlikeSuccess, res)
 }

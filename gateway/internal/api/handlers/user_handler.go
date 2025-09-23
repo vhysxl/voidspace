@@ -38,86 +38,60 @@ func NewUserHandler(
 func (uh *UserHandler) GetCurrentUser(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	ID := c.Get("ID").(string)
-	username := c.Get("username").(string)
+	user := c.Get("authUser").(*models.AuthUser)
 
-	data := &models.GetProfileRequest{
-		ID:       ID,
-		Username: username,
-	}
-
-	err := uh.Validator.Struct(data)
+	res, err := uh.UserService.GetCurrentUser(ctx, user.ID, user.Username)
 	if err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
+		return utils.HandleDialError(uh.Logger, c, err, "failed to get current user")
 	}
 
-	user, err := uh.UserService.GetCurrentUser(ctx, data.ID, data.Username)
-	if err != nil {
-		uh.Logger.Error("failed to get current user", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
-	}
-	return responses.SuccessResponseMessage(c, http.StatusOK, constants.GetProfileSuccess, user)
+	return responses.SuccessResponseMessage(c, http.StatusOK, constants.GetProfileSuccess, res)
 }
 
 func (uh *UserHandler) GetUser(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	username := c.Param("username")
-	userID, _ := c.Get("ID").(string)
-	usernameRequester, _ := c.Get("username").(string)
-
-	u := &models.GetUserRequest{
-		Username: username,
+	val := c.Get("authUser")
+	user, _ := val.(*models.AuthUser)
+	if user == nil {
+		user = &models.AuthUser{}
 	}
 
-	err := uh.Validator.Struct(u)
-	if err != nil {
+	username := c.Param("username")
+	req := &models.GetUserRequest{Username: username}
+
+	if err := uh.Validator.Struct(req); err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
 	}
 
-	user, err := uh.UserService.GetUser(ctx, username, userID, usernameRequester)
+	res, err := uh.UserService.GetUser(ctx, req.Username, user.ID, user.Username)
 	if err != nil {
-		uh.Logger.Error("failed to get user", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(uh.Logger, c, err, "failed to get user")
 	}
 
-	return responses.SuccessResponseMessage(c, http.StatusOK, constants.GetUserSuccess, user)
+	return responses.SuccessResponseMessage(c, http.StatusOK, constants.GetUserSuccess, res)
 }
 
 func (uh *UserHandler) UpdateProfile(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	ID := c.Get("ID").(string)
-	username := c.Get("username").(string)
+	user := c.Get("authUser").(*models.AuthUser)
 
-	data := &models.GetProfileRequest{
-		ID:       ID,
-		Username: username,
-	}
-
-	err := uh.Validator.Struct(data)
-	if err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
-	}
-
-	r := new(models.UpdateProfileRequest)
-	err = c.Bind(r)
-	if err != nil {
+	req := new(models.UpdateProfileRequest)
+	if err := c.Bind(req); err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
 	}
 
-	err = uh.Validator.Struct(r)
-	if err != nil {
+	if *req == (models.UpdateProfileRequest{}) {
+		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrNoField)
+	}
+
+	if err := uh.Validator.Struct(req); err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
 	}
 
-	err = uh.UserService.UpdateProfile(ctx, data.ID, data.Username, r)
-	if err != nil {
-		uh.Logger.Error("failed to update profile", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+	if err := uh.UserService.UpdateProfile(ctx, user.ID, user.Username, req); err != nil {
+		return utils.HandleDialError(uh.Logger, c, err, "failed to update profile")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, constants.UpdateProfileSuccess, nil)
@@ -126,24 +100,10 @@ func (uh *UserHandler) UpdateProfile(c echo.Context) error {
 func (uh *UserHandler) DeleteUser(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	ID := c.Get("ID").(string)
-	username := c.Get("username").(string)
+	user := c.Get("authUser").(*models.AuthUser)
 
-	data := &models.GetProfileRequest{
-		ID:       ID,
-		Username: username,
-	}
-
-	err := uh.Validator.Struct(data)
-	if err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
-	}
-
-	err = uh.UserService.DeleteUser(ctx, data.ID, data.Username)
-	if err != nil {
-		uh.Logger.Error("failed to delete user", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+	if err := uh.UserService.DeleteUser(ctx, user.ID, user.Username); err != nil {
+		return utils.HandleDialError(uh.Logger, c, err, "failed to delete user")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, constants.DeleteUserSuccess, nil)
@@ -152,34 +112,15 @@ func (uh *UserHandler) DeleteUser(c echo.Context) error {
 func (uh *UserHandler) Follow(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	ID := c.Get("ID").(string)
-	username := c.Get("username").(string)
-	targetUsername := c.Param("username")
+	user := c.Get("authUser").(*models.AuthUser)
 
-	data := &models.GetProfileRequest{
-		ID:       ID,
-		Username: username,
-	}
-
-	err := uh.Validator.Struct(data)
-	if err != nil {
+	req := &models.FollowRequest{TargetUsername: c.Param("username")}
+	if err := uh.Validator.Struct(req); err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
 	}
 
-	target := &models.FollowRequest{
-		TargetUsername: targetUsername,
-	}
-
-	err = uh.Validator.Struct(target)
-	if err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
-	}
-
-	err = uh.UserService.Follow(ctx, data.ID, data.Username, target.TargetUsername)
-	if err != nil {
-		uh.Logger.Error("failed to follow user", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+	if err := uh.UserService.Follow(ctx, user.ID, user.Username, req.TargetUsername); err != nil {
+		return utils.HandleDialError(uh.Logger, c, err, "failed to follow user")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, constants.FollowSuccess, nil)
@@ -188,33 +129,15 @@ func (uh *UserHandler) Follow(c echo.Context) error {
 func (uh *UserHandler) Unfollow(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	ID := c.Get("ID").(string)
-	username := c.Get("username").(string)
-	targetUsername := c.Param("username")
+	user := c.Get("authUser").(*models.AuthUser)
 
-	data := &models.GetProfileRequest{
-		ID:       ID,
-		Username: username,
-	}
-
-	err := uh.Validator.Struct(data)
-	if err != nil {
+	req := &models.FollowRequest{TargetUsername: c.Param("username")}
+	if err := uh.Validator.Struct(req); err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
 	}
 
-	target := &models.FollowRequest{
-		TargetUsername: targetUsername,
-	}
-	err = uh.Validator.Struct(target)
-	if err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
-	}
-
-	err = uh.UserService.Unfollow(ctx, data.ID, data.Username, target.TargetUsername)
-	if err != nil {
-		uh.Logger.Error("failed to unfollow user", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+	if err := uh.UserService.Unfollow(ctx, user.ID, user.Username, req.TargetUsername); err != nil {
+		return utils.HandleDialError(uh.Logger, c, err, "failed to unfollow user")
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, constants.UnfollowSuccess, nil)

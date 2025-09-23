@@ -12,7 +12,7 @@ import (
 func CreateAccessToken(user *domain.User, privateKey *rsa.PrivateKey, expiry time.Duration) (string, error) {
 	exp := time.Now().Add(expiry).Unix()
 	claims := &domain.AccessTokenClaims{
-		ID:       strconv.Itoa(user.ID),
+		ID:       strconv.Itoa(int(user.Id)),
 		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Unix(exp, 0)),
@@ -30,7 +30,7 @@ func CreateAccessToken(user *domain.User, privateKey *rsa.PrivateKey, expiry tim
 func CreateRefreshToken(user *domain.User, privateKey *rsa.PrivateKey, expiry time.Duration) (string, error) {
 	exp := time.Now().Add(expiry).Unix()
 	claims := &domain.RefreshTokenClaims{
-		ID:       strconv.Itoa(user.ID),
+		ID:       strconv.Itoa(int(user.Id)),
 		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Unix(exp, 0)),

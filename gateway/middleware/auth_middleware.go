@@ -6,6 +6,7 @@ import (
 	"strings"
 	"voidspaceGateway/internal/api/responses"
 	"voidspaceGateway/internal/constants"
+	"voidspaceGateway/internal/models"
 	"voidspaceGateway/utils"
 
 	"github.com/labstack/echo/v4"
@@ -33,9 +34,11 @@ func AuthMiddleware(PublicKey *rsa.PublicKey) echo.MiddlewareFunc {
 				return responses.ErrorResponseMessage(c, http.StatusUnauthorized, constants.ErrUnauthorized)
 			}
 
-			// Store extracted user information in the Echo context for use by downstream handlers
-			c.Set("ID", claims["ID"])
-			c.Set("username", claims["Username"])
+			user := &models.AuthUser{
+				ID:       claims["ID"].(string),
+				Username: claims["Username"].(string),
+			}
+			c.Set("authUser", user)
 
 			// Continue to the next handler
 			return next(c)

@@ -23,8 +23,6 @@ const (
 	PostService_CreatePost_FullMethodName            = "/posts.v1.PostService/CreatePost"
 	PostService_GetPost_FullMethodName               = "/posts.v1.PostService/GetPost"
 	PostService_UpdatePost_FullMethodName            = "/posts.v1.PostService/UpdatePost"
-	PostService_IncrementCommentCount_FullMethodName = "/posts.v1.PostService/IncrementCommentCount"
-	PostService_DecrementCommentCount_FullMethodName = "/posts.v1.PostService/DecrementCommentCount"
 	PostService_DeletePost_FullMethodName            = "/posts.v1.PostService/DeletePost"
 	PostService_GetAllPosts_FullMethodName           = "/posts.v1.PostService/GetAllPosts"
 	PostService_GetGlobalFeed_FullMethodName         = "/posts.v1.PostService/GetGlobalFeed"
@@ -39,8 +37,6 @@ type PostServiceClient interface {
 	CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	IncrementCommentCount(ctx context.Context, in *UpdateCommentReq, opts ...grpc.CallOption) (*CommentResponse, error)
-	DecrementCommentCount(ctx context.Context, in *UpdateCommentReq, opts ...grpc.CallOption) (*CommentResponse, error)
 	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetAllPosts(ctx context.Context, in *GetAllPostsRequest, opts ...grpc.CallOption) (*GetFeedResponse, error)
 	GetGlobalFeed(ctx context.Context, in *GetGlobalFeedRequest, opts ...grpc.CallOption) (*GetFeedResponse, error)
@@ -80,26 +76,6 @@ func (c *postServiceClient) UpdatePost(ctx context.Context, in *UpdatePostReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, PostService_UpdatePost_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *postServiceClient) IncrementCommentCount(ctx context.Context, in *UpdateCommentReq, opts ...grpc.CallOption) (*CommentResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CommentResponse)
-	err := c.cc.Invoke(ctx, PostService_IncrementCommentCount_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *postServiceClient) DecrementCommentCount(ctx context.Context, in *UpdateCommentReq, opts ...grpc.CallOption) (*CommentResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CommentResponse)
-	err := c.cc.Invoke(ctx, PostService_DecrementCommentCount_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -163,8 +139,6 @@ type PostServiceServer interface {
 	CreatePost(context.Context, *CreatePostRequest) (*PostResponse, error)
 	GetPost(context.Context, *GetPostRequest) (*PostResponse, error)
 	UpdatePost(context.Context, *UpdatePostRequest) (*emptypb.Empty, error)
-	IncrementCommentCount(context.Context, *UpdateCommentReq) (*CommentResponse, error)
-	DecrementCommentCount(context.Context, *UpdateCommentReq) (*CommentResponse, error)
 	DeletePost(context.Context, *DeletePostRequest) (*emptypb.Empty, error)
 	GetAllPosts(context.Context, *GetAllPostsRequest) (*GetFeedResponse, error)
 	GetGlobalFeed(context.Context, *GetGlobalFeedRequest) (*GetFeedResponse, error)
@@ -188,12 +162,6 @@ func (UnimplementedPostServiceServer) GetPost(context.Context, *GetPostRequest) 
 }
 func (UnimplementedPostServiceServer) UpdatePost(context.Context, *UpdatePostRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePost not implemented")
-}
-func (UnimplementedPostServiceServer) IncrementCommentCount(context.Context, *UpdateCommentReq) (*CommentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IncrementCommentCount not implemented")
-}
-func (UnimplementedPostServiceServer) DecrementCommentCount(context.Context, *UpdateCommentReq) (*CommentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DecrementCommentCount not implemented")
 }
 func (UnimplementedPostServiceServer) DeletePost(context.Context, *DeletePostRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePost not implemented")
@@ -281,42 +249,6 @@ func _PostService_UpdatePost_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PostServiceServer).UpdatePost(ctx, req.(*UpdatePostRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PostService_IncrementCommentCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateCommentReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PostServiceServer).IncrementCommentCount(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PostService_IncrementCommentCount_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).IncrementCommentCount(ctx, req.(*UpdateCommentReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PostService_DecrementCommentCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateCommentReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PostServiceServer).DecrementCommentCount(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PostService_DecrementCommentCount_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).DecrementCommentCount(ctx, req.(*UpdateCommentReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -429,14 +361,6 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdatePost",
 			Handler:    _PostService_UpdatePost_Handler,
-		},
-		{
-			MethodName: "IncrementCommentCount",
-			Handler:    _PostService_IncrementCommentCount_Handler,
-		},
-		{
-			MethodName: "DecrementCommentCount",
-			Handler:    _PostService_DecrementCommentCount_Handler,
 		},
 		{
 			MethodName: "DeletePost",

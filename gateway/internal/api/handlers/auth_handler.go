@@ -49,13 +49,11 @@ func (ah *AuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	l := new(models.LoginRequest)
-	err := c.Bind(l)
-	if err != nil {
+	if err := c.Bind(l); err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
 	}
 
-	err = ah.Validator.Struct(l)
-	if err != nil {
+	if err := ah.Validator.Struct(l); err != nil {
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
 	}
 
@@ -132,7 +130,6 @@ func (ah *AuthHandler) RefreshToken(c echo.Context) error {
 }
 
 func (ah *AuthHandler) Logout(c echo.Context) error {
-	// Clear refresh token cookie
 	cookie := &http.Cookie{
 		Name:     "refresh_token",
 		Value:    "",

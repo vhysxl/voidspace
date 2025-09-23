@@ -2,7 +2,7 @@ package server
 
 import (
 	"voidspace/posts/bootstrap"
-	"voidspace/posts/internal/service"
+	service "voidspace/posts/internal/handler"
 	pb "voidspace/posts/proto/generated/posts"
 	"voidspace/posts/utils/interceptor"
 

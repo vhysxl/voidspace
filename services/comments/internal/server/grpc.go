@@ -2,7 +2,7 @@ package server
 
 import (
 	"voidspace/comments/bootstrap"
-	"voidspace/comments/internal/service"
+	handler "voidspace/comments/internal/handler"
 	pb "voidspace/comments/proto/generated/comments"
 	"voidspace/comments/utils/interceptor"
 
@@ -13,13 +13,13 @@ import (
 func SetupGRPCServer(app *bootstrap.Application) *grpc.Server {
 	s := grpc.NewServer(grpc.UnaryInterceptor(interceptor.AuthInterceptor())) // interceptor here
 
-	commentService := service.NewCommentService(
+	commentHandler := handler.NewCommentHandler(
 		app.ContextTimeout,
 		app.Logger,
 		app.CommentUseCase,
 	)
 
-	pb.RegisterCommentServiceServer(s, commentService) // handler
+	pb.RegisterCommentServiceServer(s, commentHandler) // handler
 
 	reflection.Register(s)
 

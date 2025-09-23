@@ -20,11 +20,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CommentService_CreateComment_FullMethodName          = "/comments.v1.CommentService/CreateComment"
-	CommentService_DeleteComment_FullMethodName          = "/comments.v1.CommentService/DeleteComment"
-	CommentService_AccountDeletionHandle_FullMethodName  = "/comments.v1.CommentService/AccountDeletionHandle"
-	CommentService_GetAllCommentsByPostID_FullMethodName = "/comments.v1.CommentService/GetAllCommentsByPostID"
-	CommentService_GetAllCommentsByUserID_FullMethodName = "/comments.v1.CommentService/GetAllCommentsByUserID"
+	CommentService_CreateComment_FullMethodName             = "/comments.v1.CommentService/CreateComment"
+	CommentService_DeleteComment_FullMethodName             = "/comments.v1.CommentService/DeleteComment"
+	CommentService_AccountDeletionHandle_FullMethodName     = "/comments.v1.CommentService/AccountDeletionHandle"
+	CommentService_GetAllCommentsByPostId_FullMethodName    = "/comments.v1.CommentService/GetAllCommentsByPostId"
+	CommentService_GetAllCommentsByUserId_FullMethodName    = "/comments.v1.CommentService/GetAllCommentsByUserId"
+	CommentService_CountCommentsByPostId_FullMethodName     = "/comments.v1.CommentService/CountCommentsByPostId"
+	CommentService_GetCommentsCountByPostIds_FullMethodName = "/comments.v1.CommentService/GetCommentsCountByPostIds"
 )
 
 // CommentServiceClient is the client API for CommentService service.
@@ -34,8 +36,10 @@ type CommentServiceClient interface {
 	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
 	DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error)
 	AccountDeletionHandle(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	GetAllCommentsByPostID(ctx context.Context, in *GetAllCommentsByPostIDRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error)
-	GetAllCommentsByUserID(ctx context.Context, in *GetAllCommentsByUserIDRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error)
+	GetAllCommentsByPostId(ctx context.Context, in *GetAllCommentsByPostIdRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error)
+	GetAllCommentsByUserId(ctx context.Context, in *GetAllCommentsByUserIdRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error)
+	CountCommentsByPostId(ctx context.Context, in *CountCommentsByPostIdRequest, opts ...grpc.CallOption) (*GetCommentsCountResponse, error)
+	GetCommentsCountByPostIds(ctx context.Context, in *GetCommentsCountByPostIdsRequest, opts ...grpc.CallOption) (*GetCommentsCountByPostIdsResponse, error)
 }
 
 type commentServiceClient struct {
@@ -76,20 +80,40 @@ func (c *commentServiceClient) AccountDeletionHandle(ctx context.Context, in *em
 	return out, nil
 }
 
-func (c *commentServiceClient) GetAllCommentsByPostID(ctx context.Context, in *GetAllCommentsByPostIDRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error) {
+func (c *commentServiceClient) GetAllCommentsByPostId(ctx context.Context, in *GetAllCommentsByPostIdRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetBatchCommentsResponse)
-	err := c.cc.Invoke(ctx, CommentService_GetAllCommentsByPostID_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, CommentService_GetAllCommentsByPostId_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *commentServiceClient) GetAllCommentsByUserID(ctx context.Context, in *GetAllCommentsByUserIDRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error) {
+func (c *commentServiceClient) GetAllCommentsByUserId(ctx context.Context, in *GetAllCommentsByUserIdRequest, opts ...grpc.CallOption) (*GetBatchCommentsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetBatchCommentsResponse)
-	err := c.cc.Invoke(ctx, CommentService_GetAllCommentsByUserID_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, CommentService_GetAllCommentsByUserId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commentServiceClient) CountCommentsByPostId(ctx context.Context, in *CountCommentsByPostIdRequest, opts ...grpc.CallOption) (*GetCommentsCountResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCommentsCountResponse)
+	err := c.cc.Invoke(ctx, CommentService_CountCommentsByPostId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commentServiceClient) GetCommentsCountByPostIds(ctx context.Context, in *GetCommentsCountByPostIdsRequest, opts ...grpc.CallOption) (*GetCommentsCountByPostIdsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCommentsCountByPostIdsResponse)
+	err := c.cc.Invoke(ctx, CommentService_GetCommentsCountByPostIds_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +127,10 @@ type CommentServiceServer interface {
 	CreateComment(context.Context, *CreateCommentRequest) (*CommentResponse, error)
 	DeleteComment(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error)
 	AccountDeletionHandle(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
-	GetAllCommentsByPostID(context.Context, *GetAllCommentsByPostIDRequest) (*GetBatchCommentsResponse, error)
-	GetAllCommentsByUserID(context.Context, *GetAllCommentsByUserIDRequest) (*GetBatchCommentsResponse, error)
+	GetAllCommentsByPostId(context.Context, *GetAllCommentsByPostIdRequest) (*GetBatchCommentsResponse, error)
+	GetAllCommentsByUserId(context.Context, *GetAllCommentsByUserIdRequest) (*GetBatchCommentsResponse, error)
+	CountCommentsByPostId(context.Context, *CountCommentsByPostIdRequest) (*GetCommentsCountResponse, error)
+	GetCommentsCountByPostIds(context.Context, *GetCommentsCountByPostIdsRequest) (*GetCommentsCountByPostIdsResponse, error)
 	mustEmbedUnimplementedCommentServiceServer()
 }
 
@@ -124,11 +150,17 @@ func (UnimplementedCommentServiceServer) DeleteComment(context.Context, *DeleteC
 func (UnimplementedCommentServiceServer) AccountDeletionHandle(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountDeletionHandle not implemented")
 }
-func (UnimplementedCommentServiceServer) GetAllCommentsByPostID(context.Context, *GetAllCommentsByPostIDRequest) (*GetBatchCommentsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllCommentsByPostID not implemented")
+func (UnimplementedCommentServiceServer) GetAllCommentsByPostId(context.Context, *GetAllCommentsByPostIdRequest) (*GetBatchCommentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllCommentsByPostId not implemented")
 }
-func (UnimplementedCommentServiceServer) GetAllCommentsByUserID(context.Context, *GetAllCommentsByUserIDRequest) (*GetBatchCommentsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllCommentsByUserID not implemented")
+func (UnimplementedCommentServiceServer) GetAllCommentsByUserId(context.Context, *GetAllCommentsByUserIdRequest) (*GetBatchCommentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllCommentsByUserId not implemented")
+}
+func (UnimplementedCommentServiceServer) CountCommentsByPostId(context.Context, *CountCommentsByPostIdRequest) (*GetCommentsCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountCommentsByPostId not implemented")
+}
+func (UnimplementedCommentServiceServer) GetCommentsCountByPostIds(context.Context, *GetCommentsCountByPostIdsRequest) (*GetCommentsCountByPostIdsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCommentsCountByPostIds not implemented")
 }
 func (UnimplementedCommentServiceServer) mustEmbedUnimplementedCommentServiceServer() {}
 func (UnimplementedCommentServiceServer) testEmbeddedByValue()                        {}
@@ -205,38 +237,74 @@ func _CommentService_AccountDeletionHandle_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CommentService_GetAllCommentsByPostID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllCommentsByPostIDRequest)
+func _CommentService_GetAllCommentsByPostId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllCommentsByPostIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CommentServiceServer).GetAllCommentsByPostID(ctx, in)
+		return srv.(CommentServiceServer).GetAllCommentsByPostId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CommentService_GetAllCommentsByPostID_FullMethodName,
+		FullMethod: CommentService_GetAllCommentsByPostId_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CommentServiceServer).GetAllCommentsByPostID(ctx, req.(*GetAllCommentsByPostIDRequest))
+		return srv.(CommentServiceServer).GetAllCommentsByPostId(ctx, req.(*GetAllCommentsByPostIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CommentService_GetAllCommentsByUserID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllCommentsByUserIDRequest)
+func _CommentService_GetAllCommentsByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllCommentsByUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CommentServiceServer).GetAllCommentsByUserID(ctx, in)
+		return srv.(CommentServiceServer).GetAllCommentsByUserId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CommentService_GetAllCommentsByUserID_FullMethodName,
+		FullMethod: CommentService_GetAllCommentsByUserId_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CommentServiceServer).GetAllCommentsByUserID(ctx, req.(*GetAllCommentsByUserIDRequest))
+		return srv.(CommentServiceServer).GetAllCommentsByUserId(ctx, req.(*GetAllCommentsByUserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommentService_CountCommentsByPostId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountCommentsByPostIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentServiceServer).CountCommentsByPostId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommentService_CountCommentsByPostId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentServiceServer).CountCommentsByPostId(ctx, req.(*CountCommentsByPostIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommentService_GetCommentsCountByPostIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCommentsCountByPostIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentServiceServer).GetCommentsCountByPostIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommentService_GetCommentsCountByPostIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentServiceServer).GetCommentsCountByPostIds(ctx, req.(*GetCommentsCountByPostIdsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -261,12 +329,20 @@ var CommentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CommentService_AccountDeletionHandle_Handler,
 		},
 		{
-			MethodName: "GetAllCommentsByPostID",
-			Handler:    _CommentService_GetAllCommentsByPostID_Handler,
+			MethodName: "GetAllCommentsByPostId",
+			Handler:    _CommentService_GetAllCommentsByPostId_Handler,
 		},
 		{
-			MethodName: "GetAllCommentsByUserID",
-			Handler:    _CommentService_GetAllCommentsByUserID_Handler,
+			MethodName: "GetAllCommentsByUserId",
+			Handler:    _CommentService_GetAllCommentsByUserId_Handler,
+		},
+		{
+			MethodName: "CountCommentsByPostId",
+			Handler:    _CommentService_CountCommentsByPostId_Handler,
+		},
+		{
+			MethodName: "GetCommentsCountByPostIds",
+			Handler:    _CommentService_GetCommentsCountByPostIds_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

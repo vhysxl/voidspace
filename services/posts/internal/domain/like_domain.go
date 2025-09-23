@@ -11,6 +11,11 @@ type Like struct {
 	CreatedAt time.Time
 }
 
+type LikeUsecase interface {
+	LikePost(ctx context.Context, like *Like) (int32, error)
+	UnlikePost(ctx context.Context, like *Like) (int32, error)
+}
+
 type LikeRepository interface {
 	LikePost(ctx context.Context, like *Like) (int32, error)
 	UnlikePost(ctx context.Context, like *Like) (int32, error)

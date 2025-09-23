@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
+	"strings"
 	"voidspace/comments/internal/domain"
 )
 
@@ -34,7 +36,7 @@ func (r *commentRepository) Create(ctx context.Context, comment *domain.Comment)
 	if err != nil {
 		return nil, err
 	}
-	comment.ID = int32(id)
+	comment.ID = int(id)
 
 	// Fetch created_at timestamp
 	err = r.db.QueryRowContext(
@@ -50,13 +52,13 @@ func (r *commentRepository) Create(ctx context.Context, comment *domain.Comment)
 }
 
 // Delete removes a comment by its ID
-func (r *commentRepository) Delete(ctx context.Context, commentID int32) (int, error) {
-	var postId int
+func (r *commentRepository) Delete(ctx context.Context, commentID int) (int, error) {
+	var postID int
 	err := r.db.QueryRowContext(
 		ctx,
 		`SELECT post_id FROM comments WHERE id = ?`,
 		commentID,
-	).Scan(&postId)
+	).Scan(&postID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return 0, domain.ErrCommentsNotFound
@@ -81,10 +83,10 @@ func (r *commentRepository) Delete(ctx context.Context, commentID int32) (int, e
 		return 0, domain.ErrCommentsNotFound
 	}
 
-	return postId, nil
+	return postID, nil
 }
 
-func (r *commentRepository) GetCommentByID(ctx context.Context, commentID int32) (*domain.Comment, error) {
+func (r *commentRepository) GetCommentByID(ctx context.Context, commentID int) (*domain.Comment, error) {
 	comment := &domain.Comment{}
 
 	err := r.db.QueryRowContext(
@@ -109,7 +111,7 @@ func (r *commentRepository) GetCommentByID(ctx context.Context, commentID int32)
 }
 
 // GetAllByPostID implements domain.CommentRepository.
-func (r *commentRepository) GetAllByPostID(ctx context.Context, postID int32) ([]*domain.Comment, error) {
+func (r *commentRepository) GetAllByPostID(ctx context.Context, postID int) ([]*domain.Comment, error) {
 	rows, err := r.db.QueryContext(
 		ctx,
 		`SELECT id, user_id, post_id, content, created_at FROM comments WHERE post_id = ? ORDER BY created_at ASC`,
@@ -146,7 +148,7 @@ func (r *commentRepository) GetAllByPostID(ctx context.Context, postID int32) ([
 }
 
 // GetAllByUserID implements domain.CommentRepository.
-func (r *commentRepository) GetAllByUserID(ctx context.Context, userID int32) ([]*domain.Comment, error) {
+func (r *commentRepository) GetAllByUserID(ctx context.Context, userID int) ([]*domain.Comment, error) {
 	rows, err := r.db.QueryContext(
 		ctx,
 		`SELECT id, user_id, post_id, content, created_at FROM comments WHERE user_id = ? ORDER BY created_at ASC`,
@@ -179,11 +181,11 @@ func (r *commentRepository) GetAllByUserID(ctx context.Context, userID int32) ([
 	return comments, nil
 }
 
-func (r *commentRepository) DeleteAllComments(ctx context.Context, userId int32) error {
+func (r *commentRepository) DeleteAllComments(ctx context.Context, userID int) error {
 	_, err := r.db.ExecContext(
 		ctx,
 		`DELETE FROM comments WHERE user_id = ?`,
-		userId,
+		userID,
 	)
 
 	if err != nil {
@@ -191,4 +193,68 @@ func (r *commentRepository) DeleteAllComments(ctx context.Context, userId int32)
 	}
 
 	return nil
+}
+
+// CountCommentsByPostID implements domain.CommentRepository.
+func (r *commentRepository) CountCommentsByPostID(ctx context.Context, postID int) (int, error) {
+	var count int
+	err := r.db.QueryRowContext(
+		ctx,
+		`SELECT COUNT(*) FROM comments WHERE post_id = ?`,
+		postID,
+	).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+// CountCommentsByPostIDs implements domain.CommentRepository.
+func (r *commentRepository) CountCommentsByPostIDs(ctx context.Context, postIDs []int) (map[int]int, error) {
+	if len(postIDs) == 0 {
+		return make(map[int]int), nil
+	}
+
+	// Build placeholders for IN clause
+	placeholders := make([]string, len(postIDs))
+	args := make([]interface{}, len(postIDs))
+	for i, postID := range postIDs {
+		placeholders[i] = "?"
+		args[i] = postID
+	}
+
+	query := fmt.Sprintf(`
+		SELECT post_id, COUNT(*) as comment_count 
+		FROM comments 
+		WHERE post_id IN (%s) 
+		GROUP BY post_id
+	`, strings.Join(placeholders, ","))
+
+	rows, err := r.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make(map[int]int)
+
+	// Initialize all postIDs with 0 count
+	for _, postID := range postIDs {
+		result[postID] = 0
+	}
+
+	// Fill in the actual counts
+	for rows.Next() {
+		var postID, count int
+		if err := rows.Scan(&postID, &count); err != nil {
+			return nil, err
+		}
+		result[postID] = count
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }

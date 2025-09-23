@@ -12,12 +12,7 @@ type followUsecase struct {
 	contextTimeout   time.Duration
 }
 
-type FollowUsecase interface {
-	Follow(ctx context.Context, followingID int, username string) error
-	Unfollow(ctx context.Context, followingID int, username string) error
-}
-
-func NewFollowUsecase(userRepository domain.UserRepository, followRepository domain.FollowRepository, contextTimeout time.Duration) FollowUsecase {
+func NewFollowUsecase(userRepository domain.UserRepository, followRepository domain.FollowRepository, contextTimeout time.Duration) domain.FollowUsecase {
 	return &followUsecase{
 		userRepository:   userRepository,
 		followRepository: followRepository,
@@ -26,7 +21,7 @@ func NewFollowUsecase(userRepository domain.UserRepository, followRepository dom
 }
 
 // Follow implements FollowUsecase.
-func (f *followUsecase) Follow(ctx context.Context, userID int, username string) error {
+func (f *followUsecase) Follow(ctx context.Context, followerId int32, username string) error {
 	ctx, cancel := context.WithTimeout(ctx, f.contextTimeout)
 	defer cancel()
 
@@ -35,20 +30,20 @@ func (f *followUsecase) Follow(ctx context.Context, userID int, username string)
 		return err
 	}
 
-	if userID == targetUser.ID {
+	if followerId == targetUser.Id {
 		return domain.ErrSelfFollow
 	}
 
 	prepData := domain.Follow{
-		UserID:       userID,
-		TargetUserID: targetUser.ID,
+		UserId:       followerId,
+		TargetUserId: targetUser.Id,
 	}
 
 	return f.followRepository.Follow(ctx, &prepData)
 }
 
 // Unfollow implements FollowUsecase.
-func (f *followUsecase) Unfollow(ctx context.Context, userID int, username string) error {
+func (f *followUsecase) Unfollow(ctx context.Context, followerId int32, username string) error {
 	ctx, cancel := context.WithTimeout(ctx, f.contextTimeout)
 	defer cancel()
 
@@ -58,8 +53,8 @@ func (f *followUsecase) Unfollow(ctx context.Context, userID int, username strin
 	}
 
 	prepData := domain.Follow{
-		UserID:       userID,
-		TargetUserID: targetUser.ID,
+		UserId:       followerId,
+		TargetUserId: targetUser.Id,
 	}
 
 	return f.followRepository.Unfollow(ctx, &prepData)

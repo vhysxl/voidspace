@@ -7,6 +7,7 @@ import (
 
 	"voidspaceGateway/internal/models"
 	userpb "voidspaceGateway/proto/generated/users"
+	"voidspaceGateway/utils"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc/metadata"
@@ -37,17 +38,12 @@ func (as *AuthService) Login(ctx context.Context, req *models.LoginRequest) (*mo
 		EmailOrUsername: req.UsernameOrEmail,
 		Password:        req.Password,
 	})
-
 	if err != nil {
 		as.Logger.Error("failed to call AuthService.Login", zap.Error(err))
 		return nil, err
 	}
 
-	return &models.AuthResponse{
-		AccessToken:  res.GetAccessToken(),
-		RefreshToken: res.GetRefreshToken(),
-		ExpiresIn:    int64(res.GetExpiresIn()),
-	}, nil
+	return utils.AuthMapper(res), nil
 }
 
 func (as *AuthService) Register(ctx context.Context, req *models.RegisterRequest) (*models.AuthResponse, error) {
@@ -59,27 +55,19 @@ func (as *AuthService) Register(ctx context.Context, req *models.RegisterRequest
 		Email:    req.Email,
 		Password: req.Password,
 	})
-
 	if err != nil {
 		as.Logger.Error("failed to call AuthService.Login", zap.Error(err))
 		return nil, err
 	}
 
-	return &models.AuthResponse{
-		AccessToken:  res.GetAccessToken(),
-		RefreshToken: res.GetRefreshToken(),
-		ExpiresIn:    int64(res.GetExpiresIn()),
-	}, nil
+	return utils.AuthMapper(res), nil
 }
 
-func (as *AuthService) RefreshToken(ctx context.Context, userId string, username string) (*models.AuthResponse, error) {
+func (as *AuthService) RefreshToken(ctx context.Context, userID string, username string) (*models.AuthResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, as.ContextTimeout)
 	defer cancel()
 
-	md := metadata.New(map[string]string{
-		"user_id":  userId,
-		"username": username,
-	})
+	md := utils.MetaDataHandler(userID, username)
 
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
@@ -89,9 +77,5 @@ func (as *AuthService) RefreshToken(ctx context.Context, userId string, username
 		return nil, err
 	}
 
-	return &models.AuthResponse{
-		AccessToken:  res.GetAccessToken(),
-		RefreshToken: res.GetRefreshToken(),
-		ExpiresIn:    int64(res.GetExpiresIn()),
-	}, nil
+	return utils.AuthMapper(res), nil
 }

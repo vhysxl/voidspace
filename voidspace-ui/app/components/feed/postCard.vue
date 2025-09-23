@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { resolveAvatar } from '@/utils/userResolver';
 import { formatPostDate } from '@/utils/dateFormater';
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { Post } from '@/types';
@@ -38,7 +37,6 @@ const navigateToPost = async (postId: number) => {
 }
 
 const navigateToUser = async (username: string, event: Event) => {
-    event.stopPropagation() // Prevent triggering parent click event
     await navigateTo(`/user/${username}`)
 }
 
@@ -97,21 +95,17 @@ const closeModal = () => {
     <div class="divide-y border-b border-neutral-500 divide-neutral-500">
         <article @click="navigateToPost(post.id)" v-for="post in posts" :key="post.id"
             class="w-full hover:cursor-pointer hover:bg-neutral-500/10 transition-colors">
-            <!-- Header -->
             <header class="flex items-center justify-between p-4">
                 <div class="flex items-center gap-3">
-                    <!-- Avatar - clickable to user profile -->
-                    <UserAvatar :user="post.author" />
+                    <UserAvatar size="xl" :user="post.author" />
                     <div>
                         <div class="flex items-center gap-2">
-                            <!-- Display name - clickable to user profile -->
                             <h3 class="font-semibold text-sm cursor-pointer hover:underline"
                                 @click="navigateToUser(post.author.username, $event)">
                                 {{ post.author.profile.display_name || post.author.username }}
                             </h3>
                         </div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">
-                            <!-- Username - clickable to user profile -->
                             <span class="cursor-pointer hover:underline"
                                 @click="navigateToUser(post.author.username, $event)">
                                 @{{ post.author.username }}
@@ -129,14 +123,12 @@ const closeModal = () => {
                 </UDropdownMenu>
             </header>
 
-            <!-- Content - clickable to post detail -->
             <div class="px-4 pb-3 cursor-pointer">
                 <p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed">
                     {{ post.content }}
                 </p>
             </div>
 
-            <!-- Images -->
             <div v-if="post.post_images?.length" class="cursor-pointer" @click.stop>
                 <UModal :ui="{
                     content: 'w-fit max-w-[1200px] max-h-[90vh] rounded-lg'
@@ -166,10 +158,8 @@ const closeModal = () => {
             </div>
 
 
-            <!-- Actions - clickable to post detail -->
             <footer class="flex items-center justify-between px-4 py-3 cursor-pointer" @click="navigateToPost(post.id)">
                 <div class="flex items-center gap-6">
-                    <!-- Like Button -->
                     <button @click="toggleLike(post, $event)" class="flex items-center gap-2 hover:cursor-pointer group"
                         :disabled="isLikeSubmitting">
                         <UIcon name="i-heroicons-heart-solid"
@@ -189,16 +179,10 @@ const closeModal = () => {
                     </button>
                 </div>
 
-                <!-- Share -->
-                <button class="group">
-                    <UIcon name="i-heroicons-share"
-                        class="w-5 h-5 text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors" />
-                </button>
             </footer>
         </article>
     </div>
 
-    <!-- Modals (outside loop) -->
     <UModal v-model:open="editModal" :overlay="false">
         <template #content>
             <div class="p-6">

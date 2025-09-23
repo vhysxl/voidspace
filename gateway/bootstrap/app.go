@@ -76,9 +76,9 @@ func App() (*Application, error) {
 	// Services
 	authService := service.NewAuthService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewAuthServiceClient(authConn), *config.PublicKey)
 	userService := service.NewUserService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewUserServiceClient(userConn), postpb.NewPostServiceClient(postConn), commentpb.NewCommentServiceClient(commentConn))
-	postService := service.NewPostService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn))
+	postService := service.NewPostService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
 	likeService := service.NewLikeService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewLikesServiceClient(likeConn))
-	feedService := service.NewFeedService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn))
+	feedService := service.NewFeedService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
 	commentService := service.NewCommentService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
 	uploadService, err := service.NewUploadService(context.Background(), config.BucketName, config.GCSCredentialPath)
 	if err != nil {

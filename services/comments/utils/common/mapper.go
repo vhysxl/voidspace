@@ -13,9 +13,9 @@ func CommentMapper(comment *domain.Comment) *pb.CommentResponse {
 	}
 
 	return &pb.CommentResponse{
-		Id:        comment.ID,
-		UserId:    comment.UserID,
-		PostId:    comment.PostID,
+		Id:        int32(comment.UserID),
+		UserId:    int32(comment.UserID),
+		PostId:    int32(comment.UserID),
 		Content:   comment.Content,
 		CreatedAt: timestamppb.New(comment.CreatedAt),
 	}

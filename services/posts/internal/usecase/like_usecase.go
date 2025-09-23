@@ -11,12 +11,7 @@ type likeUsecase struct {
 	contextTimeout time.Duration
 }
 
-type LikeUsecase interface {
-	LikePost(ctx context.Context, like *domain.Like) (int32, error)
-	UnlikePost(ctx context.Context, like *domain.Like) (int32, error)
-}
-
-func NewLikeUsecase(likeRepository domain.LikeRepository, contextTimeout time.Duration) LikeUsecase {
+func NewLikeUsecase(likeRepository domain.LikeRepository, contextTimeout time.Duration) domain.LikeUsecase {
 	return &likeUsecase{
 		likeRepository: likeRepository,
 		contextTimeout: contextTimeout,

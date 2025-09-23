@@ -32,8 +32,10 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 		}
 
 		skippedMethods := map[string]bool{ //change this later
-			"/comments.v1.CommentService/GetAllCommentsByPostID": true,
-			"/comments.v1.CommentService/GetAllCommentsByUserID": true,
+			"/comments.v1.CommentService/GetAllCommentsByPostId":    true,
+			"/comments.v1.CommentService/GetAllCommentsByUserId":    true,
+			"/comments.v1.CommentService/CountCommentsByPostId":     true,
+			"/comments.v1.CommentService/GetCommentsCountByPostIds": true,
 		}
 
 		isSkippedMethod := skippedMethods[info.FullMethod]

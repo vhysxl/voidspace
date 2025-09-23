@@ -2,8 +2,11 @@ package utils
 
 import (
 	"net/http"
+	"voidspaceGateway/internal/api/responses"
 	"voidspaceGateway/internal/constants"
 
+	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -32,4 +35,10 @@ func GRPCErrorToHTTP(err error) (int, string) {
 	default:
 		return http.StatusInternalServerError, st.Message()
 	}
+}
+
+func HandleDialError(logger *zap.Logger, c echo.Context, err error, logMsg string) error {
+	logger.Error(logMsg, zap.Error(err))
+	code, msg := GRPCErrorToHTTP(err)
+	return responses.ErrorResponseMessage(c, code, msg)
 }

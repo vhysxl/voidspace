@@ -5,6 +5,7 @@ import (
 	"time"
 	"voidspaceGateway/internal/models"
 	postpb "voidspaceGateway/proto/generated/posts"
+	"voidspaceGateway/utils"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc/metadata"
@@ -28,11 +29,7 @@ func (ls *LikeService) Like(ctx context.Context, req *models.LikeRequest) (*mode
 	ctx, cancel := context.WithTimeout(ctx, ls.ContextTimeout)
 	defer cancel()
 
-	md := metadata.New(map[string]string{
-		"user_id":  req.UserID,
-		"username": req.Username,
-	})
-
+	md := utils.MetaDataHandler(req.UserID, req.Username)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	res, err := ls.LikeClient.Like(ctx, &postpb.LikeRequest{
@@ -52,11 +49,7 @@ func (ls *LikeService) Unlike(ctx context.Context, req *models.LikeRequest) (*mo
 	ctx, cancel := context.WithTimeout(ctx, ls.ContextTimeout)
 	defer cancel()
 
-	md := metadata.New(map[string]string{
-		"user_id":  req.UserID,
-		"username": req.Username,
-	})
-
+	md := utils.MetaDataHandler(req.UserID, req.Username)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	res, err := ls.LikeClient.Unlike(ctx, &postpb.LikeRequest{

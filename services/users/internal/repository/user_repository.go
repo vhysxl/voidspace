@@ -32,8 +32,8 @@ func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
 	result, err := tx.ExecContext(
 		ctx,
 		`INSERT INTO users 
-		(username, email, password_hash, created_at, updated_at) 
-		VALUES (?, ?, ?, ?, ?)`,
+			(username, email, password_hash, created_at, updated_at) 
+		 VALUES (?, ?, ?, ?, ?)`,
 		user.Username,
 		user.Email,
 		user.PasswordHash,
@@ -41,10 +41,8 @@ func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
 		user.UpdatedAt,
 	)
 	if err != nil {
-		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
-			if mysqlErr.Number == 1062 {
-				return domain.ErrUserExists
-			}
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
+			return domain.ErrUserExists
 		}
 		return err
 	}
@@ -53,40 +51,35 @@ func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
 	if err != nil {
 		return err
 	}
-	user.ID = int(id)
+	user.Id = int32(id) // Fixed: convert to int32
 
 	_, err = tx.ExecContext(
 		ctx,
 		"INSERT INTO user_profile (user_id) VALUES (?)",
-		user.ID,
+		user.Id,
 	)
 	if err != nil {
 		return err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-
-	return nil
+	return tx.Commit()
 }
 
-// GetUserByUsername implements domain.UserRepository.
 func (u *userRepository) GetUserByUsername(ctx context.Context, username string) (*domain.User, error) {
 	user := &domain.User{}
 	err := u.db.QueryRowContext(ctx,
 		`SELECT id, username, email, password_hash, created_at, updated_at 
-		FROM users 
-		WHERE username = ?`,
-		username).
-		Scan(
-			&user.ID,
-			&user.Username,
-			&user.Email,
-			&user.PasswordHash,
-			&user.CreatedAt,
-			&user.UpdatedAt,
-		)
+		 FROM users 
+		 WHERE username = ?`,
+		username,
+	).Scan(
+		&user.Id,
+		&user.Username,
+		&user.Email,
+		&user.PasswordHash,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -98,8 +91,11 @@ func (u *userRepository) GetUserByUsername(ctx context.Context, username string)
 	return user, nil
 }
 
-// GetUserByIds implements domain.UserRepository.
 func (u *userRepository) GetUserByIds(ctx context.Context, userIDs []int32) ([]*views.UserProfile, error) {
+	if len(userIDs) == 0 {
+		return []*views.UserProfile{}, nil
+	}
+
 	placeholders := make([]string, len(userIDs))
 	args := make([]any, len(userIDs))
 	for i, id := range userIDs {
@@ -108,21 +104,21 @@ func (u *userRepository) GetUserByIds(ctx context.Context, userIDs []int32) ([]*
 	}
 
 	query := fmt.Sprintf(`
-    SELECT 
-        u.id, 
-        u.username, 
-        up.display_name, 
-        up.avatar_url,
-        up.bio, 
-        up.banner_url, 
-        up.location,
-        (SELECT COUNT(*) FROM user_follows WHERE target_user_id = u.id) AS followers,
-        (SELECT COUNT(*) FROM user_follows WHERE user_id = u.id) AS following,
-        u.created_at
-    FROM users u
-    JOIN user_profile up ON u.id = up.user_id
-    WHERE u.id IN (%s)
-`, strings.Join(placeholders, ","))
+		SELECT 
+			u.id, 
+			u.username, 
+			up.display_name, 
+			up.avatar_url,
+			up.bio, 
+			up.banner_url, 
+			up.location,
+			(SELECT COUNT(*) FROM user_follows WHERE target_user_id = u.id) AS followers,
+			(SELECT COUNT(*) FROM user_follows WHERE user_id = u.id) AS following,
+			u.created_at
+		FROM users u
+		JOIN user_profile up ON u.id = up.user_id
+		WHERE u.id IN (%s)
+	`, strings.Join(placeholders, ","))
 
 	rows, err := u.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -133,14 +129,10 @@ func (u *userRepository) GetUserByIds(ctx context.Context, userIDs []int32) ([]*
 	users := make([]*views.UserProfile, 0)
 	for rows.Next() {
 		var user views.UserProfile
-		var displayName sql.NullString
-		var bio sql.NullString
-		var avatarUrl sql.NullString
-		var bannerUrl sql.NullString
-		var location sql.NullString
+		var displayName, bio, avatarUrl, bannerUrl, location sql.NullString
 
 		err := rows.Scan(
-			&user.ID,
+			&user.Id,
 			&user.Username,
 			&displayName,
 			&avatarUrl,
@@ -170,43 +162,15 @@ func (u *userRepository) GetUserByIds(ctx context.Context, userIDs []int32) ([]*
 	return users, nil
 }
 
-// GetUserByEmail implements domain.UserRepository.
 func (u *userRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
 	user := &domain.User{}
 	err := u.db.QueryRowContext(ctx,
 		`SELECT id, username, email, password_hash, created_at, updated_at 
-		FROM users 
-		WHERE email = ?`,
-		email).
-		Scan(
-			&user.ID,
-			&user.Username,
-			&user.Email,
-			&user.PasswordHash,
-			&user.CreatedAt,
-			&user.UpdatedAt,
-		)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, domain.ErrUserNotFound
-		}
-		return nil, err
-	}
-
-	return user, nil
-}
-
-// GetUserByCredentials implements domain.UserRepository.
-func (u *userRepository) GetUserByCredentials(ctx context.Context, credentials string) (*domain.User, error) {
-	user := &domain.User{}
-	err := u.db.QueryRowContext(ctx,
-		`SELECT id, username, email, password_hash, created_at, updated_at 
-		FROM users 
-		WHERE email = ? OR username = ?`,
-		credentials, credentials,
+		 FROM users 
+		 WHERE email = ?`,
+		email,
 	).Scan(
-		&user.ID,
+		&user.Id,
 		&user.Username,
 		&user.Email,
 		&user.PasswordHash,
@@ -224,10 +188,35 @@ func (u *userRepository) GetUserByCredentials(ctx context.Context, credentials s
 	return user, nil
 }
 
-// GetUserProfile implements domain.UserRepository.
-func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.UserProfile, error) {
-	var ( //initializer
-		userID      int
+func (u *userRepository) GetUserByCredentials(ctx context.Context, credentials string) (*domain.User, error) {
+	user := &domain.User{}
+	err := u.db.QueryRowContext(ctx,
+		`SELECT id, username, email, password_hash, created_at, updated_at 
+		 FROM users 
+		 WHERE email = ? OR username = ?`,
+		credentials, credentials,
+	).Scan(
+		&user.Id,
+		&user.Username,
+		&user.Email,
+		&user.PasswordHash,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (u *userRepository) GetUserProfile(ctx context.Context, userId int32) (*views.UserProfile, error) {
+	var (
+		id          int32
 		username    string
 		createdAt   time.Time
 		displayName sql.NullString
@@ -241,22 +230,22 @@ func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.Use
 
 	err := u.db.QueryRowContext(ctx,
 		`SELECT 
-		u.id,
-		u.username,
-		u.created_at,
-		up.display_name,
-		up.bio,
-		up.avatar_url,
-		up.banner_url,
-		up.location,
-		(SELECT COUNT(*) FROM user_follows WHERE target_user_id = u.id) AS follower,
-		(SELECT COUNT(*) FROM user_follows WHERE user_id = u.id) AS following
-	FROM users u
-	JOIN user_profile up ON u.id = up.user_id
-	WHERE u.id = ?`,
-		ID,
+			u.id,
+			u.username,
+			u.created_at,
+			up.display_name,
+			up.bio,
+			up.avatar_url,
+			up.banner_url,
+			up.location,
+			(SELECT COUNT(*) FROM user_follows WHERE target_user_id = u.id) AS follower,
+			(SELECT COUNT(*) FROM user_follows WHERE user_id = u.id) AS following
+		FROM users u
+		JOIN user_profile up ON u.id = up.user_id
+		WHERE u.id = ?`,
+		userId,
 	).Scan(
-		&userID,
+		&id,
 		&username,
 		&createdAt,
 		&displayName,
@@ -268,15 +257,14 @@ func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.Use
 		&following,
 	)
 	if err != nil {
-
 		if err == sql.ErrNoRows {
 			return nil, domain.ErrUserNotFound
 		}
 		return nil, err
 	}
 
-	user := &views.UserProfile{
-		ID:          userID,
+	return &views.UserProfile{
+		Id:          id,
 		Username:    username,
 		CreatedAt:   createdAt,
 		DisplayName: displayName.String,
@@ -284,43 +272,37 @@ func (u *userRepository) GetUserProfile(ctx context.Context, ID int) (*views.Use
 		AvatarUrl:   avatarUrl.String,
 		BannerUrl:   bannerUrl.String,
 		Location:    location.String,
-		Following:   int(following.Int64),
-		Followers:   int(follower.Int64),
-	}
-
-	return user, nil
-
+		Following:   int32(follower.Int64),
+		Followers:   int32(follower.Int64),
+	}, nil
 }
 
-// IsFollowed implements domain.UserRepository.
-func (u *userRepository) IsFollowed(ctx context.Context, userID int32, targetUserID int32) (bool, error) {
+func (u *userRepository) IsFollowed(ctx context.Context, userId, targetUserId int32) (bool, error) {
 	var dummy int
 	err := u.db.QueryRowContext(ctx,
 		`SELECT 1 FROM user_follows WHERE user_id = ? AND target_user_id = ?`,
-		userID, targetUserID,
+		userId, targetUserId,
 	).Scan(&dummy)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return false, nil
 		}
-
 		return false, err
 	}
 	return true, nil
 }
 
-// GetUserFollowedById implements domain.UserRepository.
-func (u *userRepository) GetUserFollowedById(ctx context.Context, userID int32) ([]int32, error) {
-	rows, err := u.db.QueryContext(ctx, `SELECT target_user_id FROM user_follows WHERE user_id = ?`, userID)
+func (u *userRepository) GetUserFollowedById(ctx context.Context, userId int32) ([]int32, error) {
+	rows, err := u.db.QueryContext(ctx, `SELECT target_user_id FROM user_follows WHERE user_id = ?`, userId)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var userIDs []int32
+	var userIDs []int32 // Fixed: return int32 slice
 	for rows.Next() {
-		var id int32
+		var id int32 // Fixed: use int32
 		if err := rows.Scan(&id); err != nil {
 			return nil, err
 		}
@@ -330,12 +312,11 @@ func (u *userRepository) GetUserFollowedById(ctx context.Context, userID int32) 
 	return userIDs, nil
 }
 
-// DeleteUser implements domain.UserRepository.
-func (u *userRepository) DeleteUser(ctx context.Context, id int) error {
+func (u *userRepository) DeleteUser(ctx context.Context, userId int32) error {
 	result, err := u.db.ExecContext(
 		ctx,
 		`DELETE FROM users WHERE id = ?`,
-		id,
+		userId,
 	)
 	if err != nil {
 		return err

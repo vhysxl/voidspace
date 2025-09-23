@@ -10,8 +10,6 @@ service PostService {
   rpc CreatePost(CreatePostRequest) returns (PostResponse);
   rpc GetPost(GetPostRequest) returns (PostResponse);
   rpc UpdatePost(UpdatePostRequest) returns (google.protobuf.Empty);
-  rpc IncrementCommentCount(UpdateCommentReq) returns (CommentResponse);
-  rpc DecrementCommentCount(UpdateCommentReq) returns (CommentResponse);
   rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty);
   rpc GetAllPosts(GetAllPostsRequest) returns (GetFeedResponse);
   rpc GetGlobalFeed(GetGlobalFeedRequest) returns (GetFeedResponse);
@@ -64,15 +62,13 @@ message PostResponse {
   int32 user_id = 3;
   repeated string post_images = 4;
   int32 likes_count = 5;
-  int32 comments_count = 6;
-  google.protobuf.Timestamp created_at = 7;  
-  google.protobuf.Timestamp updated_at = 8;  
-  bool is_liked = 9;
+  google.protobuf.Timestamp created_at = 6;  
+  google.protobuf.Timestamp updated_at = 7;  
+  bool is_liked = 8;
 }
 
 message CommentResponse {
   bool success = 1;
-  int32 new_comments_count = 2;  
 }
 
 message GetFeedResponse {

@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	ID           int
+	Id           int32
 	Username     string
 	Email        string
 	PasswordHash string
@@ -15,14 +15,23 @@ type User struct {
 	UpdatedAt    time.Time
 }
 
+type UserUsecase interface {
+	GetCurrentUser(ctx context.Context, userId int32) (*views.UserProfile, error)
+	GetUser(ctx context.Context, username string, userId int32) (*views.UserProfile, error)
+	GetUserById(ctx context.Context, userId int32) (*views.UserProfile, error)
+	GetUserByIds(ctx context.Context, userIds []int32) ([]*views.UserProfile, error)
+	GetUserFollowedById(ctx context.Context, userId int32) ([]int32, error)
+	DeleteUser(ctx context.Context, userId int32) error
+}
+
 type UserRepository interface {
 	Create(ctx context.Context, user *User) error
 	GetUserByUsername(ctx context.Context, username string) (*User, error)
-	IsFollowed(ctx context.Context, userID, targetUserID int32) (bool, error)
-	GetUserFollowedById(ctx context.Context, userID int32) ([]int32, error)
+	IsFollowed(ctx context.Context, userId, targetUserId int32) (bool, error)
+	GetUserFollowedById(ctx context.Context, userId int32) ([]int32, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	GetUserByCredentials(ctx context.Context, credentials string) (*User, error)
-	GetUserByIds(ctx context.Context, userIDs []int32) ([]*views.UserProfile, error)
-	GetUserProfile(ctx context.Context, userId int) (*views.UserProfile, error)
-	DeleteUser(ctx context.Context, id int) error
+	GetUserByIds(ctx context.Context, userIds []int32) ([]*views.UserProfile, error)
+	GetUserProfile(ctx context.Context, userId int32) (*views.UserProfile, error)
+	DeleteUser(ctx context.Context, userId int32) error
 }

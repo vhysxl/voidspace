@@ -13,14 +13,13 @@ func PostMapper(post *domain.Post) *pb.PostResponse {
 	}
 
 	return &pb.PostResponse{
-		Id:            post.ID,
-		Content:       post.Content,
-		UserId:        post.UserID,
-		PostImages:    post.PostImages,
-		LikesCount:    post.LikesCount,
-		CommentsCount: post.CommentsCount,
-		CreatedAt:     timestamppb.New(post.CreatedAt),
-		UpdatedAt:     timestamppb.New(post.UpdatedAt),
-		IsLiked:       post.IsLiked,
+		Id:         post.ID,
+		Content:    post.Content,
+		UserId:     post.UserID,
+		PostImages: post.PostImages,
+		LikesCount: post.LikesCount,
+		CreatedAt:  timestamppb.New(post.CreatedAt),
+		UpdatedAt:  timestamppb.New(post.UpdatedAt),
+		IsLiked:    post.IsLiked,
 	}
 }

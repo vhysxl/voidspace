@@ -431,10 +431,9 @@ type PostResponse struct {
 	UserId        int32                  `protobuf:"varint,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	PostImages    []string               `protobuf:"bytes,4,rep,name=post_images,json=postImages,proto3" json:"post_images,omitempty"`
 	LikesCount    int32                  `protobuf:"varint,5,opt,name=likes_count,json=likesCount,proto3" json:"likes_count,omitempty"`
-	CommentsCount int32                  `protobuf:"varint,6,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	IsLiked       bool                   `protobuf:"varint,9,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	IsLiked       bool                   `protobuf:"varint,8,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -504,13 +503,6 @@ func (x *PostResponse) GetLikesCount() int32 {
 	return 0
 }
 
-func (x *PostResponse) GetCommentsCount() int32 {
-	if x != nil {
-		return x.CommentsCount
-	}
-	return 0
-}
-
 func (x *PostResponse) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
@@ -533,11 +525,10 @@ func (x *PostResponse) GetIsLiked() bool {
 }
 
 type CommentResponse struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Success          bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	NewCommentsCount int32                  `protobuf:"varint,2,opt,name=new_comments_count,json=newCommentsCount,proto3" json:"new_comments_count,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CommentResponse) Reset() {
@@ -575,13 +566,6 @@ func (x *CommentResponse) GetSuccess() bool {
 		return x.Success
 	}
 	return false
-}
-
-func (x *CommentResponse) GetNewCommentsCount() int32 {
-	if x != nil {
-		return x.NewCommentsCount
-	}
-	return 0
 }
 
 type GetFeedResponse struct {
@@ -664,7 +648,7 @@ const file_posts_post_proto_rawDesc = "" +
 	"\x17GetFeedByUserIDsRequest\x12\x19\n" +
 	"\buser_ids\x18\x01 \x03(\x05R\auserIds\x122\n" +
 	"\x06cursor\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x06cursor\x12\x1a\n" +
-	"\bcursorID\x18\x03 \x01(\x05R\bcursorID\"\xcb\x02\n" +
+	"\bcursorID\x18\x03 \x01(\x05R\bcursorID\"\xa4\x02\n" +
 	"\fPostResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x18\n" +
 	"\acontent\x18\x02 \x01(\tR\acontent\x12\x17\n" +
@@ -672,27 +656,23 @@ const file_posts_post_proto_rawDesc = "" +
 	"\vpost_images\x18\x04 \x03(\tR\n" +
 	"postImages\x12\x1f\n" +
 	"\vlikes_count\x18\x05 \x01(\x05R\n" +
-	"likesCount\x12%\n" +
-	"\x0ecomments_count\x18\x06 \x01(\x05R\rcommentsCount\x129\n" +
+	"likesCount\x129\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x19\n" +
-	"\bis_liked\x18\t \x01(\bR\aisLiked\"Y\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x19\n" +
+	"\bis_liked\x18\b \x01(\bR\aisLiked\"+\n" +
 	"\x0fCommentResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12,\n" +
-	"\x12new_comments_count\x18\x02 \x01(\x05R\x10newCommentsCount\"Z\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"Z\n" +
 	"\x0fGetFeedResponse\x12,\n" +
 	"\x05posts\x18\x01 \x03(\v2\x16.posts.v1.PostResponseR\x05posts\x12\x19\n" +
-	"\bhas_more\x18\x02 \x01(\bR\ahasMore2\xe2\x05\n" +
+	"\bhas_more\x18\x02 \x01(\bR\ahasMore2\xc2\x04\n" +
 	"\vPostService\x12A\n" +
 	"\n" +
 	"CreatePost\x12\x1b.posts.v1.CreatePostRequest\x1a\x16.posts.v1.PostResponse\x12;\n" +
 	"\aGetPost\x12\x18.posts.v1.GetPostRequest\x1a\x16.posts.v1.PostResponse\x12A\n" +
 	"\n" +
-	"UpdatePost\x12\x1b.posts.v1.UpdatePostRequest\x1a\x16.google.protobuf.Empty\x12N\n" +
-	"\x15IncrementCommentCount\x12\x1a.posts.v1.UpdateCommentReq\x1a\x19.posts.v1.CommentResponse\x12N\n" +
-	"\x15DecrementCommentCount\x12\x1a.posts.v1.UpdateCommentReq\x1a\x19.posts.v1.CommentResponse\x12A\n" +
+	"UpdatePost\x12\x1b.posts.v1.UpdatePostRequest\x1a\x16.google.protobuf.Empty\x12A\n" +
 	"\n" +
 	"DeletePost\x12\x1b.posts.v1.DeletePostRequest\x1a\x16.google.protobuf.Empty\x12F\n" +
 	"\vGetAllPosts\x12\x1c.posts.v1.GetAllPostsRequest\x1a\x19.posts.v1.GetFeedResponse\x12J\n" +
@@ -737,25 +717,21 @@ var file_posts_post_proto_depIdxs = []int32{
 	0,  // 5: posts.v1.PostService.CreatePost:input_type -> posts.v1.CreatePostRequest
 	1,  // 6: posts.v1.PostService.GetPost:input_type -> posts.v1.GetPostRequest
 	2,  // 7: posts.v1.PostService.UpdatePost:input_type -> posts.v1.UpdatePostRequest
-	3,  // 8: posts.v1.PostService.IncrementCommentCount:input_type -> posts.v1.UpdateCommentReq
-	3,  // 9: posts.v1.PostService.DecrementCommentCount:input_type -> posts.v1.UpdateCommentReq
-	4,  // 10: posts.v1.PostService.DeletePost:input_type -> posts.v1.DeletePostRequest
-	5,  // 11: posts.v1.PostService.GetAllPosts:input_type -> posts.v1.GetAllPostsRequest
-	6,  // 12: posts.v1.PostService.GetGlobalFeed:input_type -> posts.v1.GetGlobalFeedRequest
-	7,  // 13: posts.v1.PostService.GetFeedByUserIDs:input_type -> posts.v1.GetFeedByUserIDsRequest
-	12, // 14: posts.v1.PostService.AccountDeletionHandle:input_type -> google.protobuf.Empty
-	8,  // 15: posts.v1.PostService.CreatePost:output_type -> posts.v1.PostResponse
-	8,  // 16: posts.v1.PostService.GetPost:output_type -> posts.v1.PostResponse
-	12, // 17: posts.v1.PostService.UpdatePost:output_type -> google.protobuf.Empty
-	9,  // 18: posts.v1.PostService.IncrementCommentCount:output_type -> posts.v1.CommentResponse
-	9,  // 19: posts.v1.PostService.DecrementCommentCount:output_type -> posts.v1.CommentResponse
-	12, // 20: posts.v1.PostService.DeletePost:output_type -> google.protobuf.Empty
-	10, // 21: posts.v1.PostService.GetAllPosts:output_type -> posts.v1.GetFeedResponse
-	10, // 22: posts.v1.PostService.GetGlobalFeed:output_type -> posts.v1.GetFeedResponse
-	10, // 23: posts.v1.PostService.GetFeedByUserIDs:output_type -> posts.v1.GetFeedResponse
-	12, // 24: posts.v1.PostService.AccountDeletionHandle:output_type -> google.protobuf.Empty
-	15, // [15:25] is the sub-list for method output_type
-	5,  // [5:15] is the sub-list for method input_type
+	4,  // 8: posts.v1.PostService.DeletePost:input_type -> posts.v1.DeletePostRequest
+	5,  // 9: posts.v1.PostService.GetAllPosts:input_type -> posts.v1.GetAllPostsRequest
+	6,  // 10: posts.v1.PostService.GetGlobalFeed:input_type -> posts.v1.GetGlobalFeedRequest
+	7,  // 11: posts.v1.PostService.GetFeedByUserIDs:input_type -> posts.v1.GetFeedByUserIDsRequest
+	12, // 12: posts.v1.PostService.AccountDeletionHandle:input_type -> google.protobuf.Empty
+	8,  // 13: posts.v1.PostService.CreatePost:output_type -> posts.v1.PostResponse
+	8,  // 14: posts.v1.PostService.GetPost:output_type -> posts.v1.PostResponse
+	12, // 15: posts.v1.PostService.UpdatePost:output_type -> google.protobuf.Empty
+	12, // 16: posts.v1.PostService.DeletePost:output_type -> google.protobuf.Empty
+	10, // 17: posts.v1.PostService.GetAllPosts:output_type -> posts.v1.GetFeedResponse
+	10, // 18: posts.v1.PostService.GetGlobalFeed:output_type -> posts.v1.GetFeedResponse
+	10, // 19: posts.v1.PostService.GetFeedByUserIDs:output_type -> posts.v1.GetFeedResponse
+	12, // 20: posts.v1.PostService.AccountDeletionHandle:output_type -> google.protobuf.Empty
+	13, // [13:21] is the sub-list for method output_type
+	5,  // [5:13] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
 	5,  // [5:5] is the sub-list for extension extendee
 	0,  // [0:5] is the sub-list for field type_name

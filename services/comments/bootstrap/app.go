@@ -7,6 +7,7 @@ import (
 	"time"
 	"voidspace/comments/config"
 	"voidspace/comments/database"
+	"voidspace/comments/internal/domain"
 	"voidspace/comments/internal/repository"
 	"voidspace/comments/internal/usecase"
 	"voidspace/comments/logger"
@@ -23,7 +24,7 @@ type Application struct {
 	Validator      *validator.Validate
 	ContextTimeout time.Duration
 	Logger         *zap.Logger
-	CommentUseCase usecase.CommentUsecase
+	CommentUseCase domain.CommentUsecase
 }
 
 func App() (*Application, error) {

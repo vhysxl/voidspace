@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"time"
 	"voidspaceGateway/internal/models"
+	commentpb "voidspaceGateway/proto/generated/comments"
 	postpb "voidspaceGateway/proto/generated/posts"
 	userpb "voidspaceGateway/proto/generated/users"
 	"voidspaceGateway/utils"
@@ -18,14 +18,16 @@ type PostService struct {
 	Logger         *zap.Logger
 	PostClient     postpb.PostServiceClient
 	UserClient     userpb.UserServiceClient
+	CommentClient  commentpb.CommentServiceClient
 }
 
-func NewPostService(timeout time.Duration, logger *zap.Logger, postClient postpb.PostServiceClient, userClient userpb.UserServiceClient) *PostService {
+func NewPostService(timeout time.Duration, logger *zap.Logger, postClient postpb.PostServiceClient, userClient userpb.UserServiceClient, commentClient commentpb.CommentServiceClient) *PostService {
 	return &PostService{
 		ContextTimeout: timeout,
 		Logger:         logger,
 		PostClient:     postClient,
 		UserClient:     userClient,
+		CommentClient:  commentClient,
 	}
 }
 
@@ -33,10 +35,7 @@ func (ps *PostService) Create(ctx context.Context, username string, userID strin
 	ctx, cancel := context.WithTimeout(ctx, ps.ContextTimeout)
 	defer cancel()
 
-	md := metadata.New(map[string]string{
-		"user_id":  userID,
-		"username": username,
-	})
+	md := utils.MetaDataHandler(userID, username)
 
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
@@ -57,7 +56,7 @@ func (ps *PostService) Create(ctx context.Context, username string, userID strin
 		UserID:        int(res.GetUserId()),
 		PostImages:    res.GetPostImages(),
 		LikesCount:    int(res.GetLikesCount()),
-		CommentsCount: int(res.GetCommentsCount()),
+		CommentsCount: 0,
 		CreatedAt:     res.GetCreatedAt().AsTime(),
 		UpdatedAt:     res.GetUpdatedAt().AsTime(),
 	}, nil
@@ -67,18 +66,8 @@ func (ps *PostService) GetPost(ctx context.Context, req *models.GetPostRequest, 
 	ctx, cancel := context.WithTimeout(ctx, ps.ContextTimeout)
 	defer cancel()
 
-	md := metadata.New(map[string]string{
-		"user_id":  userID,
-		"username": username,
-	})
-
+	md := utils.MetaDataHandler(userID, username)
 	ctx = metadata.NewOutgoingContext(ctx, md)
-
-	if md, ok := metadata.FromOutgoingContext(ctx); ok {
-		fmt.Println("outgoing metadata:", md)
-	} else {
-		fmt.Println("no outgoing metadata")
-	}
 
 	postRes, err := ps.PostClient.GetPost(ctx, &postpb.GetPostRequest{
 		Id: int32(req.ID),
@@ -96,20 +85,23 @@ func (ps *PostService) GetPost(ctx context.Context, req *models.GetPostRequest, 
 		return nil, err
 	}
 
+	commentCountRes, err := ps.CommentClient.CountCommentsByPostId(ctx, &commentpb.CountCommentsByPostIdRequest{PostId: int32(req.ID)})
+	if err != nil {
+		ps.Logger.Error("Failed to call CommentService.CountCommentsByPostId")
+		return nil, err
+	}
+
 	user := utils.UserMapper(userRes)
 
-	post := utils.PostMapper(postRes, &user)
-	return &post, nil
+	post := utils.PostMapper(postRes, user, int(commentCountRes.GetCommentsCount()))
+	return post, nil
 }
 
 func (ps *PostService) Update(ctx context.Context, req *models.PostRequest, postID int, username string, userID string) error {
 	ctx, cancel := context.WithTimeout(ctx, ps.ContextTimeout)
 	defer cancel()
 
-	md := metadata.New(map[string]string{
-		"user_id":  userID,
-		"username": username,
-	})
+	md := utils.MetaDataHandler(userID, username)
 
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
@@ -132,11 +124,7 @@ func (ps *PostService) Delete(ctx context.Context, postID int, username string, 
 	ctx, cancel := context.WithTimeout(ctx, ps.ContextTimeout)
 	defer cancel()
 
-	md := metadata.New(map[string]string{
-		"user_id":  userID,
-		"username": username,
-	})
-
+	md := utils.MetaDataHandler(userID, username)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	data := &postpb.DeletePostRequest{
@@ -174,19 +162,29 @@ func (ps *PostService) GetUserPosts(ctx context.Context, username string) (*mode
 		return nil, err
 	}
 
+	// Extract all post IDs for batch comment count query
+	postIds := make([]int32, 0, len(res.GetPosts()))
+	for _, post := range res.GetPosts() {
+		postIds = append(postIds, post.GetId())
+	}
+
+	// Get comments count for all posts in single RPC call
+	commentsCountRes, err := ps.CommentClient.GetCommentsCountByPostIds(ctx, &commentpb.GetCommentsCountByPostIdsRequest{
+		PostIds: postIds,
+	})
+	if err != nil {
+		ps.Logger.Error("failed to call CommentService.GetCommentsCountByPostIds", zap.Error(err))
+		return nil, err
+	}
+
+	// Build posts with comment counts
 	posts := make([]models.Post, 0, len(res.GetPosts()))
 	for _, post := range res.GetPosts() {
-		posts = append(posts, models.Post{
-			ID:            int(post.GetId()),
-			Content:       post.GetContent(),
-			UserID:        int(post.GetUserId()),
-			PostImages:    post.GetPostImages(),
-			CommentsCount: int(post.GetCommentsCount()),
-			LikesCount:    int(post.GetLikesCount()),
-			CreatedAt:     post.GetCreatedAt().AsTime(),
-			UpdatedAt:     post.GetUpdatedAt().AsTime(),
-		})
+		commentsCount := int(commentsCountRes.GetPostCommentsCount()[post.GetId()])
+
+		posts = append(posts, *utils.PostMapper(post, utils.UserMapper(user), commentsCount))
 	}
+
 	return &models.GetFeedResponse{
 		Posts:   posts,
 		HasMore: res.GetHasMore(),

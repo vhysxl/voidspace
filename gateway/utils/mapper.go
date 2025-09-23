@@ -2,82 +2,108 @@ package utils
 
 import (
 	"voidspaceGateway/internal/models"
+	commentpb "voidspaceGateway/proto/generated/comments"
 	postpb "voidspaceGateway/proto/generated/posts"
 	userpb "voidspaceGateway/proto/generated/users"
 )
 
 // this is where all mapper stored, used across all services
-func ProfileMapper(profile *userpb.GetUserResponse) models.Profile {
+func ProfileMapper(profile *userpb.GetUserResponse) *models.Profile {
 	if profile == nil {
-		return models.Profile{}
+		return nil
 	}
 
-	return models.Profile{
+	return &models.Profile{
 		Bio:         profile.GetUser().GetProfile().GetBio(),
 		DisplayName: profile.GetUser().GetProfile().GetDisplayName(),
 		AvatarURL:   profile.GetUser().GetProfile().GetAvatarUrl(),
 		BannerURL:   profile.GetUser().GetProfile().GetBannerUrl(),
 		Location:    profile.GetUser().GetProfile().GetLocation(),
-		Followers:   profile.GetUser().GetProfile().GetFollowers(),
-		Following:   profile.GetUser().GetProfile().GetFollowing(),
+		Followers:   int(profile.GetUser().GetProfile().GetFollowers()),
+		Following:   int(profile.GetUser().GetProfile().GetFollowing()),
 	}
 }
 
-func UserMapper(user *userpb.GetUserResponse) models.User {
+func UserMapper(user *userpb.GetUserResponse) *models.User {
 	if user == nil {
-		return models.User{}
+		return nil
 	}
 
-	return models.User{
-		ID:        user.GetUser().GetId(),
+	profile := ProfileMapper(user)
+	return &models.User{
+		ID:        int(user.GetUser().GetId()),
 		Username:  user.GetUser().GetUsername(),
 		CreatedAt: user.GetUser().GetCreatedAt().AsTime(),
-		Profile:   ProfileMapper(user),
+		Profile:   *profile,
 	}
 }
 
-func UserMapperFromUser(user *userpb.User) models.User {
+func UserMapperFromUser(user *userpb.User) *models.User {
 	if user == nil {
-		return models.User{}
+		return nil
 	}
 
-	return models.User{
+	profile := ProfileMapperFromProfile(user.GetProfile())
+	return &models.User{
+		ID:        int(user.GetId()),
 		Username:  user.GetUsername(),
 		CreatedAt: user.GetCreatedAt().AsTime(),
-		Profile:   ProfileMapperFromProfile(user.GetProfile()),
+		Profile:   *profile,
 	}
 }
 
-func ProfileMapperFromProfile(profile *userpb.Profile) models.Profile {
+func ProfileMapperFromProfile(profile *userpb.Profile) *models.Profile {
 	if profile == nil {
-		return models.Profile{}
+		return nil
 	}
 
-	return models.Profile{
+	return &models.Profile{
 		Bio:         profile.GetBio(),
 		DisplayName: profile.GetDisplayName(),
 		AvatarURL:   profile.GetAvatarUrl(),
 		BannerURL:   profile.GetBannerUrl(),
 		Location:    profile.GetLocation(),
-		Followers:   profile.GetFollowers(),
-		Following:   profile.GetFollowing(),
+		Followers:   int(profile.GetFollowers()),
+		Following:   int(profile.GetFollowing()),
 	}
 }
 
-func PostMapper(postRes *postpb.PostResponse, user *models.User) models.Post {
+func PostMapper(postRes *postpb.PostResponse, user *models.User, commentCount int) *models.Post {
 	if postRes == nil {
-		return models.Post{}
+		return nil
 	}
-	return models.Post{
+	return &models.Post{
 		ID:            int(postRes.GetId()),
 		Content:       postRes.GetContent(),
 		UserID:        int(postRes.GetUserId()),
 		PostImages:    postRes.GetPostImages(),
 		LikesCount:    int(postRes.GetLikesCount()),
-		CommentsCount: int(postRes.GetCommentsCount()),
+		CommentsCount: commentCount,
 		CreatedAt:     postRes.GetCreatedAt().AsTime(),
 		UpdatedAt:     postRes.GetUpdatedAt().AsTime(),
 		IsLiked:       postRes.GetIsLiked(),
 		Author:        user,
+	}
+}
+
+func CommentMapper(commentRes *commentpb.CommentResponse, user *models.User) *models.Comment {
+	if commentRes == nil {
+		return nil
+	}
+
+	return &models.Comment{
+		CommentID: int(commentRes.GetId()),
+		PostID:    int(commentRes.GetPostId()),
+		Content:   commentRes.GetContent(),
+		Author:    user,
+		CreatedAt: commentRes.GetCreatedAt().AsTime(),
+	}
+}
+
+func AuthMapper(authRes *userpb.AuthResponse) *models.AuthResponse {
+	return &models.AuthResponse{
+		AccessToken:  authRes.GetAccessToken(),
+		RefreshToken: authRes.GetRefreshToken(),
+		ExpiresIn:    int64(authRes.GetExpiresIn()),
 	}
 }

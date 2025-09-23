@@ -3,7 +3,7 @@ package domain
 import "context"
 
 type Profile struct {
-	UserID      int
+	UserId      int32
 	DisplayName string
 	Bio         string
 	AvatarUrl   string
@@ -11,7 +11,11 @@ type Profile struct {
 	Location    string
 }
 
+type ProfileUsecase interface {
+	UpdateProfile(ctx context.Context, userId int32, updates *Profile) error
+}
+
 type ProfileRepository interface {
-	GetProfileById(ctx context.Context, userID int) (*Profile, error)
-	Update(ctx context.Context, userID int, profile *Profile) error
+	GetProfileById(ctx context.Context, userId int32) (*Profile, error)
+	Update(ctx context.Context, userId int32, profile *Profile) error
 }

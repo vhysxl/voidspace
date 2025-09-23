@@ -15,6 +15,7 @@ type UploadService struct {
 	CredentialPath string
 }
 
+// TODO: UPDATE THIS TO USE POLICY BECAUSE THERE IS NO SIZE VALIDATION IN SIGNED URL
 // NewUploadService inisialisasi UploadService
 func NewUploadService(ctx context.Context, bucket string, credentialPath string) (*UploadService, error) {
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialPath))
@@ -40,9 +41,10 @@ func (s *UploadService) Close() error {
 // GenerateSignedURL generate signed URL untuk upload
 func (s *UploadService) GenerateSignedURL(fileName, contentType string) (string, error) {
 	opts := &storage.SignedURLOptions{
-		Scheme:  storage.SigningSchemeV4,
-		Method:  "PUT",
-		Expires: time.Now().Add(5 * time.Minute),
+		Scheme:      storage.SigningSchemeV4,
+		Method:      "PUT",
+		Expires:     time.Now().Add(1 * time.Millisecond), // FOR SECURITY REASON, CHANGE THIS LATER IN PROD
+		ContentType: contentType,
 	}
 
 	url, err := s.Client.Bucket(s.Bucket).SignedURL(fileName, opts)

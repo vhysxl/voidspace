@@ -10,13 +10,15 @@ service CommentService {
     rpc CreateComment(CreateCommentRequest) returns (CommentResponse);
     rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse);
     rpc AccountDeletionHandle(google.protobuf.Empty) returns (google.protobuf.Empty);
-    rpc GetAllCommentsByPostID (GetAllCommentsByPostIDRequest) returns (GetBatchCommentsResponse);
-    rpc GetAllCommentsByUserID (GetAllCommentsByUserIDRequest) returns (GetBatchCommentsResponse);
+    rpc GetAllCommentsByPostId(GetAllCommentsByPostIdRequest) returns (GetBatchCommentsResponse);
+    rpc GetAllCommentsByUserId(GetAllCommentsByUserIdRequest) returns (GetBatchCommentsResponse);
+    rpc CountCommentsByPostId(CountCommentsByPostIdRequest) returns (GetCommentsCountResponse);
+    rpc GetCommentsCountByPostIds(GetCommentsCountByPostIdsRequest) returns (GetCommentsCountByPostIdsResponse);
 }
 
 // requests
 message CreateCommentRequest {
-    int32  postID = 1;
+    int32 post_id = 1;
     string content = 2;
 }
 
@@ -24,28 +26,44 @@ message DeleteCommentRequest {
     int32 comment_id = 1;
 }
 
-message GetAllCommentsByPostIDRequest {
+message GetAllCommentsByPostIdRequest {
     int32 post_id = 1;
 }
 
-message GetAllCommentsByUserIDRequest {
+message GetAllCommentsByUserIdRequest {
     int32 user_id = 1;
 }
 
-// response
+message CountCommentsByPostIdRequest {
+    int32 post_id = 1;
+}
+
+message GetCommentsCountByPostIdsRequest {
+    repeated int32 post_ids = 1;
+}
+
+// responses
 message CommentResponse {
-  int32 id = 1;
-  string content = 2;
-  int32 user_id = 3;
-  int32 post_id = 4;
-  google.protobuf.Timestamp created_at = 5;  
+    int32 id = 1;
+    string content = 2;
+    int32 user_id = 3;
+    int32 post_id = 4;
+    google.protobuf.Timestamp created_at = 5;  
 }
 
 message DeleteCommentResponse {
-  int32 postId = 1;
+    int32 post_id = 1;
 }
 
 message GetBatchCommentsResponse {
-  repeated CommentResponse comments = 1;
-  bool has_more = 2;
+    repeated CommentResponse comments = 1;
+    bool has_more = 2;
+}
+
+message GetCommentsCountResponse {
+    int32 comments_count = 1;
+}
+
+message GetCommentsCountByPostIdsResponse {
+    map<int32, int32> post_comments_count = 1; 
 }

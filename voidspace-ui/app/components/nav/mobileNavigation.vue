@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { User } from '@/types';
+import { useRoute } from 'vue-router'
 
 defineProps<{
     menuItems: {
@@ -6,36 +8,39 @@ defineProps<{
         href: string
         icon?: any
         badge?: number
-    }[],
-    activePath?: string
+    }[]
+    User: User | null;
 }>()
+
+const route = useRoute()
+const activePath = computed(() => route.path)
 </script>
 
 <template>
     <nav
-        class="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 px-2 py-3 z-50">
+        class="lg:hidden fixed bottom-0 left-0 right-0 border-t border-neutral-200 bg-white dark:bg-black dark:border-neutral-800 px-2 py-2 z-50">
         <div class="flex justify-around items-center">
             <template v-for="item in menuItems" :key="item.label">
-                <a v-if="item.label !== 'Profile'" :href="item.href" :title="item.label"
-                    class="flex items-center justify-center p-3 rounded-xl transition-colors relative" :class="[
+                <NuxtLink :to="item.href" :title="item.label"
+                    class="flex flex-col items-center justify-center px-4 py-2 rounded-lg transition-colors" :class="[
                         activePath === item.href
-                            ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                            ? 'bg-neutral-200 dark:bg-neutral-800 font-bold text-neutral-900 dark:text-neutral-100'
                             : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800'
                     ]">
-                    <div class="relative">
-                        <component :is="item.icon" class="w-7 h-7" />
-                        <!-- Badge untuk mobile -->
-                        <span v-if="item.badge"
-                            class="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full text-xs bg-red-500 text-white min-w-[18px] h-[18px] flex items-center justify-center font-medium">
-                            {{ item.badge > 99 ? '99+' : item.badge }}
-                        </span>
+                    <div class="relative flex flex-col items-center">
+                        <!-- Jika ada user -->
+                        <template v-if="User">
+                            <UAvatar v-if="item.label === 'Profile'" size="md" :src="User?.profile?.avatar_url"
+                                :alt="User?.username || 'Profile Avatar'" />
+                            <component v-else :is="item.icon" class="w-6 h-6" />
+                        </template>
+
+                        <template v-else>
+                            <component :is="item.label === 'Profile' ? 'LoginButton' : item.icon" class="w-6 h-6" />
+                        </template>
                     </div>
-                </a>
-                <div v-else class="flex items-center justify-center">
-                    <UAvatar size="lg"
-                        src="https://images-ext-1.discordapp.net/external/B-T4tAJ-005Oa4ZCibUPCHCqG7ofGne0YxqZhyi9kmI/https/mudae.net/uploads/7266015/Gf1mE5j~4apc5wo66v4.png?format=webp&quality=lossless&width=281&height=438"
-                        alt="Profile Avatar" />
-                </div>
+                    <span class="text-xs mt-1 truncate">{{ item.label }}</span>
+                </NuxtLink>
             </template>
         </div>
     </nav>

@@ -1,0 +1,1926 @@
+openapi: 3.0.0
+info:
+  title: voidspace
+  description: >-
+    This is collection API of voidspace app
+
+
+    REPO:
+    [https://github.com/vhysxl/voidspace](https://github.com/vhysxl/voidspace)
+  version: 1.0.0
+servers:
+  - url: localhost://
+tags:
+  - name: Auth
+  - name: User
+    description: CRUD related to user
+  - name: Follow
+    description: Actions Related to Follow
+  - name: Post
+    description: CRUD Related To Post
+  - name: Feed
+    description: To Get feed
+  - name: Like
+    description: CRUD related to Like
+  - name: Comment
+    description: CRUD related to comments
+  - name: Upload
+    description: Upload for requesting filename and signed url
+paths:
+  /api/v1/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                username: vhysxl123
+                email: vhysxl123@gmail.com
+                password: vernalequinox123
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "201":
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Set-Cookie:
+              schema:
+                type: string
+                example: >-
+                  refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTkxODE1MTJ9.THnkZtRrIIGLhMXh1_bQVXQYFS3AzuIeXBLEATfBb-UdTHWadVjpAKN3YFwFyxLeDrm6DJT0etc-ce9xDYuxSWQaS9x9pRISCxHKFLEV4R6EMPeomE49ONUJiZyXQhcT56A92dDyg6zgNrNEnodFLdViR822yUx7UNkhIFzp4k-nIbPInN8hJ4xowvRh2td6JJrFSVN21tW9Cew6MVeQZH575MxlnK0GaUsCqwSt0aCydk4G7An4N-GjU7N22vQwI-rY-cB0h2x2Tw40YM75ZZjcpkYpT082ssJKlIhTty9LKgdAV3bR0rzCcGPMWqD3m8RN4mvTC4tz5Tb1yytp2g;
+                  Path=/; Max-Age=604800; HttpOnly; SameSite=Lax
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Mon, 22 Sep 2025 21:31:52 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "545"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Registration successful",
+                    "data": {
+                        "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1Nzg1MTJ9.W9kxHy9U6G_Avo8DUKTy8ZeIDlmHjosF4XgVVJ3ttZJMbkpxcjTQBTOSxfErADxiS79PN6VCqZUfwcNe470uPhavtC-8Y5rURBr2SM1zVQCyFHJWIzsjSGmQG_QHupH8qqRvdTuqPerSwzNeFSLEhnxfVRbiFC7oFLEi_BHopFRVSnUsOshgOK8uxZ8l--CfnpocAUMMc-rGZDGEBAm-jy2C6_Z2Q_1EJZkoV-ggh8doKXjU4r2rhE0begSbRGVFZkeqGMOPjL2cxthRfUCy2qZUfMqMGtbzXBZRRHB_5D9T0eIu_zppfulr_0aBzmrbCqXgR3sXlhOShC403FevqQ",
+                        "expires_in": 1800
+                    }
+                }
+  /api/v1/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                usernameoremail: jack
+                password: prikitiew
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Set-Cookie:
+              schema:
+                type: string
+                example: >-
+                  refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTkxOTY5NzZ9.K-51IHQ4-a9CAlqP8G_Hmw1Sunshgk4RCZoXbj6G9E2giOUcBmvDFtbaQDCgz9cj3G6PqVKYxGih5157vdVKGItRH3DI6uOqoT6ZUokbDE5A1YXimeaTAUWdxFqkDCWdo0hb8SXrhVAAGAPq2cz1B30W31Oo90RnATVtfj0y69VKiIF8gUXmu8du-nT0AuCpcwyRGX8697qkP6xfmmKrzOAq1EI-maIAT2IkfO3TuiZ1co4d9OCndYjKXU7lofrR_dGtYjkzYgbBGtjAvWYNJIXWSF22bX2HShhkD6bM2zYbxp4o4cusIIhS9nRWtg_3xsuZXeTnCE3bliS-oK6aSA;
+                  Path=/; Max-Age=604800; HttpOnly; SameSite=Lax
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 01:49:36 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "538"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Login successful",
+                    "data": {
+                        "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1OTM5NzZ9.eGWVvxf1fTuiqodpQRX0MTkVT51431kgchwYLyfZgfl5cPCAkAzr_MIM2xuT56v5IGHCqWd91Y46qoL2FPRF41vt7LTnTnuvw31_Q9ej1ceE0cKs1lbuRjLNRlybJU1U3kSfq2fZAfR0IOKx-W8dgmuwP_POV_qcZbfB-3TBuLV9FvxnmiWGAJ0GNxviBMLg9-zpoh2O-0S4pDoIiGf8qxPbI4FFmkSsZXx5DW1FiY7ucScew30-1jAexqEp1CQgw1kPpIhSF7nR8jNvC61FQkhFDs4bMTJJbP7AVHPCOv6HJ95e_3tebQJmzp1TsFqZZqLhX0nvTF0WjkAwVXQ_aA",
+                        "expires_in": 1800
+                    }
+                }
+  /api/v1/auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh
+      requestBody:
+        content: {}
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Mon, 22 Sep 2025 21:32:16 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "550"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Token refreshed successfully",
+                    "data": {
+                        "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1Nzg1MzZ9.VnnD3jHP7eNO6KKdkf2CfJhv1LVdg9LlYeae7L6drz1mZTf3_6jMnye-R7tR_U3HAV6nyNgXuPkUBQfSLYzjks-79JNiJaitom3Uuo1NZVL-GFUJ5GbbmBpoJnrYXazaVQYm7fqaKsF4_ehplLzRyOthKbslQGxcSN029bZGRVJ24qderGw98oI7PnYnfypCRIje37g7-S1pvlo--hSJD2KOtyh82lc9cqQ1l5MX3LW-66l25-F8b8VaD2Oq-po8EKdWupfeJhnPRaAqZmj-DG7bT4Vd95Lq0s-MbXZ-UyLcDflhx8IzARxjhsWFFoGiS1PXzQevqK-F_0Yx9PqskA",
+                        "expires_in": 1800
+                    }
+                }
+  /api/v1/auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout
+      requestBody:
+        content: {}
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Set-Cookie:
+              schema:
+                type: string
+                example: refresh_token=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Mon, 22 Sep 2025 21:32:21 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "46"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Logout successful"
+                }
+  /api/v1/users/me:
+    get:
+      tags:
+        - User
+      summary: GetCurrentUser
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1ODEyNzV9.KMnPq5JQlOT8QtuyQ4GgFFnPlzYyQdt1Z3KcA53tT9sLzk8gJp222TYDfzCYn2k0XAL6Yv4JbR8Dyce5ZqJ49rX4FgBRkw_5I_KxmNsqKIC0BIsSYB24G1YBW4wpu4nPJDrQ5Ie9eS2iKsYlEDWoO6E_krVeuA8L0x5-Pe6E1A7km4-srJm_IRdd7rglG54VzYxqBnbefAEyWSMyU89HL6eBIcnwitne4hDLgpJZdyjCK62tdZBYDaAyXcTRg-HjGP7FkcQTG2izdhgAGrWKv26X7OZa6XSkSE5rGBYCQ9QuaB9ReI7cikgC6ngIljuOgWK8qzMjcMN9mZLAsaKTKQ
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Mon, 22 Sep 2025 22:18:18 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "319"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Profile retrieved successfully",
+                    "data": {
+                        "id": 51,
+                        "username": "vhysxl123",
+                        "profile": {
+                            "display_name": "Gin Sama",
+                            "bio": "Ini Bio",
+                            "avatar_url": "https://example.com/avatar.png",
+                            "banner_url": "",
+                            "location": "Bekasi",
+                            "followers": 0,
+                            "following": 0
+                        },
+                        "created_at": "2025-09-22T21:31:52Z",
+                        "is_followed": false
+                    }
+                }
+    put:
+      tags:
+        - User
+      summary: UpdateProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                display_name: Gin Sama
+                bio: Ini Bio
+                avatar_url: https://example.com/avatar.png
+                location: Bekasi
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1ODA5MTR9.gx72VJojH1_y7s8nBnm6aqdgyKlhsrPzhmp6Akp1XlvLkT8Ke2KdBmyufWC-G4VRqRtISlKDtQhfaao19mDi_l0NcfsOxk_-LBlkha-IKILnin9SlhC1XRQXF1yUlArBs1ZDCsz6Aa0mY8zz03VuqNd87nmZimVi67LzvwQQ18P6dpUOuU7scMUbOk8WCoLvb5kqOUSgiVOXZIimcy7uQjmkiXM5MVw-BQlxCwblyIZrTS2DXU9fjGh7weH_6V_g72xVHklFWrEoBCHjiJoDtcN0L4Y6HR_ulDEwxTjHN-oGv8kHDQ-jEd_eBAq102L5xDEjC8NBucfo_lV36tX9rg
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Mon, 22 Sep 2025 22:17:00 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "57"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Profile updated successfully"
+                }
+    delete:
+      tags:
+        - User
+      summary: DeleteUser
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTU4MTZ9.cC4qQm8swz3lnR9LC9a_e4c1SrH2sr1oVPAk_caFU_IKVHwPNzasnHOcGpNyMdehNqsWbK7wmUm38g-YvfcL-fuSQbC_nysdyhh5Q2xdNBFVczb_cmolxf_B70qzYmf0FUliTGUcTNptvY8IJmXVizVdw-4IGjDA_P2yUdM3eQRhYzjR5_9crq4Wuq112uhmz0kNQSMPvLf8fCNXQW2PsHCyU3at3FiBjrfaMcZyAt8YMToYfjP93lle2NVcJ9sZN-NMWkyUDNlBxrB8Ystr5xYTFEgZv875L9MrfsJynWUAhLrXiHXY45S0_l64yfnuZ42SQtiViD_vQ3a4DRKemA
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 07:53:53 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "54"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "User deleted successfully"
+                }
+  /api/v1/users/vhysxl123:
+    get:
+      tags:
+        - User
+      summary: GetUser
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Mon, 22 Sep 2025 22:17:37 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "316"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "User retrieved successfully",
+                    "data": {
+                        "id": 51,
+                        "username": "vhysxl123",
+                        "profile": {
+                            "display_name": "Gin Sama",
+                            "bio": "Ini Bio",
+                            "avatar_url": "https://example.com/avatar.png",
+                            "banner_url": "",
+                            "location": "Bekasi",
+                            "followers": 0,
+                            "following": 0
+                        },
+                        "created_at": "2025-09-22T21:31:52Z",
+                        "is_followed": false
+                    }
+                }
+  /api/v1/follow/yogi:
+    post:
+      tags:
+        - Follow
+      summary: Follow
+      requestBody:
+        content: {}
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1Nzg1MjZ9.VlRfHUVBZrv0SWJEnNLBDdt3l5Xbd5FKGBxWKHXJpOsZRwLOn5BUp7I69kkvkIGRIZNY1I7OuoklF_4JUu7DjMPcOKUQaEjKFgKuTDuGQgRAbMB-sxlPnynGclDpAc8judLCNG-jxtPOt7JOBrXaycKWVMGvu23JKQcJSVlbq3pyK1OcQjDx9JRTVRHbcoJyGXJTYqkw__i64wqipVqwSedlYFHNMpHfNz99NPrucwvKY4a0S__JxE-UKeqqoxUoBwaQUTo6ZFC-5pSXgqClCjI2E-bq9I613CHk8aujlTpVUBPL4quMg0czf1q-nyarFS5qNljKeMwsdAy5_jNfNw
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Mon, 22 Sep 2025 21:33:34 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "55"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "User followed successfully"
+                }
+    delete:
+      tags:
+        - Follow
+      summary: Unfollow
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1Nzg1MjZ9.VlRfHUVBZrv0SWJEnNLBDdt3l5Xbd5FKGBxWKHXJpOsZRwLOn5BUp7I69kkvkIGRIZNY1I7OuoklF_4JUu7DjMPcOKUQaEjKFgKuTDuGQgRAbMB-sxlPnynGclDpAc8judLCNG-jxtPOt7JOBrXaycKWVMGvu23JKQcJSVlbq3pyK1OcQjDx9JRTVRHbcoJyGXJTYqkw__i64wqipVqwSedlYFHNMpHfNz99NPrucwvKY4a0S__JxE-UKeqqoxUoBwaQUTo6ZFC-5pSXgqClCjI2E-bq9I613CHk8aujlTpVUBPL4quMg0czf1q-nyarFS5qNljKeMwsdAy5_jNfNw
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Mon, 22 Sep 2025 21:33:42 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "57"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "User unfollowed successfully"
+                }
+  /api/v1/posts/:
+    post:
+      tags:
+        - Post
+      summary: CreatePost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                content: Hello from vhysx
+                post_images:
+                  - https://example.com/image1.jpg
+                  - >-
+                    https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png
+                  - https://httpbin.org/image/jpeg
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1ODAzNjh9.PQyClo64c3-WXOQpzetmN36Q9p0iOyVlFSCG5x4ruciKDzd2k36KB05OkPHaEgVgO25a_av_IgaEdKAKvaSwkCk1kxk2M3qM2oKeVobQu8sa4r6fvpzcbD15dMqf9k8wrgcTm5eSHbowPcyEa30kHVgjI9QQqGpfmxlJ_AWtkEQ22qWPthdAgwApwCxp30olRRPfpmW4tG9BhneIPa0YrQC7bYxAKl_lo1ADkGwb-Kn9I6pmOMd4kuVHBc4i_cYKzb4jYplVZv8uy3n-nw3LNrClSj7DoaMiRdfZ89xp1lWmE_AiFXe9J8DPkVGbwwhSWYUuvLfEst7UpM_F1YNCLQ
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "201":
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Mon, 22 Sep 2025 22:21:03 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "432"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Post created successfully",
+                    "data": {
+                        "id": 77,
+                        "content": "Hello from vhysx",
+                        "user_id": 51,
+                        "post_images": [
+                            "https://example.com/image1.jpg",
+                            "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                            "https://httpbin.org/image/jpeg"
+                        ],
+                        "likes_count": 0,
+                        "comments_count": 0,
+                        "created_at": "2025-09-22T22:21:03.557261Z",
+                        "updated_at": "2025-09-22T22:21:03.557261Z",
+                        "author": null,
+                        "is_liked": false
+                    }
+                }
+  /api/v1/posts/78:
+    get:
+      tags:
+        - Post
+      summary: GetPost
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 01:57:23 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "549"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Post retrieved successfully",
+                    "data": {
+                        "id": 78,
+                        "content": "Ah normal inimah",
+                        "user_id": 38,
+                        "post_images": null,
+                        "likes_count": 0,
+                        "comments_count": 0,
+                        "created_at": "2025-09-22T22:30:11.177418Z",
+                        "updated_at": "2025-09-22T22:30:11.177418Z",
+                        "author": {
+                            "id": 38,
+                            "username": "jack",
+                            "profile": {
+                                "display_name": "",
+                                "bio": "",
+                                "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                "banner_url": "",
+                                "location": "",
+                                "followers": 1,
+                                "following": 1
+                            },
+                            "created_at": "2025-09-17T21:41:38Z",
+                            "is_followed": false
+                        },
+                        "is_liked": false
+                    }
+                }
+  /api/v1/posts/user/jack:
+    get:
+      tags:
+        - Post
+      summary: GetUserPosts
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Mon, 22 Sep 2025 22:30:17 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "1133"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Post retrieved successfully",
+                    "data": {
+                        "posts": [
+                            {
+                                "id": 78,
+                                "content": "Ah normal inimah",
+                                "user_id": 38,
+                                "post_images": null,
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T22:30:11.177418Z",
+                                "updated_at": "2025-09-22T22:30:11.177418Z",
+                                "author": {
+                                    "id": 38,
+                                    "username": "jack",
+                                    "profile": {
+                                        "display_name": "",
+                                        "bio": "",
+                                        "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                        "banner_url": "",
+                                        "location": "",
+                                        "followers": 1,
+                                        "following": 1
+                                    },
+                                    "created_at": "2025-09-17T21:41:38Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 46,
+                                "content": "gua mah malu tuh",
+                                "user_id": 38,
+                                "post_images": [
+                                    "https://storage.googleapis.com/assets_voidspace/1758181889641719500.jpg"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 1,
+                                "created_at": "2025-09-18T07:51:31.45751Z",
+                                "updated_at": "2025-09-18T21:24:52.93158Z",
+                                "author": {
+                                    "id": 38,
+                                    "username": "jack",
+                                    "profile": {
+                                        "display_name": "",
+                                        "bio": "",
+                                        "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                        "banner_url": "",
+                                        "location": "",
+                                        "followers": 1,
+                                        "following": 1
+                                    },
+                                    "created_at": "2025-09-17T21:41:38Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            }
+                        ],
+                        "has_more": false
+                    }
+                }
+  /api/v1/posts/77:
+    put:
+      tags:
+        - Post
+      summary: UpdatePost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                content: Updating post
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1OTM5NzZ9.eGWVvxf1fTuiqodpQRX0MTkVT51431kgchwYLyfZgfl5cPCAkAzr_MIM2xuT56v5IGHCqWd91Y46qoL2FPRF41vt7LTnTnuvw31_Q9ej1ceE0cKs1lbuRjLNRlybJU1U3kSfq2fZAfR0IOKx-W8dgmuwP_POV_qcZbfB-3TBuLV9FvxnmiWGAJ0GNxviBMLg9-zpoh2O-0S4pDoIiGf8qxPbI4FFmkSsZXx5DW1FiY7ucScew30-1jAexqEp1CQgw1kPpIhSF7nR8jNvC61FQkhFDs4bMTJJbP7AVHPCOv6HJ95e_3tebQJmzp1TsFqZZqLhX0nvTF0WjkAwVXQ_aA
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 01:52:32 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "54"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Post updated successfully"
+                }
+  /api/v1/posts/76:
+    delete:
+      tags:
+        - Post
+      summary: DeletePost
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1OTM5NzZ9.eGWVvxf1fTuiqodpQRX0MTkVT51431kgchwYLyfZgfl5cPCAkAzr_MIM2xuT56v5IGHCqWd91Y46qoL2FPRF41vt7LTnTnuvw31_Q9ej1ceE0cKs1lbuRjLNRlybJU1U3kSfq2fZAfR0IOKx-W8dgmuwP_POV_qcZbfB-3TBuLV9FvxnmiWGAJ0GNxviBMLg9-zpoh2O-0S4pDoIiGf8qxPbI4FFmkSsZXx5DW1FiY7ucScew30-1jAexqEp1CQgw1kPpIhSF7nR8jNvC61FQkhFDs4bMTJJbP7AVHPCOv6HJ95e_3tebQJmzp1TsFqZZqLhX0nvTF0WjkAwVXQ_aA
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 01:58:47 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "54"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Post deleted successfully"
+                }
+        "404":
+          description: Not Found
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 01:57:57 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "44"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": false,
+                    "detail": "post not found"
+                }
+  /api/v1/feed/:
+    get:
+      tags:
+        - Feed
+      summary: GetFeedWithCursor
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+        - name: cursor
+          in: query
+          schema:
+            type: number
+          example: "2025-09-22T21:34:59.179572Z"
+        - name: cursorid
+          in: query
+          schema:
+            type: integer
+          example: "65"
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 05:28:51 GMT
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Get Feed Success",
+                    "data": {
+                        "posts": [
+                            {
+                                "id": 64,
+                                "content": "Helo from yogi",
+                                "user_id": 51,
+                                "post_images": [
+                                    "image.com",
+                                    "image2.com"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T21:33:58.818128Z",
+                                "updated_at": "2025-09-22T21:33:58.818128Z",
+                                "author": {
+                                    "id": 51,
+                                    "username": "vhysxl123",
+                                    "profile": {
+                                        "display_name": "Gin Sama",
+                                        "bio": "Ini Bio",
+                                        "avatar_url": "https://example.com/avatar.png",
+                                        "banner_url": "",
+                                        "location": "Bekasi",
+                                        "followers": 0,
+                                        "following": 0
+                                    },
+                                    "created_at": "2025-09-22T21:31:52Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 63,
+                                "content": "Helo from yogi",
+                                "user_id": 49,
+                                "post_images": [
+                                    "image.com",
+                                    "image2.com"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T16:16:18.634313Z",
+                                "updated_at": "2025-09-22T16:16:18.634313Z",
+                                "author": {
+                                    "id": 49,
+                                    "username": "vhysxl",
+                                    "profile": {
+                                        "display_name": "vhysxl Sama",
+                                        "bio": "",
+                                        "avatar_url": "https://example.com/avatar.png",
+                                        "banner_url": "",
+                                        "location": "Bekasi",
+                                        "followers": 0,
+                                        "following": 0
+                                    },
+                                    "created_at": "2025-09-22T15:08:10Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 62,
+                                "content": "Helo from yogi",
+                                "user_id": 49,
+                                "post_images": [
+                                    "image.com",
+                                    "image2.com"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T16:15:08.558606Z",
+                                "updated_at": "2025-09-22T16:15:08.558606Z",
+                                "author": {
+                                    "id": 49,
+                                    "username": "vhysxl",
+                                    "profile": {
+                                        "display_name": "vhysxl Sama",
+                                        "bio": "",
+                                        "avatar_url": "https://example.com/avatar.png",
+                                        "banner_url": "",
+                                        "location": "Bekasi",
+                                        "followers": 0,
+                                        "following": 0
+                                    },
+                                    "created_at": "2025-09-22T15:08:10Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 61,
+                                "content": "Helo from yogi",
+                                "user_id": 49,
+                                "post_images": [
+                                    "image.com",
+                                    "image2.com"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T16:15:06.561005Z",
+                                "updated_at": "2025-09-22T16:15:06.561005Z",
+                                "author": {
+                                    "id": 49,
+                                    "username": "vhysxl",
+                                    "profile": {
+                                        "display_name": "vhysxl Sama",
+                                        "bio": "",
+                                        "avatar_url": "https://example.com/avatar.png",
+                                        "banner_url": "",
+                                        "location": "Bekasi",
+                                        "followers": 0,
+                                        "following": 0
+                                    },
+                                    "created_at": "2025-09-22T15:08:10Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 60,
+                                "content": "Helo from yogi",
+                                "user_id": 49,
+                                "post_images": [
+                                    "image.com",
+                                    "image2.com"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T16:14:57.681492Z",
+                                "updated_at": "2025-09-22T16:14:57.681492Z",
+                                "author": {
+                                    "id": 49,
+                                    "username": "vhysxl",
+                                    "profile": {
+                                        "display_name": "vhysxl Sama",
+                                        "bio": "",
+                                        "avatar_url": "https://example.com/avatar.png",
+                                        "banner_url": "",
+                                        "location": "Bekasi",
+                                        "followers": 0,
+                                        "following": 0
+                                    },
+                                    "created_at": "2025-09-22T15:08:10Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 59,
+                                "content": "Helo from yogi",
+                                "user_id": 49,
+                                "post_images": [
+                                    "image.com",
+                                    "image2.com"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T16:13:55.543653Z",
+                                "updated_at": "2025-09-22T16:13:55.543653Z",
+                                "author": {
+                                    "id": 49,
+                                    "username": "vhysxl",
+                                    "profile": {
+                                        "display_name": "vhysxl Sama",
+                                        "bio": "",
+                                        "avatar_url": "https://example.com/avatar.png",
+                                        "banner_url": "",
+                                        "location": "Bekasi",
+                                        "followers": 0,
+                                        "following": 0
+                                    },
+                                    "created_at": "2025-09-22T15:08:10Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 58,
+                                "content": "Helo from yogi",
+                                "user_id": 49,
+                                "post_images": [
+                                    "image.com",
+                                    "image2.com"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T16:13:53.149229Z",
+                                "updated_at": "2025-09-22T16:13:53.149229Z",
+                                "author": {
+                                    "id": 49,
+                                    "username": "vhysxl",
+                                    "profile": {
+                                        "display_name": "vhysxl Sama",
+                                        "bio": "",
+                                        "avatar_url": "https://example.com/avatar.png",
+                                        "banner_url": "",
+                                        "location": "Bekasi",
+                                        "followers": 0,
+                                        "following": 0
+                                    },
+                                    "created_at": "2025-09-22T15:08:10Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 57,
+                                "content": "Helo from yogi",
+                                "user_id": 49,
+                                "post_images": [
+                                    "image.com",
+                                    "image2.com"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T16:13:50.507548Z",
+                                "updated_at": "2025-09-22T16:13:50.507548Z",
+                                "author": {
+                                    "id": 49,
+                                    "username": "vhysxl",
+                                    "profile": {
+                                        "display_name": "vhysxl Sama",
+                                        "bio": "",
+                                        "avatar_url": "https://example.com/avatar.png",
+                                        "banner_url": "",
+                                        "location": "Bekasi",
+                                        "followers": 0,
+                                        "following": 0
+                                    },
+                                    "created_at": "2025-09-22T15:08:10Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 56,
+                                "content": "Helo from yogi",
+                                "user_id": 49,
+                                "post_images": [
+                                    "image.com",
+                                    "image2.com"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T16:13:30.3165Z",
+                                "updated_at": "2025-09-22T16:13:30.3165Z",
+                                "author": {
+                                    "id": 49,
+                                    "username": "vhysxl",
+                                    "profile": {
+                                        "display_name": "vhysxl Sama",
+                                        "bio": "",
+                                        "avatar_url": "https://example.com/avatar.png",
+                                        "banner_url": "",
+                                        "location": "Bekasi",
+                                        "followers": 0,
+                                        "following": 0
+                                    },
+                                    "created_at": "2025-09-22T15:08:10Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 55,
+                                "content": "ya ambon",
+                                "user_id": 6,
+                                "post_images": [
+                                    "https://storage.googleapis.com/assets_voidspace/1758521578310269600.png"
+                                ],
+                                "likes_count": 1,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T06:12:58.78959Z",
+                                "updated_at": "2025-09-22T06:12:58.78959Z",
+                                "author": {
+                                    "id": 6,
+                                    "username": "yogi",
+                                    "profile": {
+                                        "display_name": "lort",
+                                        "bio": "ngaku2 developernya njir",
+                                        "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758374417268992400.jpg",
+                                        "banner_url": "https://storage.googleapis.com/assets_voidspace/1757237992695560500.jpg",
+                                        "location": "Bekasi",
+                                        "followers": 1,
+                                        "following": 2
+                                    },
+                                    "created_at": "2025-08-24T14:33:15Z",
+                                    "is_followed": false
+                                },
+                                "is_liked": false
+                            }
+                        ],
+                        "has_more": true
+                    }
+                }
+  /api/v1/feed/following/:
+    get:
+      tags:
+        - Feed
+      summary: GetFollowFeed
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTE4NzJ9.hEsQNQkbylnttwKqNU9sPcSHamRMOREFmqaLuQs0XwdJKDYgVrxZx0VnDDsiMgJ-_nIGak7kIM6zETDI9czbeF9OMuz_6QwMCd1D-g9m9PaXmTtrOuZUDZkfmOirsrOgUFDOdSncfwyhL389MdiFBL8B2aWjA-DJqwswWQ6UTypEH3EWLB8V7xMsqSzFY8XMfN2L628KEgCmC8-lU6hAfj0tZyNXEPYS3Cf2gYyjl_LykoThcNO9R5PDA76wCgBwCTBBOuN7sExJ__lAUs6_z1Gj0kS3rjOYVbfMTLfhyEuEwQydnQ3gaa69Be0Mbwg5dkqLE9uKLxtcnv1XAgSWTQ
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 06:48:03 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "1120"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Get Feed Success",
+                    "data": {
+                        "posts": [
+                            {
+                                "id": 78,
+                                "content": "Ah normal inimah",
+                                "user_id": 38,
+                                "post_images": null,
+                                "likes_count": 0,
+                                "comments_count": 0,
+                                "created_at": "2025-09-22T22:30:11.177418Z",
+                                "updated_at": "2025-09-22T22:30:11.177418Z",
+                                "author": {
+                                    "id": 38,
+                                    "username": "jack",
+                                    "profile": {
+                                        "display_name": "",
+                                        "bio": "",
+                                        "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                        "banner_url": "",
+                                        "location": "",
+                                        "followers": 1,
+                                        "following": 1
+                                    },
+                                    "created_at": "2025-09-17T21:41:38Z",
+                                    "is_followed": true
+                                },
+                                "is_liked": false
+                            },
+                            {
+                                "id": 46,
+                                "content": "gua mah malu tuh",
+                                "user_id": 38,
+                                "post_images": [
+                                    "https://storage.googleapis.com/assets_voidspace/1758181889641719500.jpg"
+                                ],
+                                "likes_count": 0,
+                                "comments_count": 1,
+                                "created_at": "2025-09-18T07:51:31.45751Z",
+                                "updated_at": "2025-09-18T21:24:52.93158Z",
+                                "author": {
+                                    "id": 38,
+                                    "username": "jack",
+                                    "profile": {
+                                        "display_name": "",
+                                        "bio": "",
+                                        "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                        "banner_url": "",
+                                        "location": "",
+                                        "followers": 1,
+                                        "following": 1
+                                    },
+                                    "created_at": "2025-09-17T21:41:38Z",
+                                    "is_followed": true
+                                },
+                                "is_liked": false
+                            }
+                        ],
+                        "has_more": false
+                    }
+                }
+  /api/v1/likes/78:
+    post:
+      tags:
+        - Like
+      summary: Like
+      requestBody:
+        content: {}
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTM5MjN9.JiVk_oPZ1Xv1uUFpBUrxwg2R8fZUHdeWQu4Y_itxP3Syj5ZICi8fhRRRP1Ul4bDmK-7meYBrNA34U8RsByDsc7FDtr_cJAhRYkNo1AyZImwwc0ihRUn9_Lbw0YqkxJNyDHmgLjRgDxgvmjRuIprC6IBL02rFrfdrWCZ_ya3P8pDHd0Nh5A2qFXYcGanI-5zqVMOwbakrTPpeY1GI-rjRm-dhhQB-f2vR8x6uBCH1-A7ClbF1VhVAegzft478NptSXqwmmjDy8xxw5_OkomoskJ4HZLCvwFymJR3HFMsFXoxLdirLUU0LXdKguTchHet6Qk6-OfZEmVTEMLBYmPXCCQ
+      responses:
+        "201":
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 07:24:13 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "81"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Post liked successfully",
+                    "data": {
+                        "new_likes_count": 1
+                    }
+                }
+    delete:
+      tags:
+        - Like
+      summary: Unlike
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTM5MjN9.JiVk_oPZ1Xv1uUFpBUrxwg2R8fZUHdeWQu4Y_itxP3Syj5ZICi8fhRRRP1Ul4bDmK-7meYBrNA34U8RsByDsc7FDtr_cJAhRYkNo1AyZImwwc0ihRUn9_Lbw0YqkxJNyDHmgLjRgDxgvmjRuIprC6IBL02rFrfdrWCZ_ya3P8pDHd0Nh5A2qFXYcGanI-5zqVMOwbakrTPpeY1GI-rjRm-dhhQB-f2vR8x6uBCH1-A7ClbF1VhVAegzft478NptSXqwmmjDy8xxw5_OkomoskJ4HZLCvwFymJR3HFMsFXoxLdirLUU0LXdKguTchHet6Qk6-OfZEmVTEMLBYmPXCCQ
+      responses:
+        "201":
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 07:23:25 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "83"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Post unliked successfully",
+                    "data": {
+                        "new_likes_count": 0
+                    }
+                }
+  /api/v1/comment/user/jack:
+    get:
+      tags:
+        - Comment
+      summary: GetCommentByUser
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 07:26:40 GMT
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Comments retrieved successfully",
+                    "data": [
+                        {
+                            "comment_id": 38,
+                            "post_id": 38,
+                            "content": "tes komen ajah",
+                            "author": {
+                                "id": 38,
+                                "username": "jack",
+                                "profile": {
+                                    "display_name": "",
+                                    "bio": "",
+                                    "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                    "banner_url": "",
+                                    "location": "",
+                                    "followers": 1,
+                                    "following": 1
+                                },
+                                "created_at": "2025-09-17T21:41:38Z",
+                                "is_followed": false
+                            },
+                            "created_at": "2025-09-17T21:42:40Z"
+                        },
+                        {
+                            "comment_id": 38,
+                            "post_id": 38,
+                            "content": "wha sql",
+                            "author": {
+                                "id": 38,
+                                "username": "jack",
+                                "profile": {
+                                    "display_name": "",
+                                    "bio": "",
+                                    "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                    "banner_url": "",
+                                    "location": "",
+                                    "followers": 1,
+                                    "following": 1
+                                },
+                                "created_at": "2025-09-17T21:41:38Z",
+                                "is_followed": false
+                            },
+                            "created_at": "2025-09-19T02:02:28Z"
+                        },
+                        {
+                            "comment_id": 38,
+                            "post_id": 38,
+                            "content": "gua mah malu tuh",
+                            "author": {
+                                "id": 38,
+                                "username": "jack",
+                                "profile": {
+                                    "display_name": "",
+                                    "bio": "",
+                                    "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                    "banner_url": "",
+                                    "location": "",
+                                    "followers": 1,
+                                    "following": 1
+                                },
+                                "created_at": "2025-09-17T21:41:38Z",
+                                "is_followed": false
+                            },
+                            "created_at": "2025-09-19T02:02:35Z"
+                        },
+                        {
+                            "comment_id": 38,
+                            "post_id": 38,
+                            "content": "besok aja",
+                            "author": {
+                                "id": 38,
+                                "username": "jack",
+                                "profile": {
+                                    "display_name": "",
+                                    "bio": "",
+                                    "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                    "banner_url": "",
+                                    "location": "",
+                                    "followers": 1,
+                                    "following": 1
+                                },
+                                "created_at": "2025-09-17T21:41:38Z",
+                                "is_followed": false
+                            },
+                            "created_at": "2025-09-19T03:13:18Z"
+                        },
+                        {
+                            "comment_id": 38,
+                            "post_id": 38,
+                            "content": "besok aja",
+                            "author": {
+                                "id": 38,
+                                "username": "jack",
+                                "profile": {
+                                    "display_name": "",
+                                    "bio": "",
+                                    "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                    "banner_url": "",
+                                    "location": "",
+                                    "followers": 1,
+                                    "following": 1
+                                },
+                                "created_at": "2025-09-17T21:41:38Z",
+                                "is_followed": false
+                            },
+                            "created_at": "2025-09-19T03:13:26Z"
+                        },
+                        {
+                            "comment_id": 38,
+                            "post_id": 38,
+                            "content": "Bukankah ini",
+                            "author": {
+                                "id": 38,
+                                "username": "jack",
+                                "profile": {
+                                    "display_name": "",
+                                    "bio": "",
+                                    "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg",
+                                    "banner_url": "",
+                                    "location": "",
+                                    "followers": 1,
+                                    "following": 1
+                                },
+                                "created_at": "2025-09-17T21:41:38Z",
+                                "is_followed": false
+                            },
+                            "created_at": "2025-09-22T06:13:40Z"
+                        }
+                    ]
+                }
+  /api/v1/comment/post/15:
+    get:
+      tags:
+        - Comment
+      summary: GetCommentByPost
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 07:28:14 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "1472"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Comments retrieved successfully",
+                    "data": [
+                        {
+                            "comment_id": 6,
+                            "post_id": 6,
+                            "content": "yeah buddy2",
+                            "author": {
+                                "id": 6,
+                                "username": "yogi",
+                                "profile": {
+                                    "display_name": "lort",
+                                    "bio": "ngaku2 developernya njir",
+                                    "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758374417268992400.jpg",
+                                    "banner_url": "https://storage.googleapis.com/assets_voidspace/1757237992695560500.jpg",
+                                    "location": "Bekasi",
+                                    "followers": 1,
+                                    "following": 2
+                                },
+                                "created_at": "2025-08-24T14:33:15Z",
+                                "is_followed": false
+                            },
+                            "created_at": "2025-09-15T22:54:49Z"
+                        },
+                        {
+                            "comment_id": 6,
+                            "post_id": 6,
+                            "content": "yeah buddy2",
+                            "author": {
+                                "id": 6,
+                                "username": "yogi",
+                                "profile": {
+                                    "display_name": "lort",
+                                    "bio": "ngaku2 developernya njir",
+                                    "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758374417268992400.jpg",
+                                    "banner_url": "https://storage.googleapis.com/assets_voidspace/1757237992695560500.jpg",
+                                    "location": "Bekasi",
+                                    "followers": 1,
+                                    "following": 2
+                                },
+                                "created_at": "2025-08-24T14:33:15Z",
+                                "is_followed": false
+                            },
+                            "created_at": "2025-09-15T22:56:44Z"
+                        },
+                        {
+                            "comment_id": 6,
+                            "post_id": 6,
+                            "content": "halo",
+                            "author": {
+                                "id": 6,
+                                "username": "yogi",
+                                "profile": {
+                                    "display_name": "lort",
+                                    "bio": "ngaku2 developernya njir",
+                                    "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758374417268992400.jpg",
+                                    "banner_url": "https://storage.googleapis.com/assets_voidspace/1757237992695560500.jpg",
+                                    "location": "Bekasi",
+                                    "followers": 1,
+                                    "following": 2
+                                },
+                                "created_at": "2025-08-24T14:33:15Z",
+                                "is_followed": false
+                            },
+                            "created_at": "2025-09-17T20:15:14Z"
+                        }
+                    ]
+                }
+  /api/v1/comment:
+    post:
+      tags:
+        - Comment
+      summary: CreateComments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                content: Ini komentar contoh
+                post_id: 78
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTQ3OTN9.iSnwAQ7OGBOuJlANEm4SDn40NjRuVx4GuGQxrVdA-8QnEp5mjSW5H2rjc48DQHwX356wjEfs3JQSODB60BQUZT69eokKBBSYKxRvLBLH5tgRp9644Ad7WQBuTHE3HZYuFi3OdoxXvp1LwXndMhsIGIeTBYaFerbZJGpYsoTQp7u0zV1mweVxKnyVmPeUZ1EFqSRmW0jwai8bHesx4O4HD_4bg6V3sWfVkQAGB_vbSF6FOtrqG-ILLBEdNrQiLS_mE9HB40oGvqmYg51ZXZe8jIOiuKfKG7Qv2EWIB4reB8jrRWpJMxDjZu45vFAJ_2TBxhqWJI5G-4nxQy5COtDCTA
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "201":
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 07:37:59 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "542"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Comment created successfully",
+                    "data": {
+                        "comment_id": 6,
+                        "post_id": 6,
+                        "content": "Ini komentar contoh",
+                        "author": {
+                            "id": 6,
+                            "username": "yogi",
+                            "profile": {
+                                "display_name": "lort",
+                                "bio": "ngaku2 developernya njir",
+                                "avatar_url": "https://storage.googleapis.com/assets_voidspace/1758374417268992400.jpg",
+                                "banner_url": "https://storage.googleapis.com/assets_voidspace/1757237992695560500.jpg",
+                                "location": "Bekasi",
+                                "followers": 1,
+                                "following": 1
+                            },
+                            "created_at": "2025-08-24T14:33:15Z",
+                            "is_followed": false
+                        },
+                        "created_at": "2025-09-23T07:37:59Z"
+                    }
+                }
+  /api/v1/comment/6:
+    delete:
+      tags:
+        - Comment
+      summary: DeleteComment
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTQ3OTN9.iSnwAQ7OGBOuJlANEm4SDn40NjRuVx4GuGQxrVdA-8QnEp5mjSW5H2rjc48DQHwX356wjEfs3JQSODB60BQUZT69eokKBBSYKxRvLBLH5tgRp9644Ad7WQBuTHE3HZYuFi3OdoxXvp1LwXndMhsIGIeTBYaFerbZJGpYsoTQp7u0zV1mweVxKnyVmPeUZ1EFqSRmW0jwai8bHesx4O4HD_4bg6V3sWfVkQAGB_vbSF6FOtrqG-ILLBEdNrQiLS_mE9HB40oGvqmYg51ZXZe8jIOiuKfKG7Qv2EWIB4reB8jrRWpJMxDjZu45vFAJ_2TBxhqWJI5G-4nxQy5COtDCTA
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 07:40:00 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "57"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Comment deleted successfully"
+                }
+  /api/v1/upload/signed-url:
+    post:
+      tags:
+        - Upload
+      summary: ImageUpload
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                contentType: image/jpeg
+      parameters:
+        - name: x-api-key
+          in: header
+          schema:
+            type: string
+          example: shinmenmusashinokamifujiwaranoharunobu
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: >-
+            Bearer
+            eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTUxNjB9.TH88tgqK-gppFyoLC8HY1_Ve5GRSciO3gA38JU3YgOi_shhG7OQNZbMxUuhBh-B1zbJeQ3YlNzY1utNwYw5qWqAi2lBVO8B2LVlcq8KWO0FhHThLLpD_U9YYQk7Lofdy76snti_v-kfD1nOo6uzCJ27WPhl75U0DDu_saRY9tLHEvw2kN0fh1NXmG7BqpL-FT9V7HHrSIJnVzztcppaLElsy5CiSjAi8VK2BBmRi-Zp8Vyqkfq-pLPWaqdNlYsc2M9wse2FUEFxQkjwUQ67MrFee_WcIB6m1M013rjqnWY5BeaRelOGvzwb9JHBDFWVwp7C_wX0e1gMYS_HdluNS0g
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+            Vary:
+              schema:
+                type: string
+                example: Origin
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Sep 2025 07:45:30 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: "1038"
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |-
+                {
+                    "success": true,
+                    "detail": "Url Successfully generated",
+                    "data": {
+                        "publicUrl": "https://storage.googleapis.com/assets_voidspace/1758613530284396900.jpg",
+                        "signedUrl": "https://storage.googleapis.com/assets_voidspace/1758613530284396900.jpg?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=voidspaceimage%40modified-fabric-379312.iam.gserviceaccount.com%2F20250923%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20250923T074530Z&X-Goog-Expires=0&X-Goog-Signature=066c326620299d0daba0a8afd58cbbf710ccb86f1317400cb9061dcb7ee7dbcdc36919fee3eceff033f52f754d71772ad02192fa34c481d9b61ca8e44724084527deedfa672d314bb29afbdc7a902aefdb8536d36735a3fab6edab3abea23a8ea63ca270a4881e1fe3e95dd593c9bd4849b618c6e89e397cf6c6251ed8838d821d21a686df696e5bba73fba948316629dc074f621ddd562e9920c27567c573e1cc11d0d42cd347c472969192aa6b646bf15ccef34e247baac98ffcabd6880a2371ff109c136d13afa1c46add895a403737fd1dd94524b3a0ba4f942df9f6992da20e54651cd5eb563ad6574463d9e0d229325ac45917217dbe4f397b9c3b80e6&X-Goog-SignedHeaders=content-type%3Bhost"
+                    }
+                }
