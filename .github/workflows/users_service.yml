@@ -33,6 +33,7 @@ jobs:
         uses: golangci/golangci-lint-action@v8
         with:
           version: latest
+          working-directory: services/users
 
       - name: run test
         run: go test -v ./...
