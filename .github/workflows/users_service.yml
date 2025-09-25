@@ -16,6 +16,10 @@ jobs:
       id-token: write
       packages: write
 
+    defaults:
+      run:
+        working-directory: services/users
+
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
