@@ -19,13 +19,15 @@ import (
 )
 
 type Application struct {
-	Config               *config.Config
-	DB                   *sql.DB
-	ContextTimeout       time.Duration
-	AccessTokenDuration  time.Duration
-	RefreshTokenDuration time.Duration
-	PrivateKey           *rsa.PrivateKey
-	Logger               *zap.Logger
+	Config                 *config.Config
+	DB                     *sql.DB
+	ContextTimeout         time.Duration
+	AccessTokenDuration    time.Duration
+	RefreshTokenDuration   time.Duration
+	PrivateKey             *rsa.PrivateKey
+	Logger                 *zap.Logger
+	InstanceConnectionName string
+	RSAPrivateKey          string
 	// use cases
 	FollowUsecase  domain.FollowUsecase
 	AuthUsecase    usecase.AuthUsecase
@@ -45,27 +47,23 @@ func App() (*Application, error) {
 	}
 	defer logger.Sync()
 
-	privateKey, err := config.LoadPrivateKey("./secret/private_key.pem")
+	cfg := config.GetConfig()
+
+	privateKey, err := config.LoadPrivateKey(cfg.RSAPrivateKey)
 	if err != nil {
 		logger.Error("Failed to load private key", zap.Error(err))
 	}
 
-	cfg := config.GetConfig()
-
-	var dbConfig = mysql.Config{
-		User:                 cfg.DBUser,
-		Passwd:               cfg.DBPassword,
-		Addr:                 cfg.DBAddress,
-		DBName:               cfg.DBName,
-		Net:                  "tcp",
-		AllowNativePasswords: true,
-		ParseTime:            true,
+	var dbConfig = &mysql.Config{
+		User:   cfg.DBUser,
+		Passwd: cfg.DBPassword,
+		DBName: cfg.DBName,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ContextTimeout)*time.Second)
 	defer cancel()
 
-	db, err := database.MySqlDatabase(ctx, dbConfig)
+	db, err := database.MySqlDatabase(ctx, dbConfig, cfg.InstanceConnectionName)
 	if err != nil {
 		logger.Error("Failed to connect to database", zap.Error(err))
 		return nil, err

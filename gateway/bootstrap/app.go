@@ -80,7 +80,7 @@ func App() (*Application, error) {
 	likeService := service.NewLikeService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewLikesServiceClient(likeConn))
 	feedService := service.NewFeedService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
 	commentService := service.NewCommentService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
-	uploadService, err := service.NewUploadService(context.Background(), config.BucketName, config.GCSCredentialPath)
+	uploadService, err := service.NewUploadService(context.Background(), config.BucketName)
 	if err != nil {
 		panic(err)
 	}

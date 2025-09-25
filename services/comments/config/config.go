@@ -8,13 +8,14 @@ import (
 )
 
 type Config struct {
-	PublicHost     string
-	Port           string
-	DBUser         string
-	DBPassword     string
-	DBAddress      string
-	DBName         string
-	ContextTimeout int
+	PublicHost             string
+	Port                   string
+	DBUser                 string
+	DBPassword             string
+	DBAddress              string
+	DBName                 string
+	ContextTimeout         int
+	InstanceConnectionName string
 }
 
 var (
@@ -32,13 +33,14 @@ func GetConfig() *Config {
 
 func initConfig() Config {
 	return Config{
-		PublicHost:     getEnv("PUBLIC_HOST", "http://localhost"),
-		Port:           getEnv("PORT", ":8082"),
-		DBUser:         getEnv("DB_USER", "root"),
-		DBPassword:     getEnv("DB_PASS", "secret"),
-		DBAddress:      fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "3307")),
-		DBName:         getEnv("DB_NAME", "voidspace"),
-		ContextTimeout: getIntEnv("CONTEXT_TIMEOUT", 10),
+		PublicHost:             getEnv("PUBLIC_HOST", "http://localhost"),
+		Port:                   getEnv("PORT", ":8082"),
+		DBUser:                 getEnv("PROD_DB_USER", "root"),
+		DBPassword:             getEnv("PROD_DB_PASS", "secret"),
+		DBAddress:              fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "3307")),
+		DBName:                 getEnv("PROD_DB_NAME", "voidspace"),
+		ContextTimeout:         getIntEnv("CONTEXT_TIMEOUT", 10),
+		InstanceConnectionName: getEnv("PROD_INSTANCE_CONNECTION_NAME", "project:region:instance"),
 	}
 }
 

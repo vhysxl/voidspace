@@ -18,7 +18,6 @@ type Config struct {
 	PostServiceAddr    string
 	CommentServiceAddr string
 	BucketName         string
-	GCSCredentialPath  string
 }
 
 var (
@@ -50,7 +49,6 @@ func initConfig() Config {
 		PostServiceAddr:    getEnv("POST_SERVICE_URL", "localhost:5000"),
 		CommentServiceAddr: getEnv("COMMENT_SERVICE_URL", "localhost:8082"),
 		BucketName:         getEnv("BUCKET_NAME", "assets_voidspace"),
-		GCSCredentialPath:  getEnv("GOOGLE_APPLICATION_CREDENTIALS", "./secret/credentials_gcs.json"),
 	}
 }
 

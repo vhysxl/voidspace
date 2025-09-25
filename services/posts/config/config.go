@@ -5,19 +5,19 @@ import (
 	"os"
 	"strconv"
 	"sync"
+
+	"github.com/jackc/pgx/v5"
 )
 
 // Config struct
 type Config struct {
-	PublicHost     string
-	Port           string
-	DBUser         string
-	DBPassword     string
-	DBHost         string
-	DBPort         string
-	DBName         string
-	DBSSLMode      string
-	ContextTimeout int
+	Port                   string
+	DBUser                 string
+	DBPassword             string
+	DBName                 string
+	DBSSLMode              string
+	ContextTimeout         int
+	InstanceConnectionName string
 }
 
 var (
@@ -35,29 +35,24 @@ func GetConfig() *Config {
 
 func initConfig() Config {
 	return Config{
-		PublicHost:     getEnv("PUBLIC_HOST", "http://localhost"),
-		Port:           getEnv("PORT", "8081"),
-		DBUser:         getEnv("DB_USER", "postgres"),
-		DBPassword:     getEnv("DB_PASSWORD", "secret"),
-		DBHost:         getEnv("DB_HOST", "localhost"),
-		DBPort:         getEnv("DB_PORT", "5432"),
-		DBName:         getEnv("DB_NAME", "voidspace"),
-		DBSSLMode:      getEnv("DB_SSLMODE", "disable"),
-		ContextTimeout: getIntEnv("CONTEXT_TIMEOUT", 10),
+		Port:                   getEnv("PORT", "8081"),
+		DBUser:                 getEnv("PROD_DB_USER", "postgres"),
+		DBPassword:             getEnv("PROD_DB_PASS", "secret"),
+		DBName:                 getEnv("PROD_DB_NAME", "voidspace"),
+		ContextTimeout:         getIntEnv("CONTEXT_TIMEOUT", 10),
+		InstanceConnectionName: getEnv("PROD_INSTANCE_CONNECTION_NAME", "project:region:instance"),
 	}
 }
 
 // GetDBConnectionString returns PostgreSQL connection string
-func (c *Config) GetDBConnectionString() string {
-	return fmt.Sprintf(
-		"postgresql://%s:%s@%s:%s/%s?sslmode=%s",
-		c.DBUser,
-		c.DBPassword,
-		c.DBHost,
-		c.DBPort,
-		c.DBName,
-		c.DBSSLMode,
-	)
+func (c *Config) GetDBConnectionString() (*pgx.ConnConfig, error) {
+	dsn := fmt.Sprintf("user=%s password=%s database=%s", c.DBUser, c.DBPassword, c.DBName)
+	config, err := pgx.ParseConfig(dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
 }
 
 func getEnv(key, fallback string) string {

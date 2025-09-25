@@ -19,12 +19,13 @@ import (
 )
 
 type Application struct {
-	Config         *config.Config
-	DB             *sql.DB
-	Validator      *validator.Validate
-	ContextTimeout time.Duration
-	Logger         *zap.Logger
-	CommentUseCase domain.CommentUsecase
+	Config                 *config.Config
+	DB                     *sql.DB
+	Validator              *validator.Validate
+	ContextTimeout         time.Duration
+	Logger                 *zap.Logger
+	CommentUseCase         domain.CommentUsecase
+	InstanceConnectionName string
 }
 
 func App() (*Application, error) {
@@ -41,20 +42,16 @@ func App() (*Application, error) {
 
 	cfg := config.GetConfig()
 
-	var dbConfig = mysql.Config{
-		User:                 cfg.DBUser,
-		Passwd:               cfg.DBPassword,
-		Addr:                 cfg.DBAddress,
-		DBName:               cfg.DBName,
-		Net:                  "tcp",
-		AllowNativePasswords: true,
-		ParseTime:            true,
+	var dbConfig = &mysql.Config{
+		User:   cfg.DBUser,
+		Passwd: cfg.DBPassword,
+		DBName: cfg.DBName,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ContextTimeout)*time.Second)
 	defer cancel()
 
-	db, err := database.MySqlDatabase(ctx, dbConfig)
+	db, err := database.MySqlDatabase(ctx, dbConfig, cfg.InstanceConnectionName)
 	if err != nil {
 		logger.Error("Failed to connect to database", zap.Error(err))
 		return nil, err
