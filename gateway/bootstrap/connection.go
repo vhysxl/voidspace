@@ -12,10 +12,8 @@ import (
 // NewConn creates a new gRPC connection.
 // host should be of the form domain:port, e.g., example.com:443
 func NewConn(host string, insecure bool) (*grpc.ClientConn, error) {
+
 	var opts []grpc.DialOption
-	if host != "" {
-		opts = append(opts, grpc.WithAuthority(host))
-	}
 
 	if insecure {
 		opts = append(opts, grpc.WithTransportCredentials(grpcInsecure.NewCredentials()))
@@ -24,9 +22,7 @@ func NewConn(host string, insecure bool) (*grpc.ClientConn, error) {
 		if err != nil {
 			return nil, err
 		}
-		cred := credentials.NewTLS(&tls.Config{
-			RootCAs: systemRoots,
-		})
+		cred := credentials.NewTLS(&tls.Config{RootCAs: systemRoots})
 		opts = append(opts, grpc.WithTransportCredentials(cred))
 	}
 

@@ -48,10 +48,11 @@ func App() (*Application, error) {
 	}
 
 	// gRPC Connections to microservices
-	userConn, err := NewConn(config.UserServiceAddr, true)
+	userConn, err := NewConn(config.UserServiceAddr, false)
 	if err != nil {
 		return nil, err
 	}
+
 	postConn, err := NewConn(config.PostServiceAddr, true)
 	if err != nil {
 		return nil, err
