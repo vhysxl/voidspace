@@ -65,7 +65,7 @@ jobs:
           image: asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/users:latest
           region: "asia-southeast2"
           project_id: "modified-fabric-379312"
-          flags: "--use-http2 --allow-unauthenticated"
+          flags: "--use-http2 --allow-unauthenticated --service-account=voidspace-cicd@modified-fabric-379312.iam.gserviceaccount.com"
           secrets: |
             - PEM_KEY=projects/591941627936/secrets/voidspace-users-private-key/versions/latest
           env_vars: |
