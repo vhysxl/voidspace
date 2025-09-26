@@ -305,7 +305,7 @@ func (u *userRepository) GetUserFollowedById(ctx context.Context, userId int32) 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer errUtil.SafeClose(rows)
 
 	var userIDs []int32 // Fixed: return int32 slice
 	for rows.Next() {
