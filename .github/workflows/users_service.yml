@@ -61,7 +61,7 @@ jobs:
       - name: "Deploy to Cloud Run"
         uses: "google-github-actions/deploy-cloudrun@v2"
         with:
-          service: "subply-deploy"
+          service: "voidspace-user-deploy"
           image: asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/voidspace-users:latest
           region: "asia-southeast2"
           project_id: "modified-fabric-379312"
@@ -70,4 +70,4 @@ jobs:
             PROD_DB_PASS=${{ secrets.PROD_DB_PASS }}
             PROD_DB_NAME=${{ secrets.PROD_DB_NAME }}
             PROD_INSTANCE_CONNECTION_NAME=${{ secrets.PROD_INSTANCE_CONNECTION_NAME }}
-            PeM_KEY=${{ secrets.PEM_KEY }}
+            PEM_KEY=${{ secrets.PEM_KEY }}
