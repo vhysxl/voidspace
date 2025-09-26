@@ -5,17 +5,16 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"strings"
+	"os"
 )
 
-func LoadPrivateKey(env string) (*rsa.PrivateKey, error) {
-	if env == "" {
-		return nil, fmt.Errorf("environment variable %s is not set", env)
+func LoadPrivateKey(path string) (*rsa.PrivateKey, error) {
+	privateKeyData, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read private key file: %w", err)
 	}
 
-	keyData := strings.ReplaceAll(env, "\\n", "\n")
-
-	block, _ := pem.Decode([]byte(keyData))
+	block, _ := pem.Decode(privateKeyData)
 	if block == nil {
 		return nil, fmt.Errorf("failed to parse PEM block containing the key")
 	}

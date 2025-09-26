@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rsa"
 	"database/sql"
-	"fmt"
 	"log"
 	"time"
 	"voidspace/users/config"
@@ -28,7 +27,6 @@ type Application struct {
 	PrivateKey             *rsa.PrivateKey
 	Logger                 *zap.Logger
 	InstanceConnectionName string
-	RSAPrivateKey          string
 	// use cases
 	FollowUsecase  domain.FollowUsecase
 	AuthUsecase    usecase.AuthUsecase
@@ -55,34 +53,7 @@ func App() (*Application, error) {
 
 	cfg := config.GetConfig()
 
-	fmt.Printf(`
-Config:
-  PublicHost:             %s
-  Port:                   %s
-  DBUser:                 %s
-  DBPassword:             %s
-  DBAddress:              %s
-  DBName:                 %s
-  ContextTimeout:         %d
-  AccessTokenDuration:    %d
-  RefreshTokenDuration:   %d
-  InstanceConnectionName: %s
-  RSAPrivateKey:          %s
-`,
-		cfg.PublicHost,
-		cfg.Port,
-		cfg.DBUser,
-		cfg.DBPassword,
-		cfg.DBAddress,
-		cfg.DBName,
-		cfg.ContextTimeout,
-		cfg.AccessTokenDuration,
-		cfg.RefreshTokenDuration,
-		cfg.InstanceConnectionName,
-		cfg.RSAPrivateKey,
-	)
-
-	privateKey, err := config.LoadPrivateKey(cfg.RSAPrivateKey)
+	privateKey, err := config.LoadPrivateKey("/etc/secrets/private-key")
 	if err != nil {
 		logger.Error("Failed to load private key", zap.Error(err))
 	}
