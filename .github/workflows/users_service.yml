@@ -65,9 +65,7 @@ jobs:
           image: asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/users:latest
           region: "asia-southeast2"
           project_id: "modified-fabric-379312"
-          flags: "--use-http2 --allow-unauthenticated"
-          secrets: |
-            - /etc/secrets/private-key=projects/591941627936/secrets/voidspace_private_key/versions/1
+          flags: "--use-http2 --allow-unauthenticated --update-secrets=/etc/secrets/private-key=voidspace_private_key:1"
           env_vars: |
             PROD_DB_USER=${{ secrets.PROD_DB_USER }}
             PROD_DB_PASS=${{ secrets.PROD_DB_PASS }}
