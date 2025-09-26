@@ -62,12 +62,13 @@ jobs:
         uses: "google-github-actions/deploy-cloudrun@v2"
         with:
           service: "voidspace-user-deploy"
-          image: asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/voidspace-users:latest
+          image: asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/users:latest
           region: "asia-southeast2"
           project_id: "modified-fabric-379312"
+          flags: "--use-http2 --allow-unauthenticated"
+          secrets: projects/591941627936/secrets/voidspace-users-private-key/versions/1
           env_vars: |
             PROD_DB_USER=${{ secrets.PROD_DB_USER }}
             PROD_DB_PASS=${{ secrets.PROD_DB_PASS }}
             PROD_DB_NAME=${{ secrets.PROD_DB_NAME }}
             PROD_INSTANCE_CONNECTION_NAME=${{ secrets.PROD_INSTANCE_CONNECTION_NAME }}
-            PEM_KEY=${{ secrets.PEM_KEY }}
