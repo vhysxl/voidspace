@@ -4,10 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 	"voidspace/users/internal/domain"
 	"voidspace/users/internal/domain/views"
+	errUtil "voidspace/users/utils/error"
 
 	"github.com/go-sql-driver/mysql"
 )
@@ -27,7 +29,12 @@ func (u *userRepository) Create(ctx context.Context, user *domain.User) error {
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			log.Printf("failed to rollback: %v", err)
+		}
+	}()
 
 	result, err := tx.ExecContext(
 		ctx,
@@ -124,7 +131,7 @@ func (u *userRepository) GetUserByIds(ctx context.Context, userIDs []int32) ([]*
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer errUtil.SafeClose(rows)
 
 	users := make([]*views.UserProfile, 0)
 	for rows.Next() {

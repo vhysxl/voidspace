@@ -45,7 +45,12 @@ func App() (*Application, error) {
 	if err != nil {
 		log.Println("logger failed to load", err)
 	}
-	defer logger.Sync()
+
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			log.Printf("failed to flush log: %v", err)
+		}
+	}()
 
 	cfg := config.GetConfig()
 

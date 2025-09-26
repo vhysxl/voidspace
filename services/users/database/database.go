@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"net"
 
 	"cloud.google.com/go/cloudsqlconn"
@@ -30,7 +31,13 @@ func MySqlDatabase(ctx context.Context, config *mysql.Config, instanceConnection
 	}
 
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+
+		defer func() {
+			if err := db.Close(); err != nil {
+				log.Printf("failed to close db: %v", err)
+			}
+		}()
+
 		return nil, fmt.Errorf("db.Ping: %w", err)
 	}
 
