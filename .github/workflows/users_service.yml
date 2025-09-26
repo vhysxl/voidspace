@@ -67,7 +67,7 @@ jobs:
           project_id: "modified-fabric-379312"
           flags: "--use-http2 --allow-unauthenticated"
           secrets: |
-            - PEM_KEY=projects/591941627936/secrets/voidspace-users-private-key/versions/1
+            - PEM_KEY=projects/591941627936/secrets/voidspace-users-private-key/versions/latest
           env_vars: |
             PROD_DB_USER=${{ secrets.PROD_DB_USER }}
             PROD_DB_PASS=${{ secrets.PROD_DB_PASS }}
