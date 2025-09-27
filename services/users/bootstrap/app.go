@@ -58,11 +58,12 @@ func App() (*Application, error) {
 	}
 
 	var dbConfig = mysql.Config{
-		User:   cfg.DBUser,
-		Passwd: cfg.DBPassword,
-		DBName: cfg.DBName,
-		Net:    "tcp",
-		Addr:   cfg.DBAddress,
+		User:      cfg.DBUser,
+		Passwd:    cfg.DBPassword,
+		DBName:    cfg.DBName,
+		Net:       "tcp",
+		Addr:      cfg.DBAddress,
+		ParseTime: true,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ContextTimeout)*time.Second)
