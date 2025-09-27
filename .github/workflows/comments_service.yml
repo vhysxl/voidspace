@@ -69,4 +69,3 @@ jobs:
             PROD_DB_PASS=${{ secrets.COMMENTS_DB_PASS }}
             PROD_DB_NAME=${{ secrets.COMMENTS_DB_NAME }}
             PROD_DB_ADDRESS=${{ secrets.COMMENTS_DB_ADDRESS }}
-            PORT=8082
