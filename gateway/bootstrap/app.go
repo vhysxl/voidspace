@@ -14,8 +14,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Application struct {
@@ -49,24 +47,18 @@ func App() (*Application, error) {
 		return nil, err
 	}
 
-	// gRPC connections
-	authConn, err := grpc.NewClient(config.UserServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// gRPC Connections to microservices
+	userConn, err := NewConn(config.UserServiceAddr, false)
 	if err != nil {
 		return nil, err
 	}
-	userConn, err := grpc.NewClient(config.UserServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	postConn, err := NewConn(config.PostServiceAddr, true)
 	if err != nil {
 		return nil, err
 	}
-	postConn, err := grpc.NewClient(config.PostServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	likeConn, err := grpc.NewClient(config.PostServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	commentConn, err := grpc.NewClient(config.CommentServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	commentConn, err := NewConn(config.CommentServiceAddr, true)
 	if err != nil {
 		return nil, err
 	}
@@ -74,13 +66,13 @@ func App() (*Application, error) {
 	logger.Info("bucket name", zap.String("bucket", config.BucketName))
 
 	// Services
-	authService := service.NewAuthService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewAuthServiceClient(authConn), *config.PublicKey)
+	authService := service.NewAuthService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewAuthServiceClient(userConn), *config.PublicKey)
 	userService := service.NewUserService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewUserServiceClient(userConn), postpb.NewPostServiceClient(postConn), commentpb.NewCommentServiceClient(commentConn))
 	postService := service.NewPostService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
-	likeService := service.NewLikeService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewLikesServiceClient(likeConn))
+	likeService := service.NewLikeService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewLikesServiceClient(postConn))
 	feedService := service.NewFeedService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
 	commentService := service.NewCommentService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
-	uploadService, err := service.NewUploadService(context.Background(), config.BucketName, config.GCSCredentialPath)
+	uploadService, err := service.NewUploadService(context.Background(), config.BucketName)
 	if err != nil {
 		panic(err)
 	}

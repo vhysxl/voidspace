@@ -43,23 +43,26 @@ func App() (*Application, error) {
 	if err != nil {
 		log.Println("logger failed to load", err)
 	}
-	defer logger.Sync()
+
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			log.Printf("failed to flush log: %v", err)
+		}
+	}()
+
+	cfg := config.GetConfig()
 
 	privateKey, err := config.LoadPrivateKey("./secret/private_key.pem")
 	if err != nil {
 		logger.Error("Failed to load private key", zap.Error(err))
 	}
 
-	cfg := config.GetConfig()
-
 	var dbConfig = mysql.Config{
-		User:                 cfg.DBUser,
-		Passwd:               cfg.DBPassword,
-		Addr:                 cfg.DBAddress,
-		DBName:               cfg.DBName,
-		Net:                  "tcp",
-		AllowNativePasswords: true,
-		ParseTime:            true,
+		User:   cfg.DBUser,
+		Passwd: cfg.DBPassword,
+		DBName: cfg.DBName,
+		Net:    "tcp",
+		Addr:   cfg.DBAddress,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ContextTimeout)*time.Second)

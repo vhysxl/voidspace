@@ -65,7 +65,10 @@ func (ah *AuthHandler) Login(c echo.Context) error {
 	}
 
 	if res.RefreshToken != "" {
-		utils.SetRefreshTokenCookie(c, res.RefreshToken)
+		err := utils.SetRefreshTokenCookie(c, res.RefreshToken)
+		if err != nil {
+			return utils.HandleDialError(ah.Logger, c, err, "failed to set refresh token cookie")
+		}
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, constants.LoginSuccess, &response{AccessToken: res.AccessToken, ExpiresIn: res.ExpiresIn})
@@ -91,7 +94,10 @@ func (ah *AuthHandler) Register(c echo.Context) error {
 	}
 
 	if res.RefreshToken != "" {
-		utils.SetRefreshTokenCookie(c, res.RefreshToken)
+		err := utils.SetRefreshTokenCookie(c, res.RefreshToken)
+		if err != nil {
+			return utils.HandleDialError(ah.Logger, c, err, "failed to set refresh token cookie")
+		}
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusCreated, constants.RegisterSuccess, &response{AccessToken: res.AccessToken, ExpiresIn: res.ExpiresIn})
@@ -120,10 +126,6 @@ func (ah *AuthHandler) RefreshToken(c echo.Context) error {
 		ah.Logger.Error("failed to refresh token", zap.Error(err))
 		code, msg := utils.GRPCErrorToHTTP(err)
 		return responses.ErrorResponseMessage(c, code, msg)
-	}
-
-	if res.RefreshToken != "" {
-		utils.SetRefreshTokenCookie(c, res.RefreshToken)
 	}
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, constants.TokenRefresh, &response{AccessToken: res.AccessToken, ExpiresIn: res.ExpiresIn})

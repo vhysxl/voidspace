@@ -1,0 +1,35 @@
+# Build stage: compile the Go application
+FROM golang:1.24 AS builder
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy all source code to container
+COPY . .
+
+# Download Go module dependencies
+RUN go mod download
+
+# Build the Go application into a static binary
+# CGO_ENABLED=0 creates a static binary that can run on minimal images
+RUN CGO_ENABLED=0 go build -o user_grpc ./cmd/main.go
+
+# Production stage: create minimal runtime image
+FROM alpine:latest
+
+# Install SSL certificates for HTTPS connections
+# --no-cache prevents storing package cache to keep image small
+RUN apk --no-cache add ca-certificates
+
+# Set working directory for the runtime
+WORKDIR /app
+
+# Copy only the compiled binary from builder stage to current stage
+# This keeps the final image small by excluding build tools and source code
+COPY --from=builder /app/user_grpc .
+
+# Expose port 8080 (standard for Cloud Run)
+EXPOSE 8080
+
+# Run the binary when container starts
+CMD ["./user_grpc"]

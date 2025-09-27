@@ -142,11 +142,8 @@ func (ph *PostHandler) GetUserPosts(c echo.Context) error {
 	ctx := c.Request().Context()
 	username := c.Param("username")
 
-	val := c.Get("authUser")
-	user, _ := val.(*models.AuthUser)
-	if user == nil {
-		user = &models.AuthUser{}
-	}
+	// val := c.Get("authUser")
+	// user, _ := val.(*models.AuthUser)
 
 	data := &models.GetUserRequest{Username: username}
 	if err := ph.Validator.Struct(data); err != nil {

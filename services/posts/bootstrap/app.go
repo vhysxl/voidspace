@@ -18,11 +18,12 @@ import (
 )
 
 type Application struct {
-	Config         *config.Config
-	ContextTimeout time.Duration
-	Validator      *validator.Validate
-	Logger         *zap.Logger
-	DB             *sql.DB
+	Config                 *config.Config
+	ContextTimeout         time.Duration
+	Validator              *validator.Validate
+	Logger                 *zap.Logger
+	DB                     *sql.DB
+	InstanceConnectionName string
 	// usecase
 	LikeUsecase domain.LikeUsecase
 	PostUsecase domain.PostUsecase
@@ -46,7 +47,13 @@ func App() (*Application, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	db, err := database.PostgresDatabase(ctx, cfg.GetDBConnectionString())
+	connstring, err := cfg.GetDBConnectionString()
+	if err != nil {
+		logger.Error("Failed to get DB connection string", zap.Error(err))
+		return nil, err
+	}
+
+	db, err := database.PostgresDatabase(ctx, connstring, cfg.InstanceConnectionName)
 	if err != nil {
 		logger.Error("Failed to connect to database", zap.Error(err))
 		return nil, err
