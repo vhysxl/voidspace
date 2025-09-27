@@ -25,9 +25,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: stable
-
-      - name: list files
-        run: ls
+          cache: true
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
@@ -70,4 +68,4 @@ jobs:
             PROD_DB_USER=${{ secrets.PROD_DB_USER }}
             PROD_DB_PASS=${{ secrets.PROD_DB_PASS }}
             PROD_DB_NAME=${{ secrets.PROD_DB_NAME }}
-            PROD_INSTANCE_CONNECTION_NAME=${{ secrets.PROD_INSTANCE_CONNECTION_NAME }}
+            PROD_DB_ADDRESS=${{ secrets.PROD_DB_ADDRESS }}

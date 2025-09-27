@@ -13,6 +13,7 @@ import (
 	"voidspace/users/internal/usecase"
 	"voidspace/users/logger"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
@@ -56,10 +57,18 @@ func App() (*Application, error) {
 		logger.Error("Failed to load private key", zap.Error(err))
 	}
 
+	var dbConfig = mysql.Config{
+		User:   cfg.DBUser,
+		Passwd: cfg.DBPassword,
+		DBName: cfg.DBName,
+		Net:    "tcp",
+		Addr:   cfg.DBAddress,
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ContextTimeout)*time.Second)
 	defer cancel()
 
-	db, err := database.MySqlDatabase(ctx, cfg.DBConnectionString)
+	db, err := database.MySqlDatabase(ctx, dbConfig)
 	if err != nil {
 		logger.Error("Failed to connect to database", zap.Error(err))
 		return nil, err
