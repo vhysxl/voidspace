@@ -19,13 +19,12 @@ import (
 )
 
 type Application struct {
-	Config                 *config.Config
-	DB                     *sql.DB
-	Validator              *validator.Validate
-	ContextTimeout         time.Duration
-	Logger                 *zap.Logger
-	CommentUseCase         domain.CommentUsecase
-	InstanceConnectionName string
+	Config         *config.Config
+	DB             *sql.DB
+	Validator      *validator.Validate
+	ContextTimeout time.Duration
+	Logger         *zap.Logger
+	CommentUseCase domain.CommentUsecase
 }
 
 func App() (*Application, error) {
@@ -38,20 +37,27 @@ func App() (*Application, error) {
 	if err != nil {
 		log.Println("logger failed to load", err)
 	}
-	defer logger.Sync()
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			log.Printf("failed to flush log: %v", err)
+		}
+	}()
 
 	cfg := config.GetConfig()
 
-	var dbConfig = &mysql.Config{
-		User:   cfg.DBUser,
-		Passwd: cfg.DBPassword,
-		DBName: cfg.DBName,
+	var dbConfig = mysql.Config{
+		User:      cfg.DBUser,
+		Passwd:    cfg.DBPassword,
+		DBName:    cfg.DBName,
+		Net:       "tcp",
+		Addr:      cfg.DBAddress,
+		ParseTime: true,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ContextTimeout)*time.Second)
 	defer cancel()
 
-	db, err := database.MySqlDatabase(ctx, dbConfig, cfg.InstanceConnectionName)
+	db, err := database.MySqlDatabase(ctx, dbConfig)
 	if err != nil {
 		logger.Error("Failed to connect to database", zap.Error(err))
 		return nil, err

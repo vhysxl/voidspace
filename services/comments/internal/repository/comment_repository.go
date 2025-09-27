@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 	"voidspace/comments/internal/domain"
+	utils "voidspace/comments/utils/database"
 )
 
 type commentRepository struct {
@@ -123,7 +124,7 @@ func (r *commentRepository) GetAllByPostID(ctx context.Context, postID int) ([]*
 		}
 		return nil, err
 	}
-	defer rows.Close()
+	defer utils.SafeClose(rows)
 
 	var comments []*domain.Comment
 	for rows.Next() {
@@ -157,7 +158,7 @@ func (r *commentRepository) GetAllByUserID(ctx context.Context, userID int) ([]*
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer utils.SafeClose(rows)
 
 	var comments []*domain.Comment
 	for rows.Next() {
@@ -234,7 +235,7 @@ func (r *commentRepository) CountCommentsByPostIDs(ctx context.Context, postIDs 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer utils.SafeClose(rows)
 
 	result := make(map[int]int)
 
