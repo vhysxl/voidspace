@@ -5,39 +5,27 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"net"
-
-	"cloud.google.com/go/cloudsqlconn"
-	"github.com/go-sql-driver/mysql"
+	"time"
 )
 
-func MySqlDatabase(ctx context.Context, config *mysql.Config, instanceConnectionName string) (*sql.DB, error) {
-	d, err := cloudsqlconn.NewDialer(ctx, cloudsqlconn.WithLazyRefresh())
+func MySqlDatabase(ctx context.Context, connString string) (*sql.DB, error) {
+	db, err := sql.Open("mysql", connString)
+
 	if err != nil {
-		return nil, fmt.Errorf("cloudsqlconn.NewDialer: %w", err)
+		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	mysql.RegisterDialContext("cloudsqlconn",
-		func(ctx context.Context, addr string) (net.Conn, error) {
-			return d.Dial(ctx, instanceConnectionName)
-		})
-
-	dbURI := fmt.Sprintf("%s:%s@cloudsqlconn(localhost:3306)/%s?parseTime=true",
-		config.User, config.Passwd, config.DBName)
-
-	db, err := sql.Open("mysql", dbURI)
-	if err != nil {
-		return nil, fmt.Errorf("sql.Open: %w", err)
-	}
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(10)
+	db.SetConnMaxLifetime(30 * time.Minute)
+	db.SetConnMaxIdleTime(15 * time.Minute)
 
 	if err := db.PingContext(ctx); err != nil {
-
 		defer func() {
 			if err := db.Close(); err != nil {
 				log.Printf("failed to close db: %v", err)
 			}
 		}()
-
 		return nil, fmt.Errorf("db.Ping: %w", err)
 	}
 

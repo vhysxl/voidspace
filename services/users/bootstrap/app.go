@@ -13,20 +13,18 @@ import (
 	"voidspace/users/internal/usecase"
 	"voidspace/users/logger"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
 
 type Application struct {
-	Config                 *config.Config
-	DB                     *sql.DB
-	ContextTimeout         time.Duration
-	AccessTokenDuration    time.Duration
-	RefreshTokenDuration   time.Duration
-	PrivateKey             *rsa.PrivateKey
-	Logger                 *zap.Logger
-	InstanceConnectionName string
+	Config               *config.Config
+	DB                   *sql.DB
+	ContextTimeout       time.Duration
+	AccessTokenDuration  time.Duration
+	RefreshTokenDuration time.Duration
+	PrivateKey           *rsa.PrivateKey
+	Logger               *zap.Logger
 	// use cases
 	FollowUsecase  domain.FollowUsecase
 	AuthUsecase    usecase.AuthUsecase
@@ -53,21 +51,15 @@ func App() (*Application, error) {
 
 	cfg := config.GetConfig()
 
-	privateKey, err := config.LoadPrivateKey("/etc/secrets/private-key")
+	privateKey, err := config.LoadPrivateKey("./secret/private_key.pem")
 	if err != nil {
 		logger.Error("Failed to load private key", zap.Error(err))
-	}
-
-	var dbConfig = &mysql.Config{
-		User:   cfg.DBUser,
-		Passwd: cfg.DBPassword,
-		DBName: cfg.DBName,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ContextTimeout)*time.Second)
 	defer cancel()
 
-	db, err := database.MySqlDatabase(ctx, dbConfig, cfg.InstanceConnectionName)
+	db, err := database.MySqlDatabase(ctx, cfg.DBConnectionString)
 	if err != nil {
 		logger.Error("Failed to connect to database", zap.Error(err))
 		return nil, err

@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} triggered pipeline
 on:
   push:
     branches:
-      - cloud-sql
+      - master
     paths:
       - "services/users/**"
       - ".github/workflows/users_service.yml"
