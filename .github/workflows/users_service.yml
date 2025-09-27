@@ -26,13 +26,13 @@ jobs:
         with:
           go-version: stable
           cache: true
-
+        # lint
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
           version: latest
           working-directory: services/users
-
+        # test
       - name: run test
         run: go test -v ./...
 

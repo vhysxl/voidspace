@@ -58,7 +58,7 @@ func App() (*Application, error) {
 		return nil, err
 	}
 
-	commentConn, err := NewConn(config.CommentServiceAddr, true)
+	commentConn, err := NewConn(config.CommentServiceAddr, false)
 	if err != nil {
 		return nil, err
 	}
