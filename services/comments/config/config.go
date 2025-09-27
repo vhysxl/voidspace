@@ -32,7 +32,7 @@ func GetConfig() *Config {
 func initConfig() Config {
 	return Config{
 		PublicHost:     getEnv("PUBLIC_HOST", "http://localhost"),
-		Port:           getEnv("PORT", "8080"),
+		Port:           getEnv("PORT", ":8080"),
 		DBUser:         getEnv("PROD_DB_USER", "root"),
 		DBPassword:     getEnv("PROD_DB_PASS", "secret"),
 		DBAddress:      getEnv("PROD_DB_ADDRESS", "localhost:3306"),
