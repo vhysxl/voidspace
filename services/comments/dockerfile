@@ -16,6 +16,6 @@ WORKDIR /app
 
 COPY --from=builder /app/comment_grpc .
 
-EXPOSE 8082
+EXPOSE 8080
 
 CMD ["./comment_grpc"]
