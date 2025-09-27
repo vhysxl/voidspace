@@ -45,7 +45,7 @@ func App() (*Application, error) {
 	}
 	defer logger.Sync()
 
-	privateKey, err := config.LoadPrivateKey("./secret/private_key.pem")
+	privateKey, err := config.LoadPrivateKey("/etc/secrets/private-key")
 	if err != nil {
 		logger.Error("Failed to load private key", zap.Error(err))
 	}
