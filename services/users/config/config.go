@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"sync"
@@ -37,16 +36,15 @@ func initConfig() Config {
 	return Config{
 		PublicHost:           getEnv("PUBLIC_HOST", "http://localhost"),
 		Port:                 getEnv("PORT", ":8080"),
-		DBUser:               getEnv("DB_USER", "root"),
-		DBPassword:           getEnv("DB_PASS", "secret"),
-		DBAddress:            fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "3306")),
-		DBName:               getEnv("DB_NAME", "voidspace"),
+		DBUser:               getEnv("PROD_DB_USER", "root"),
+		DBPassword:           getEnv("PROD_DB_PASS", "secret"),
+		DBAddress:            getEnv("PROD_DB_ADDRESS", "localhost:3306"),
+		DBName:               getEnv("PROD_DB_NAME", "voidspace"),
 		ContextTimeout:       getIntEnv("CONTEXT_TIMEOUT", 10),
 		AccessTokenDuration:  getIntEnv("ACCESS_TOKEN_DURATION", 30),
 		RefreshTokenDuration: getIntEnv("REFRESH_TOKEN_DURATION", 7),
 	}
 }
-
 func getEnv(key, fallback string) string { //lookup env
 	if value, ok := os.LookupEnv(key); ok {
 		return value

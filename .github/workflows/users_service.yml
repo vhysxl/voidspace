@@ -1,0 +1,71 @@
+name: users-cicd
+run-name: ${{ github.actor }} triggered pipeline
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "services/users/**"
+      - ".github/workflows/users_service.yml"
+jobs:
+  voidspace-user-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+
+    defaults:
+      run:
+        working-directory: services/users
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache: true
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
+          working-directory: services/users
+
+      - name: run test
+        run: go test -v ./...
+
+      - name: build docker image
+        run: docker build -t voidspace-users:latest .
+
+      - uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: "projects/591941627936/locations/global/workloadIdentityPools/voidspace-cicd/providers/github-actions"
+          service_account: "voidspace-cicd@modified-fabric-379312.iam.gserviceaccount.com"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+
+      - name: "Docker auth"
+        run: gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
+
+      # PUSH TO ARTIFACT REGISTRY
+      - name: "Push to Artifact Registry"
+        run: |
+          docker tag voidspace-users:latest asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/users:latest
+          docker push asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/users:latest
+
+      - name: "Deploy to Cloud Run"
+        uses: "google-github-actions/deploy-cloudrun@v2"
+        with:
+          service: "voidspace-user-deploy"
+          image: asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/users:latest
+          region: "asia-southeast2"
+          project_id: "modified-fabric-379312"
+          flags: "--use-http2 --allow-unauthenticated --update-secrets=/etc/secrets/private-key=voidspace_private_key:1"
+          env_vars: |
+            PROD_DB_USER=${{ secrets.PROD_DB_USER }}
+            PROD_DB_PASS=${{ secrets.PROD_DB_PASS }}
+            PROD_DB_NAME=${{ secrets.PROD_DB_NAME }}
+            PROD_DB_ADDRESS=${{ secrets.PROD_DB_ADDRESS }}

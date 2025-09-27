@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	"google.golang.org/api/option"
 )
 
 type UploadService struct {
@@ -17,16 +16,15 @@ type UploadService struct {
 
 // TODO: UPDATE THIS TO USE POLICY BECAUSE THERE IS NO SIZE VALIDATION IN SIGNED URL
 // NewUploadService inisialisasi UploadService
-func NewUploadService(ctx context.Context, bucket string, credentialPath string) (*UploadService, error) {
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialPath))
+func NewUploadService(ctx context.Context, bucket string) (*UploadService, error) {
+	client, err := storage.NewClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create storage client: %w", err)
 	}
 
 	return &UploadService{
-		Bucket:         bucket,
-		Client:         client,
-		CredentialPath: credentialPath,
+		Bucket: bucket,
+		Client: client,
 	}, nil
 }
 
