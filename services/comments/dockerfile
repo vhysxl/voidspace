@@ -18,4 +18,4 @@ COPY --from=builder /app/comment_grpc .
 
 EXPOSE 8082
 
-CMD ["./user_grpc"]
+CMD ["./comment_grpc"]
