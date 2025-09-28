@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"voidspaceGateway/utils"
 )
@@ -41,7 +42,7 @@ func initConfig() Config {
 	}
 
 	return Config{
-		Port:               getEnv("PORT", ":8080"),
+		Port:               getEnv("PORT", "8080"),
 		PublicKey:          publicKey,
 		ApiSecret:          getEnv("API_SECRET", "SUPER SECRET LMAO"),
 		ContextTimeout:     getIntEnv("CONTEXT_TIMEOUT", 30),
@@ -54,9 +55,11 @@ func initConfig() Config {
 
 func getEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
+		if !strings.HasPrefix(value, ":") {
+			return ":" + value
+		}
 		return value
 	}
-
 	return fallback
 }
 
