@@ -34,7 +34,7 @@ func GetConfig() *Config {
 }
 
 func initConfig() Config {
-	publicKey, err := utils.LoadPublicKey(getEnv("PUBLIC_KEY_PATH", "./certs/public_key.pem"))
+	publicKey, err := utils.LoadPublicKey(getEnv("PUBLIC_KEY_PATH", "/etc/secrets/public-key"))
 	if err != nil {
 		fmt.Println("FAILED TO LOAD PUBLIC KEY FROM ENV AND FALLBACK!")
 		panic("error load the public key")
