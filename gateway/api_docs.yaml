@@ -10,7 +10,7 @@ info:
 servers:
   - url: http://localhost:5000
     description: Local development
-  - url: https://voidspace-gateway-591941627936.asia-southeast2.run.app/api/v1
+  - url: https://voidspace-gateway-591941627936.asia-southeast2.run.app
     description: Production Cloud Run
 tags:
   - name: Auth
