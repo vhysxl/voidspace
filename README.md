@@ -30,5 +30,6 @@
 ## To Do
 
 - [ ] Finish UI implementation
-- [ ] Add Redis caching for performance
-- [ ] Upgrade to full microservices pattern (Saga / 2PC)
+- [ ] Add Redis caching
+- [ ] Refactor to full microservices pattern (Saga / 2PC)
+- [ ] Add tracing and monitoring (jaeger, prometheus, grafana, otel)
