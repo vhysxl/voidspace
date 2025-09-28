@@ -37,7 +37,7 @@ func main() {
 
 	router.SetupRoutes(app, e)
 
-	e.File("/openapi", "./api_docs.yaml")
+	e.File("/openapi", "/app/api_docs.yaml")
 
 	e.GET("/docs", func(c echo.Context) error {
 		html := `
