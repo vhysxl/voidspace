@@ -53,7 +53,7 @@ func App() (*Application, error) {
 		return nil, err
 	}
 
-	postConn, err := NewConn(config.PostServiceAddr, true)
+	postConn, err := NewConn(config.PostServiceAddr, false)
 	if err != nil {
 		return nil, err
 	}

@@ -9,7 +9,7 @@ info:
     [https://github.com/vhysxl/voidspace](https://github.com/vhysxl/voidspace)
   version: 1.0.0
 servers:
-  - url: localhost://
+  - url: http://localhost:5000
 tags:
   - name: Auth
   - name: User
