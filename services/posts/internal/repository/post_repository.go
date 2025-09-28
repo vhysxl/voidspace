@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 	"voidspace/posts/internal/domain"
+	errUtil "voidspace/posts/utils/error"
 
 	"github.com/lib/pq"
 )
@@ -126,7 +127,7 @@ func (p *postRepository) GetAllUserPosts(ctx context.Context, userID int32) ([]*
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer errUtil.SafeClose(rows)
 
 	var posts []*domain.Post
 	for rows.Next() {
@@ -185,7 +186,7 @@ func (p *postRepository) GetFollowFeed(ctx context.Context, userIDs []int32, cur
 	if err != nil {
 		return nil, false, err
 	}
-	defer rows.Close()
+	defer errUtil.SafeClose(rows)
 
 	var posts []*domain.Post
 	for rows.Next() {
@@ -241,7 +242,7 @@ func (p *postRepository) GetGlobalFeed(ctx context.Context, cursorTime time.Time
 	if err != nil {
 		return nil, false, err
 	}
-	defer rows.Close()
+	defer errUtil.SafeClose(rows)
 
 	posts := []*domain.Post{}
 

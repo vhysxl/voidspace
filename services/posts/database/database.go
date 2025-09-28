@@ -22,7 +22,10 @@ func PostgresDatabase(ctx context.Context, connstring string) (*sql.DB, error) {
 	db.SetConnMaxIdleTime(15 * time.Minute) // idle lifetime
 
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+		if cerr := db.Close(); cerr != nil {
+			log.Printf("failed to close db: %v", cerr)
+		}
+
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 

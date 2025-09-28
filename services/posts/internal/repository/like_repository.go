@@ -3,7 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"log"
 	"voidspace/posts/internal/domain"
+	errUtil "voidspace/posts/utils/error"
 
 	"github.com/lib/pq"
 )
@@ -35,7 +37,7 @@ func (l *likeRepository) IsPostsLikedByUser(ctx context.Context, userID int32, p
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer errUtil.SafeClose(rows)
 
 	// mark found as true
 	for rows.Next() {
@@ -77,7 +79,12 @@ func (l *likeRepository) LikePost(ctx context.Context, like *domain.Like) (int32
 	if err != nil {
 		return 0, err
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			log.Printf("failed to rollback : %v", err)
+		}
+	}()
 
 	// Insert like (abaikan kalau sudah ada)
 	result, err := tx.ExecContext(
@@ -134,7 +141,12 @@ func (l *likeRepository) UnlikePost(ctx context.Context, like *domain.Like) (int
 	if err != nil {
 		return 0, err
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			log.Printf("failed to rollback : %v", err)
+		}
+	}()
 
 	result, err := tx.ExecContext(
 		ctx,
