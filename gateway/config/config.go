@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 	"sync"
 	"voidspaceGateway/utils"
 )
@@ -55,11 +54,10 @@ func initConfig() Config {
 
 func getEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
-		if !strings.HasPrefix(value, ":") {
-			return ":" + value
-		}
+
 		return value
 	}
+
 	return fallback
 }
 

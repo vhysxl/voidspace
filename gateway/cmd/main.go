@@ -62,5 +62,5 @@ func main() {
 		return c.HTML(200, html)
 	})
 
-	e.Logger.Fatal(e.Start(app.Config.Port))
+	e.Logger.Fatal(e.Start(":" + app.Config.Port))
 }
