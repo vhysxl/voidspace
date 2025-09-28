@@ -47,13 +47,7 @@ func App() (*Application, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	connstring, err := cfg.GetDBConnectionString()
-	if err != nil {
-		logger.Error("Failed to get DB connection string", zap.Error(err))
-		return nil, err
-	}
-
-	db, err := database.PostgresDatabase(ctx, connstring, cfg.InstanceConnectionName)
+	db, err := database.PostgresDatabase(ctx, cfg.DBConnString)
 	if err != nil {
 		logger.Error("Failed to connect to database", zap.Error(err))
 		return nil, err

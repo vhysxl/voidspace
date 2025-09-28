@@ -4,32 +4,28 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"net"
+	"log"
+	"time"
 
-	"cloud.google.com/go/cloudsqlconn"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/lib/pq"
 )
 
-func PostgresDatabase(ctx context.Context, connstring *pgx.ConnConfig, instanceName string) (*sql.DB, error) {
-	var opts []cloudsqlconn.Option
-
-	opts = append(opts, cloudsqlconn.WithLazyRefresh())
-	d, err := cloudsqlconn.NewDialer(context.Background(), opts...)
+func PostgresDatabase(ctx context.Context, connstring string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", connstring)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	connstring.DialFunc = func(ctx context.Context, network, instance string) (net.Conn, error) {
-		return d.Dial(ctx, instanceName)
+	db.SetMaxOpenConns(25) // max pool
+	db.SetMaxIdleConns(10)
+	db.SetConnMaxLifetime(30 * time.Minute) // conn lifetime
+	db.SetConnMaxIdleTime(15 * time.Minute) // idle lifetime
+
+	if err := db.PingContext(ctx); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	dbURI := stdlib.RegisterConnConfig(connstring)
-	dbPool, err := sql.Open("pgx", dbURI)
-	if err != nil {
-		return nil, fmt.Errorf("sql.Open: %w", err)
-	}
-
-	return dbPool, nil // return db
+	log.Println("PostgreSQL database connected")
+	return db, nil // return db
 }
