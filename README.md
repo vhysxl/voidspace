@@ -1,6 +1,6 @@
 # Voidspace
 
-**Voidspace** Social is a cloud-first mini-microservices application. It is a mini Twitter-like social media app where users can create posts, follow others, send direct messages, and view their timeline. This project is deployed using Google Cloud products (Cloud Run, Artifact Registry, Cloud Storage), Railway (MySQL and PostgreSQL), and GitHub Actions for CI/CD automation. The application runs entirely on Cloud Run.
+**Voidspace** Social is a cloud-first mini-microservices application. It is a mini Twitter-like social media app where users can create posts, follow others, and view their timeline. This project is deployed using Google Cloud products (Cloud Run, Artifact Registry, Cloud Storage), Railway (MySQL and PostgreSQL), and GitHub Actions for CI/CD automation. The application runs entirely on Cloud Run.
 
 ---
 
