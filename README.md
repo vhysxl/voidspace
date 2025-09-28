@@ -4,7 +4,7 @@
 
 ---
 
-[![Architecture of voidspace](/docs/img/diagram_architecture.png)](/docs/img/diagram_architecture.png)
+[![Architecture of voidspace](/docs/img/diagram.png)](/docs/img/diagram.png)
 
 ---
 
