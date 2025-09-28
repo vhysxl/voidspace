@@ -41,7 +41,7 @@ func initConfig() Config {
 	}
 
 	return Config{
-		Port:               getEnv("PORT", ":5000"),
+		Port:               getEnv("PORT", ":8000"),
 		PublicKey:          publicKey,
 		ApiSecret:          getEnv("API_SECRET", "SUPER SECRET LMAO"),
 		ContextTimeout:     getIntEnv("CONTEXT_TIMEOUT", 30),
