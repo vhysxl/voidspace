@@ -62,9 +62,8 @@ jobs:
           image: "asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/gateway:latest"
           region: "asia-southeast2"
           project_id: "modified-fabric-379312"
-          flags: "--use-http2 --allow-unauthenticated"
+          flags: "--use-http2 --allow-unauthenticated --update-secrets=/etc/secrets/public-key=public_key_gateway:1"
           env_vars: |
-            PUBLIC_KEY_PATH=${{ secrets.PUBLIC_KEY_PATH }}
             USER_SERVICE_URL=${{ secrets.USER_SERVICE_URL }}
             POST_SERVICE_URL=${{ secrets.POST_SERVICE_URL }}
             COMMENT_SERVICE_URL=${{ secrets.COMMENT_SERVICE_URL }}
