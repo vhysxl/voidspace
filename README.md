@@ -10,9 +10,10 @@
 
 ## API Documentation
 
-- [API Docs](http://localhost:5000/docs)
+- [POSTMAN Collection](/docs/api/voidspace.postman_collection.json)
+- [API Docs](https://voidspace-gateway-591941627936.asia-southeast2.run.app/docs)
 
-> **Disclaimer**: If you encounter **500/503 errors**, it may be due to Railway databases going into sleep mode. Please wait a few moments and try again.
+> **Disclaimer**: When using the Cloud Run URL, If you encounter **500/503 errors**, it may be due to Railway databases going into sleep mode. Please wait a few moments and try again.
 
 ---
 

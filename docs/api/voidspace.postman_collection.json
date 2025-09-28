@@ -1,0 +1,1747 @@
+{
+	"info": {
+		"_postman_id": "806ae1e0-fe9a-4f13-805f-fa21945385d6",
+		"name": "voidspace",
+		"description": "This is collection API of voidspace app\n\nREPO: [https://github.com/vhysxl/voidspace](https://github.com/vhysxl/voidspace)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "28418445"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\" : \"vhysxl123\",\r\n\t\"email\" : \"vhysxl123@gmail.com\",\r\n\t\"password\": \"vernalequinox123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:5000/api/v1/auth/register"
+					},
+					"response": [
+						{
+							"name": "Register",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"username\" : \"vhysxl123\",\r\n\t\"email\" : \"vhysxl123@gmail.com\",\r\n\t\"password\": \"vernalequinox123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "localhost:5000/api/v1/auth/register"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTkxODE1MTJ9.THnkZtRrIIGLhMXh1_bQVXQYFS3AzuIeXBLEATfBb-UdTHWadVjpAKN3YFwFyxLeDrm6DJT0etc-ce9xDYuxSWQaS9x9pRISCxHKFLEV4R6EMPeomE49ONUJiZyXQhcT56A92dDyg6zgNrNEnodFLdViR822yUx7UNkhIFzp4k-nIbPInN8hJ4xowvRh2td6JJrFSVN21tW9Cew6MVeQZH575MxlnK0GaUsCqwSt0aCydk4G7An4N-GjU7N22vQwI-rY-cB0h2x2Tw40YM75ZZjcpkYpT082ssJKlIhTty9LKgdAV3bR0rzCcGPMWqD3m8RN4mvTC4tz5Tb1yytp2g; Path=/; Max-Age=604800; HttpOnly; SameSite=Lax"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 21:31:52 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "545"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Registration successful\",\n    \"data\": {\n        \"access_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1Nzg1MTJ9.W9kxHy9U6G_Avo8DUKTy8ZeIDlmHjosF4XgVVJ3ttZJMbkpxcjTQBTOSxfErADxiS79PN6VCqZUfwcNe470uPhavtC-8Y5rURBr2SM1zVQCyFHJWIzsjSGmQG_QHupH8qqRvdTuqPerSwzNeFSLEhnxfVRbiFC7oFLEi_BHopFRVSnUsOshgOK8uxZ8l--CfnpocAUMMc-rGZDGEBAm-jy2C6_Z2Q_1EJZkoV-ggh8doKXjU4r2rhE0begSbRGVFZkeqGMOPjL2cxthRfUCy2qZUfMqMGtbzXBZRRHB_5D9T0eIu_zppfulr_0aBzmrbCqXgR3sXlhOShC403FevqQ\",\n        \"expires_in\": 1800\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"usernameoremail\" : \"jack\",\r\n\t\"password\": \"prikitiew\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:5000/api/v1/auth/login"
+					},
+					"response": [
+						{
+							"name": "Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"usernameoremail\" : \"vhysxl123\",\r\n\t\"password\": \"vernalequinox123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "localhost:5000/api/v1/auth/login"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTkxOTY5NzZ9.K-51IHQ4-a9CAlqP8G_Hmw1Sunshgk4RCZoXbj6G9E2giOUcBmvDFtbaQDCgz9cj3G6PqVKYxGih5157vdVKGItRH3DI6uOqoT6ZUokbDE5A1YXimeaTAUWdxFqkDCWdo0hb8SXrhVAAGAPq2cz1B30W31Oo90RnATVtfj0y69VKiIF8gUXmu8du-nT0AuCpcwyRGX8697qkP6xfmmKrzOAq1EI-maIAT2IkfO3TuiZ1co4d9OCndYjKXU7lofrR_dGtYjkzYgbBGtjAvWYNJIXWSF22bX2HShhkD6bM2zYbxp4o4cusIIhS9nRWtg_3xsuZXeTnCE3bliS-oK6aSA; Path=/; Max-Age=604800; HttpOnly; SameSite=Lax"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 01:49:36 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "538"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Login successful\",\n    \"data\": {\n        \"access_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1OTM5NzZ9.eGWVvxf1fTuiqodpQRX0MTkVT51431kgchwYLyfZgfl5cPCAkAzr_MIM2xuT56v5IGHCqWd91Y46qoL2FPRF41vt7LTnTnuvw31_Q9ej1ceE0cKs1lbuRjLNRlybJU1U3kSfq2fZAfR0IOKx-W8dgmuwP_POV_qcZbfB-3TBuLV9FvxnmiWGAJ0GNxviBMLg9-zpoh2O-0S4pDoIiGf8qxPbI4FFmkSsZXx5DW1FiY7ucScew30-1jAexqEp1CQgw1kPpIhSF7nR8jNvC61FQkhFDs4bMTJJbP7AVHPCOv6HJ95e_3tebQJmzp1TsFqZZqLhX0nvTF0WjkAwVXQ_aA\",\n        \"expires_in\": 1800\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Refresh",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/auth/refresh"
+					},
+					"response": [
+						{
+							"name": "Refresh",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/auth/refresh"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 21:32:16 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "550"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Token refreshed successfully\",\n    \"data\": {\n        \"access_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1Nzg1MzZ9.VnnD3jHP7eNO6KKdkf2CfJhv1LVdg9LlYeae7L6drz1mZTf3_6jMnye-R7tR_U3HAV6nyNgXuPkUBQfSLYzjks-79JNiJaitom3Uuo1NZVL-GFUJ5GbbmBpoJnrYXazaVQYm7fqaKsF4_ehplLzRyOthKbslQGxcSN029bZGRVJ24qderGw98oI7PnYnfypCRIje37g7-S1pvlo--hSJD2KOtyh82lc9cqQ1l5MX3LW-66l25-F8b8VaD2Oq-po8EKdWupfeJhnPRaAqZmj-DG7bT4Vd95Lq0s-MbXZ-UyLcDflhx8IzARxjhsWFFoGiS1PXzQevqK-F_0Yx9PqskA\",\n        \"expires_in\": 1800\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/auth/logout"
+					},
+					"response": [
+						{
+							"name": "Logout",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/auth/logout"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "refresh_token=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 21:32:21 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "46"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Logout successful\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "GetCurrentUser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1ODEyNzV9.KMnPq5JQlOT8QtuyQ4GgFFnPlzYyQdt1Z3KcA53tT9sLzk8gJp222TYDfzCYn2k0XAL6Yv4JbR8Dyce5ZqJ49rX4FgBRkw_5I_KxmNsqKIC0BIsSYB24G1YBW4wpu4nPJDrQ5Ie9eS2iKsYlEDWoO6E_krVeuA8L0x5-Pe6E1A7km4-srJm_IRdd7rglG54VzYxqBnbefAEyWSMyU89HL6eBIcnwitne4hDLgpJZdyjCK62tdZBYDaAyXcTRg-HjGP7FkcQTG2izdhgAGrWKv26X7OZa6XSkSE5rGBYCQ9QuaB9ReI7cikgC6ngIljuOgWK8qzMjcMN9mZLAsaKTKQ",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/users/me"
+					},
+					"response": [
+						{
+							"name": "GetCurrentUser",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1ODEyNzV9.KMnPq5JQlOT8QtuyQ4GgFFnPlzYyQdt1Z3KcA53tT9sLzk8gJp222TYDfzCYn2k0XAL6Yv4JbR8Dyce5ZqJ49rX4FgBRkw_5I_KxmNsqKIC0BIsSYB24G1YBW4wpu4nPJDrQ5Ie9eS2iKsYlEDWoO6E_krVeuA8L0x5-Pe6E1A7km4-srJm_IRdd7rglG54VzYxqBnbefAEyWSMyU89HL6eBIcnwitne4hDLgpJZdyjCK62tdZBYDaAyXcTRg-HjGP7FkcQTG2izdhgAGrWKv26X7OZa6XSkSE5rGBYCQ9QuaB9ReI7cikgC6ngIljuOgWK8qzMjcMN9mZLAsaKTKQ",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/users/me"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 22:18:18 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "319"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Profile retrieved successfully\",\n    \"data\": {\n        \"id\": 51,\n        \"username\": \"vhysxl123\",\n        \"profile\": {\n            \"display_name\": \"Gin Sama\",\n            \"bio\": \"Ini Bio\",\n            \"avatar_url\": \"https://example.com/avatar.png\",\n            \"banner_url\": \"\",\n            \"location\": \"Bekasi\",\n            \"followers\": 0,\n            \"following\": 0\n        },\n        \"created_at\": \"2025-09-22T21:31:52Z\",\n        \"is_followed\": false\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "GetUser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/users/vhysxl123"
+					},
+					"response": [
+						{
+							"name": "GetUser",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/users/vhysxl123"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 22:17:37 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "316"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"User retrieved successfully\",\n    \"data\": {\n        \"id\": 51,\n        \"username\": \"vhysxl123\",\n        \"profile\": {\n            \"display_name\": \"Gin Sama\",\n            \"bio\": \"Ini Bio\",\n            \"avatar_url\": \"https://example.com/avatar.png\",\n            \"banner_url\": \"\",\n            \"location\": \"Bekasi\",\n            \"followers\": 0,\n            \"following\": 0\n        },\n        \"created_at\": \"2025-09-22T21:31:52Z\",\n        \"is_followed\": false\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "UpdateProfile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1ODA5MTR9.gx72VJojH1_y7s8nBnm6aqdgyKlhsrPzhmp6Akp1XlvLkT8Ke2KdBmyufWC-G4VRqRtISlKDtQhfaao19mDi_l0NcfsOxk_-LBlkha-IKILnin9SlhC1XRQXF1yUlArBs1ZDCsz6Aa0mY8zz03VuqNd87nmZimVi67LzvwQQ18P6dpUOuU7scMUbOk8WCoLvb5kqOUSgiVOXZIimcy7uQjmkiXM5MVw-BQlxCwblyIZrTS2DXU9fjGh7weH_6V_g72xVHklFWrEoBCHjiJoDtcN0L4Y6HR_ulDEwxTjHN-oGv8kHDQ-jEd_eBAq102L5xDEjC8NBucfo_lV36tX9rg",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"display_name\": \"Gin Sama\",\r\n  \"bio\": \"Ini Bio\",\r\n  \"avatar_url\": \"https://example.com/avatar.png\",\r\n  \"location\" :\"Bekasi\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:5000/api/v1/users/me"
+					},
+					"response": [
+						{
+							"name": "UpdateProfile",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1ODA5MTR9.gx72VJojH1_y7s8nBnm6aqdgyKlhsrPzhmp6Akp1XlvLkT8Ke2KdBmyufWC-G4VRqRtISlKDtQhfaao19mDi_l0NcfsOxk_-LBlkha-IKILnin9SlhC1XRQXF1yUlArBs1ZDCsz6Aa0mY8zz03VuqNd87nmZimVi67LzvwQQ18P6dpUOuU7scMUbOk8WCoLvb5kqOUSgiVOXZIimcy7uQjmkiXM5MVw-BQlxCwblyIZrTS2DXU9fjGh7weH_6V_g72xVHklFWrEoBCHjiJoDtcN0L4Y6HR_ulDEwxTjHN-oGv8kHDQ-jEd_eBAq102L5xDEjC8NBucfo_lV36tX9rg",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"display_name\": \"Gin Sama\",\r\n  \"bio\": \"Ini Bio\",\r\n  \"avatar_url\": \"https://example.com/avatar.png\",\r\n  \"location\" :\"Bekasi\"\r\n}\r\n\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "localhost:5000/api/v1/users/me"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 22:17:00 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Profile updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "DeleteUser",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTU4MTZ9.cC4qQm8swz3lnR9LC9a_e4c1SrH2sr1oVPAk_caFU_IKVHwPNzasnHOcGpNyMdehNqsWbK7wmUm38g-YvfcL-fuSQbC_nysdyhh5Q2xdNBFVczb_cmolxf_B70qzYmf0FUliTGUcTNptvY8IJmXVizVdw-4IGjDA_P2yUdM3eQRhYzjR5_9crq4Wuq112uhmz0kNQSMPvLf8fCNXQW2PsHCyU3at3FiBjrfaMcZyAt8YMToYfjP93lle2NVcJ9sZN-NMWkyUDNlBxrB8Ystr5xYTFEgZv875L9MrfsJynWUAhLrXiHXY45S0_l64yfnuZ42SQtiViD_vQ3a4DRKemA",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/users/me"
+					},
+					"response": [
+						{
+							"name": "DeleteUser",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTU4MTZ9.cC4qQm8swz3lnR9LC9a_e4c1SrH2sr1oVPAk_caFU_IKVHwPNzasnHOcGpNyMdehNqsWbK7wmUm38g-YvfcL-fuSQbC_nysdyhh5Q2xdNBFVczb_cmolxf_B70qzYmf0FUliTGUcTNptvY8IJmXVizVdw-4IGjDA_P2yUdM3eQRhYzjR5_9crq4Wuq112uhmz0kNQSMPvLf8fCNXQW2PsHCyU3at3FiBjrfaMcZyAt8YMToYfjP93lle2NVcJ9sZN-NMWkyUDNlBxrB8Ystr5xYTFEgZv875L9MrfsJynWUAhLrXiHXY45S0_l64yfnuZ42SQtiViD_vQ3a4DRKemA",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/users/me"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 07:53:53 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "54"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"User deleted successfully\"\n}"
+						}
+					]
+				}
+			],
+			"description": "CRUD related to user"
+		},
+		{
+			"name": "Follow",
+			"item": [
+				{
+					"name": "Follow",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1Nzg1MjZ9.VlRfHUVBZrv0SWJEnNLBDdt3l5Xbd5FKGBxWKHXJpOsZRwLOn5BUp7I69kkvkIGRIZNY1I7OuoklF_4JUu7DjMPcOKUQaEjKFgKuTDuGQgRAbMB-sxlPnynGclDpAc8judLCNG-jxtPOt7JOBrXaycKWVMGvu23JKQcJSVlbq3pyK1OcQjDx9JRTVRHbcoJyGXJTYqkw__i64wqipVqwSedlYFHNMpHfNz99NPrucwvKY4a0S__JxE-UKeqqoxUoBwaQUTo6ZFC-5pSXgqClCjI2E-bq9I613CHk8aujlTpVUBPL4quMg0czf1q-nyarFS5qNljKeMwsdAy5_jNfNw",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/follow/yogi"
+					},
+					"response": [
+						{
+							"name": "Follow",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1Nzg1MjZ9.VlRfHUVBZrv0SWJEnNLBDdt3l5Xbd5FKGBxWKHXJpOsZRwLOn5BUp7I69kkvkIGRIZNY1I7OuoklF_4JUu7DjMPcOKUQaEjKFgKuTDuGQgRAbMB-sxlPnynGclDpAc8judLCNG-jxtPOt7JOBrXaycKWVMGvu23JKQcJSVlbq3pyK1OcQjDx9JRTVRHbcoJyGXJTYqkw__i64wqipVqwSedlYFHNMpHfNz99NPrucwvKY4a0S__JxE-UKeqqoxUoBwaQUTo6ZFC-5pSXgqClCjI2E-bq9I613CHk8aujlTpVUBPL4quMg0czf1q-nyarFS5qNljKeMwsdAy5_jNfNw",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/follow/yogi"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 21:33:34 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "55"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"User followed successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Unfollow",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1Nzg1MjZ9.VlRfHUVBZrv0SWJEnNLBDdt3l5Xbd5FKGBxWKHXJpOsZRwLOn5BUp7I69kkvkIGRIZNY1I7OuoklF_4JUu7DjMPcOKUQaEjKFgKuTDuGQgRAbMB-sxlPnynGclDpAc8judLCNG-jxtPOt7JOBrXaycKWVMGvu23JKQcJSVlbq3pyK1OcQjDx9JRTVRHbcoJyGXJTYqkw__i64wqipVqwSedlYFHNMpHfNz99NPrucwvKY4a0S__JxE-UKeqqoxUoBwaQUTo6ZFC-5pSXgqClCjI2E-bq9I613CHk8aujlTpVUBPL4quMg0czf1q-nyarFS5qNljKeMwsdAy5_jNfNw",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/follow/yogi"
+					},
+					"response": [
+						{
+							"name": "Unfollow",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1Nzg1MjZ9.VlRfHUVBZrv0SWJEnNLBDdt3l5Xbd5FKGBxWKHXJpOsZRwLOn5BUp7I69kkvkIGRIZNY1I7OuoklF_4JUu7DjMPcOKUQaEjKFgKuTDuGQgRAbMB-sxlPnynGclDpAc8judLCNG-jxtPOt7JOBrXaycKWVMGvu23JKQcJSVlbq3pyK1OcQjDx9JRTVRHbcoJyGXJTYqkw__i64wqipVqwSedlYFHNMpHfNz99NPrucwvKY4a0S__JxE-UKeqqoxUoBwaQUTo6ZFC-5pSXgqClCjI2E-bq9I613CHk8aujlTpVUBPL4quMg0czf1q-nyarFS5qNljKeMwsdAy5_jNfNw",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/follow/yogi"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 21:33:42 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"User unfollowed successfully\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Actions Related to Follow"
+		},
+		{
+			"name": "Post",
+			"item": [
+				{
+					"name": "CreatePost",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1ODAzNjh9.PQyClo64c3-WXOQpzetmN36Q9p0iOyVlFSCG5x4ruciKDzd2k36KB05OkPHaEgVgO25a_av_IgaEdKAKvaSwkCk1kxk2M3qM2oKeVobQu8sa4r6fvpzcbD15dMqf9k8wrgcTm5eSHbowPcyEa30kHVgjI9QQqGpfmxlJ_AWtkEQ22qWPthdAgwApwCxp30olRRPfpmW4tG9BhneIPa0YrQC7bYxAKl_lo1ADkGwb-Kn9I6pmOMd4kuVHBc4i_cYKzb4jYplVZv8uy3n-nw3LNrClSj7DoaMiRdfZ89xp1lWmE_AiFXe9J8DPkVGbwwhSWYUuvLfEst7UpM_F1YNCLQ",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"content\": \"Hello from vhysx\",\r\n  \"post_images\": [\r\n    \"https://example.com/image1.jpg\",\r\n    \"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png\",\r\n    \"https://httpbin.org/image/jpeg\"\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:5000/api/v1/posts/"
+					},
+					"response": [
+						{
+							"name": "CreatePost",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1ODAzNjh9.PQyClo64c3-WXOQpzetmN36Q9p0iOyVlFSCG5x4ruciKDzd2k36KB05OkPHaEgVgO25a_av_IgaEdKAKvaSwkCk1kxk2M3qM2oKeVobQu8sa4r6fvpzcbD15dMqf9k8wrgcTm5eSHbowPcyEa30kHVgjI9QQqGpfmxlJ_AWtkEQ22qWPthdAgwApwCxp30olRRPfpmW4tG9BhneIPa0YrQC7bYxAKl_lo1ADkGwb-Kn9I6pmOMd4kuVHBc4i_cYKzb4jYplVZv8uy3n-nw3LNrClSj7DoaMiRdfZ89xp1lWmE_AiFXe9J8DPkVGbwwhSWYUuvLfEst7UpM_F1YNCLQ",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"content\": \"Hello from vhysx\",\r\n  \"post_images\": [\r\n    \"https://example.com/image1.jpg\",\r\n    \"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png\",\r\n    \"https://httpbin.org/image/jpeg\"\r\n  ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "localhost:5000/api/v1/posts/"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 22:21:03 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "432"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Post created successfully\",\n    \"data\": {\n        \"id\": 77,\n        \"content\": \"Hello from vhysx\",\n        \"user_id\": 51,\n        \"post_images\": [\n            \"https://example.com/image1.jpg\",\n            \"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png\",\n            \"https://httpbin.org/image/jpeg\"\n        ],\n        \"likes_count\": 0,\n        \"comments_count\": 0,\n        \"created_at\": \"2025-09-22T22:21:03.557261Z\",\n        \"updated_at\": \"2025-09-22T22:21:03.557261Z\",\n        \"author\": null,\n        \"is_liked\": false\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "GetPost",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/posts/78"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/posts/78"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 01:57:23 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "549"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Post retrieved successfully\",\n    \"data\": {\n        \"id\": 78,\n        \"content\": \"Ah normal inimah\",\n        \"user_id\": 38,\n        \"post_images\": null,\n        \"likes_count\": 0,\n        \"comments_count\": 0,\n        \"created_at\": \"2025-09-22T22:30:11.177418Z\",\n        \"updated_at\": \"2025-09-22T22:30:11.177418Z\",\n        \"author\": {\n            \"id\": 38,\n            \"username\": \"jack\",\n            \"profile\": {\n                \"display_name\": \"\",\n                \"bio\": \"\",\n                \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                \"banner_url\": \"\",\n                \"location\": \"\",\n                \"followers\": 1,\n                \"following\": 1\n            },\n            \"created_at\": \"2025-09-17T21:41:38Z\",\n            \"is_followed\": false\n        },\n        \"is_liked\": false\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "GetUserPosts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/posts/user/jack"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/posts/user/jack"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 22:30:17 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1133"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Post retrieved successfully\",\n    \"data\": {\n        \"posts\": [\n            {\n                \"id\": 78,\n                \"content\": \"Ah normal inimah\",\n                \"user_id\": 38,\n                \"post_images\": null,\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T22:30:11.177418Z\",\n                \"updated_at\": \"2025-09-22T22:30:11.177418Z\",\n                \"author\": {\n                    \"id\": 38,\n                    \"username\": \"jack\",\n                    \"profile\": {\n                        \"display_name\": \"\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                        \"banner_url\": \"\",\n                        \"location\": \"\",\n                        \"followers\": 1,\n                        \"following\": 1\n                    },\n                    \"created_at\": \"2025-09-17T21:41:38Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 46,\n                \"content\": \"gua mah malu tuh\",\n                \"user_id\": 38,\n                \"post_images\": [\n                    \"https://storage.googleapis.com/assets_voidspace/1758181889641719500.jpg\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 1,\n                \"created_at\": \"2025-09-18T07:51:31.45751Z\",\n                \"updated_at\": \"2025-09-18T21:24:52.93158Z\",\n                \"author\": {\n                    \"id\": 38,\n                    \"username\": \"jack\",\n                    \"profile\": {\n                        \"display_name\": \"\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                        \"banner_url\": \"\",\n                        \"location\": \"\",\n                        \"followers\": 1,\n                        \"following\": 1\n                    },\n                    \"created_at\": \"2025-09-17T21:41:38Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            }\n        ],\n        \"has_more\": false\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "UpdatePost",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1OTM5NzZ9.eGWVvxf1fTuiqodpQRX0MTkVT51431kgchwYLyfZgfl5cPCAkAzr_MIM2xuT56v5IGHCqWd91Y46qoL2FPRF41vt7LTnTnuvw31_Q9ej1ceE0cKs1lbuRjLNRlybJU1U3kSfq2fZAfR0IOKx-W8dgmuwP_POV_qcZbfB-3TBuLV9FvxnmiWGAJ0GNxviBMLg9-zpoh2O-0S4pDoIiGf8qxPbI4FFmkSsZXx5DW1FiY7ucScew30-1jAexqEp1CQgw1kPpIhSF7nR8jNvC61FQkhFDs4bMTJJbP7AVHPCOv6HJ95e_3tebQJmzp1TsFqZZqLhX0nvTF0WjkAwVXQ_aA",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"Updating post\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:5000/api/v1/posts/77"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1OTM5NzZ9.eGWVvxf1fTuiqodpQRX0MTkVT51431kgchwYLyfZgfl5cPCAkAzr_MIM2xuT56v5IGHCqWd91Y46qoL2FPRF41vt7LTnTnuvw31_Q9ej1ceE0cKs1lbuRjLNRlybJU1U3kSfq2fZAfR0IOKx-W8dgmuwP_POV_qcZbfB-3TBuLV9FvxnmiWGAJ0GNxviBMLg9-zpoh2O-0S4pDoIiGf8qxPbI4FFmkSsZXx5DW1FiY7ucScew30-1jAexqEp1CQgw1kPpIhSF7nR8jNvC61FQkhFDs4bMTJJbP7AVHPCOv6HJ95e_3tebQJmzp1TsFqZZqLhX0nvTF0WjkAwVXQ_aA",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Updating post\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "localhost:5000/api/v1/posts/77"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 01:52:32 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "54"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Post updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "DeletePost",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1OTM5NzZ9.eGWVvxf1fTuiqodpQRX0MTkVT51431kgchwYLyfZgfl5cPCAkAzr_MIM2xuT56v5IGHCqWd91Y46qoL2FPRF41vt7LTnTnuvw31_Q9ej1ceE0cKs1lbuRjLNRlybJU1U3kSfq2fZAfR0IOKx-W8dgmuwP_POV_qcZbfB-3TBuLV9FvxnmiWGAJ0GNxviBMLg9-zpoh2O-0S4pDoIiGf8qxPbI4FFmkSsZXx5DW1FiY7ucScew30-1jAexqEp1CQgw1kPpIhSF7nR8jNvC61FQkhFDs4bMTJJbP7AVHPCOv6HJ95e_3tebQJmzp1TsFqZZqLhX0nvTF0WjkAwVXQ_aA",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/posts/76"
+					},
+					"response": [
+						{
+							"name": "NotFound",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1OTM5NzZ9.eGWVvxf1fTuiqodpQRX0MTkVT51431kgchwYLyfZgfl5cPCAkAzr_MIM2xuT56v5IGHCqWd91Y46qoL2FPRF41vt7LTnTnuvw31_Q9ej1ceE0cKs1lbuRjLNRlybJU1U3kSfq2fZAfR0IOKx-W8dgmuwP_POV_qcZbfB-3TBuLV9FvxnmiWGAJ0GNxviBMLg9-zpoh2O-0S4pDoIiGf8qxPbI4FFmkSsZXx5DW1FiY7ucScew30-1jAexqEp1CQgw1kPpIhSF7nR8jNvC61FQkhFDs4bMTJJbP7AVHPCOv6HJ95e_3tebQJmzp1TsFqZZqLhX0nvTF0WjkAwVXQ_aA",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/posts/77"
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 01:57:57 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "44"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"detail\": \"post not found\"\n}"
+						},
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjUxIiwiVXNlcm5hbWUiOiJ2aHlzeGwxMjMiLCJleHAiOjE3NTg1OTM5NzZ9.eGWVvxf1fTuiqodpQRX0MTkVT51431kgchwYLyfZgfl5cPCAkAzr_MIM2xuT56v5IGHCqWd91Y46qoL2FPRF41vt7LTnTnuvw31_Q9ej1ceE0cKs1lbuRjLNRlybJU1U3kSfq2fZAfR0IOKx-W8dgmuwP_POV_qcZbfB-3TBuLV9FvxnmiWGAJ0GNxviBMLg9-zpoh2O-0S4pDoIiGf8qxPbI4FFmkSsZXx5DW1FiY7ucScew30-1jAexqEp1CQgw1kPpIhSF7nR8jNvC61FQkhFDs4bMTJJbP7AVHPCOv6HJ95e_3tebQJmzp1TsFqZZqLhX0nvTF0WjkAwVXQ_aA",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/posts/76"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 01:58:47 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "54"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Post deleted successfully\"\n}"
+						}
+					]
+				}
+			],
+			"description": "CRUD Related To Post"
+		},
+		{
+			"name": "Feed",
+			"item": [
+				{
+					"name": "GlobalFeed",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/feed/"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/feed/"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 05:23:09 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Get Feed Success\",\n    \"data\": {\n        \"posts\": [\n            {\n                \"id\": 78,\n                \"content\": \"Ah normal inimah\",\n                \"user_id\": 38,\n                \"post_images\": null,\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T22:30:11.177418Z\",\n                \"updated_at\": \"2025-09-22T22:30:11.177418Z\",\n                \"author\": {\n                    \"id\": 38,\n                    \"username\": \"jack\",\n                    \"profile\": {\n                        \"display_name\": \"\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                        \"banner_url\": \"\",\n                        \"location\": \"\",\n                        \"followers\": 1,\n                        \"following\": 1\n                    },\n                    \"created_at\": \"2025-09-17T21:41:38Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 73,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 51,\n                \"post_images\": [\n                    \"image\",\n                    \"image2\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T21:52:03.561138Z\",\n                \"updated_at\": \"2025-09-22T21:52:03.561138Z\",\n                \"author\": {\n                    \"id\": 51,\n                    \"username\": \"vhysxl123\",\n                    \"profile\": {\n                        \"display_name\": \"Gin Sama\",\n                        \"bio\": \"Ini Bio\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T21:31:52Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 72,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 51,\n                \"post_images\": [\n                    \"image\",\n                    \"image2\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T21:51:25.34257Z\",\n                \"updated_at\": \"2025-09-22T21:51:25.34257Z\",\n                \"author\": {\n                    \"id\": 51,\n                    \"username\": \"vhysxl123\",\n                    \"profile\": {\n                        \"display_name\": \"Gin Sama\",\n                        \"bio\": \"Ini Bio\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T21:31:52Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 71,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 51,\n                \"post_images\": [\n                    \"image\",\n                    \"image2\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T21:51:22.288411Z\",\n                \"updated_at\": \"2025-09-22T21:51:22.288411Z\",\n                \"author\": {\n                    \"id\": 51,\n                    \"username\": \"vhysxl123\",\n                    \"profile\": {\n                        \"display_name\": \"Gin Sama\",\n                        \"bio\": \"Ini Bio\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T21:31:52Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 70,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 51,\n                \"post_images\": [\n                    \"image\",\n                    \"image2\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T21:42:01.978175Z\",\n                \"updated_at\": \"2025-09-22T21:42:01.978175Z\",\n                \"author\": {\n                    \"id\": 51,\n                    \"username\": \"vhysxl123\",\n                    \"profile\": {\n                        \"display_name\": \"Gin Sama\",\n                        \"bio\": \"Ini Bio\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T21:31:52Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 69,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 51,\n                \"post_images\": [\n                    \"image\",\n                    \"image2\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T21:39:40.463327Z\",\n                \"updated_at\": \"2025-09-22T21:39:40.463327Z\",\n                \"author\": {\n                    \"id\": 51,\n                    \"username\": \"vhysxl123\",\n                    \"profile\": {\n                        \"display_name\": \"Gin Sama\",\n                        \"bio\": \"Ini Bio\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T21:31:52Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 68,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 51,\n                \"post_images\": [\n                    \"image\",\n                    \"image2\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T21:37:21.48663Z\",\n                \"updated_at\": \"2025-09-22T21:37:21.48663Z\",\n                \"author\": {\n                    \"id\": 51,\n                    \"username\": \"vhysxl123\",\n                    \"profile\": {\n                        \"display_name\": \"Gin Sama\",\n                        \"bio\": \"Ini Bio\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T21:31:52Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 67,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 51,\n                \"post_images\": [\n                    \"image\",\n                    \"image2\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T21:35:47.516513Z\",\n                \"updated_at\": \"2025-09-22T21:35:47.516513Z\",\n                \"author\": {\n                    \"id\": 51,\n                    \"username\": \"vhysxl123\",\n                    \"profile\": {\n                        \"display_name\": \"Gin Sama\",\n                        \"bio\": \"Ini Bio\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T21:31:52Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 66,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 51,\n                \"post_images\": [\n                    \"image.com\",\n                    \"image2.com\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T21:35:39.219334Z\",\n                \"updated_at\": \"2025-09-22T21:35:39.219334Z\",\n                \"author\": {\n                    \"id\": 51,\n                    \"username\": \"vhysxl123\",\n                    \"profile\": {\n                        \"display_name\": \"Gin Sama\",\n                        \"bio\": \"Ini Bio\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T21:31:52Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 65,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 51,\n                \"post_images\": null,\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T21:34:59.179572Z\",\n                \"updated_at\": \"2025-09-22T21:34:59.179572Z\",\n                \"author\": {\n                    \"id\": 51,\n                    \"username\": \"vhysxl123\",\n                    \"profile\": {\n                        \"display_name\": \"Gin Sama\",\n                        \"bio\": \"Ini Bio\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T21:31:52Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            }\n        ],\n        \"has_more\": true\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "GetFeedWithCursor",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:5000/api/v1/feed/?cursor=2025-09-22T21:34:59.179572Z&cursorid=65",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"feed",
+								""
+							],
+							"query": [
+								{
+									"key": "cursor",
+									"value": "2025-09-22T21:34:59.179572Z"
+								},
+								{
+									"key": "cursorid",
+									"value": "65"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "localhost:5000/api/v1/feed/?cursor=2025-09-22T21:34:59.179572Z&cursorid=65",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"feed",
+										""
+									],
+									"query": [
+										{
+											"key": "cursor",
+											"value": "2025-09-22T21:34:59.179572Z"
+										},
+										{
+											"key": "cursorid",
+											"value": "65"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 05:28:51 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Get Feed Success\",\n    \"data\": {\n        \"posts\": [\n            {\n                \"id\": 64,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 51,\n                \"post_images\": [\n                    \"image.com\",\n                    \"image2.com\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T21:33:58.818128Z\",\n                \"updated_at\": \"2025-09-22T21:33:58.818128Z\",\n                \"author\": {\n                    \"id\": 51,\n                    \"username\": \"vhysxl123\",\n                    \"profile\": {\n                        \"display_name\": \"Gin Sama\",\n                        \"bio\": \"Ini Bio\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T21:31:52Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 63,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 49,\n                \"post_images\": [\n                    \"image.com\",\n                    \"image2.com\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T16:16:18.634313Z\",\n                \"updated_at\": \"2025-09-22T16:16:18.634313Z\",\n                \"author\": {\n                    \"id\": 49,\n                    \"username\": \"vhysxl\",\n                    \"profile\": {\n                        \"display_name\": \"vhysxl Sama\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T15:08:10Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 62,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 49,\n                \"post_images\": [\n                    \"image.com\",\n                    \"image2.com\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T16:15:08.558606Z\",\n                \"updated_at\": \"2025-09-22T16:15:08.558606Z\",\n                \"author\": {\n                    \"id\": 49,\n                    \"username\": \"vhysxl\",\n                    \"profile\": {\n                        \"display_name\": \"vhysxl Sama\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T15:08:10Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 61,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 49,\n                \"post_images\": [\n                    \"image.com\",\n                    \"image2.com\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T16:15:06.561005Z\",\n                \"updated_at\": \"2025-09-22T16:15:06.561005Z\",\n                \"author\": {\n                    \"id\": 49,\n                    \"username\": \"vhysxl\",\n                    \"profile\": {\n                        \"display_name\": \"vhysxl Sama\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T15:08:10Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 60,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 49,\n                \"post_images\": [\n                    \"image.com\",\n                    \"image2.com\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T16:14:57.681492Z\",\n                \"updated_at\": \"2025-09-22T16:14:57.681492Z\",\n                \"author\": {\n                    \"id\": 49,\n                    \"username\": \"vhysxl\",\n                    \"profile\": {\n                        \"display_name\": \"vhysxl Sama\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T15:08:10Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 59,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 49,\n                \"post_images\": [\n                    \"image.com\",\n                    \"image2.com\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T16:13:55.543653Z\",\n                \"updated_at\": \"2025-09-22T16:13:55.543653Z\",\n                \"author\": {\n                    \"id\": 49,\n                    \"username\": \"vhysxl\",\n                    \"profile\": {\n                        \"display_name\": \"vhysxl Sama\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T15:08:10Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 58,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 49,\n                \"post_images\": [\n                    \"image.com\",\n                    \"image2.com\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T16:13:53.149229Z\",\n                \"updated_at\": \"2025-09-22T16:13:53.149229Z\",\n                \"author\": {\n                    \"id\": 49,\n                    \"username\": \"vhysxl\",\n                    \"profile\": {\n                        \"display_name\": \"vhysxl Sama\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T15:08:10Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 57,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 49,\n                \"post_images\": [\n                    \"image.com\",\n                    \"image2.com\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T16:13:50.507548Z\",\n                \"updated_at\": \"2025-09-22T16:13:50.507548Z\",\n                \"author\": {\n                    \"id\": 49,\n                    \"username\": \"vhysxl\",\n                    \"profile\": {\n                        \"display_name\": \"vhysxl Sama\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T15:08:10Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 56,\n                \"content\": \"Helo from yogi\",\n                \"user_id\": 49,\n                \"post_images\": [\n                    \"image.com\",\n                    \"image2.com\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T16:13:30.3165Z\",\n                \"updated_at\": \"2025-09-22T16:13:30.3165Z\",\n                \"author\": {\n                    \"id\": 49,\n                    \"username\": \"vhysxl\",\n                    \"profile\": {\n                        \"display_name\": \"vhysxl Sama\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://example.com/avatar.png\",\n                        \"banner_url\": \"\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 0,\n                        \"following\": 0\n                    },\n                    \"created_at\": \"2025-09-22T15:08:10Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 55,\n                \"content\": \"ya ambon\",\n                \"user_id\": 6,\n                \"post_images\": [\n                    \"https://storage.googleapis.com/assets_voidspace/1758521578310269600.png\"\n                ],\n                \"likes_count\": 1,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T06:12:58.78959Z\",\n                \"updated_at\": \"2025-09-22T06:12:58.78959Z\",\n                \"author\": {\n                    \"id\": 6,\n                    \"username\": \"yogi\",\n                    \"profile\": {\n                        \"display_name\": \"lort\",\n                        \"bio\": \"ngaku2 developernya njir\",\n                        \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758374417268992400.jpg\",\n                        \"banner_url\": \"https://storage.googleapis.com/assets_voidspace/1757237992695560500.jpg\",\n                        \"location\": \"Bekasi\",\n                        \"followers\": 1,\n                        \"following\": 2\n                    },\n                    \"created_at\": \"2025-08-24T14:33:15Z\",\n                    \"is_followed\": false\n                },\n                \"is_liked\": false\n            }\n        ],\n        \"has_more\": true\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "GetFollowFeed",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTE4NzJ9.hEsQNQkbylnttwKqNU9sPcSHamRMOREFmqaLuQs0XwdJKDYgVrxZx0VnDDsiMgJ-_nIGak7kIM6zETDI9czbeF9OMuz_6QwMCd1D-g9m9PaXmTtrOuZUDZkfmOirsrOgUFDOdSncfwyhL389MdiFBL8B2aWjA-DJqwswWQ6UTypEH3EWLB8V7xMsqSzFY8XMfN2L628KEgCmC8-lU6hAfj0tZyNXEPYS3Cf2gYyjl_LykoThcNO9R5PDA76wCgBwCTBBOuN7sExJ__lAUs6_z1Gj0kS3rjOYVbfMTLfhyEuEwQydnQ3gaa69Be0Mbwg5dkqLE9uKLxtcnv1XAgSWTQ",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/feed/following/"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTE4NzJ9.hEsQNQkbylnttwKqNU9sPcSHamRMOREFmqaLuQs0XwdJKDYgVrxZx0VnDDsiMgJ-_nIGak7kIM6zETDI9czbeF9OMuz_6QwMCd1D-g9m9PaXmTtrOuZUDZkfmOirsrOgUFDOdSncfwyhL389MdiFBL8B2aWjA-DJqwswWQ6UTypEH3EWLB8V7xMsqSzFY8XMfN2L628KEgCmC8-lU6hAfj0tZyNXEPYS3Cf2gYyjl_LykoThcNO9R5PDA76wCgBwCTBBOuN7sExJ__lAUs6_z1Gj0kS3rjOYVbfMTLfhyEuEwQydnQ3gaa69Be0Mbwg5dkqLE9uKLxtcnv1XAgSWTQ",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/feed/following/"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 06:48:03 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1120"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Get Feed Success\",\n    \"data\": {\n        \"posts\": [\n            {\n                \"id\": 78,\n                \"content\": \"Ah normal inimah\",\n                \"user_id\": 38,\n                \"post_images\": null,\n                \"likes_count\": 0,\n                \"comments_count\": 0,\n                \"created_at\": \"2025-09-22T22:30:11.177418Z\",\n                \"updated_at\": \"2025-09-22T22:30:11.177418Z\",\n                \"author\": {\n                    \"id\": 38,\n                    \"username\": \"jack\",\n                    \"profile\": {\n                        \"display_name\": \"\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                        \"banner_url\": \"\",\n                        \"location\": \"\",\n                        \"followers\": 1,\n                        \"following\": 1\n                    },\n                    \"created_at\": \"2025-09-17T21:41:38Z\",\n                    \"is_followed\": true\n                },\n                \"is_liked\": false\n            },\n            {\n                \"id\": 46,\n                \"content\": \"gua mah malu tuh\",\n                \"user_id\": 38,\n                \"post_images\": [\n                    \"https://storage.googleapis.com/assets_voidspace/1758181889641719500.jpg\"\n                ],\n                \"likes_count\": 0,\n                \"comments_count\": 1,\n                \"created_at\": \"2025-09-18T07:51:31.45751Z\",\n                \"updated_at\": \"2025-09-18T21:24:52.93158Z\",\n                \"author\": {\n                    \"id\": 38,\n                    \"username\": \"jack\",\n                    \"profile\": {\n                        \"display_name\": \"\",\n                        \"bio\": \"\",\n                        \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                        \"banner_url\": \"\",\n                        \"location\": \"\",\n                        \"followers\": 1,\n                        \"following\": 1\n                    },\n                    \"created_at\": \"2025-09-17T21:41:38Z\",\n                    \"is_followed\": true\n                },\n                \"is_liked\": false\n            }\n        ],\n        \"has_more\": false\n    }\n}"
+						}
+					]
+				}
+			],
+			"description": "To Get feed"
+		},
+		{
+			"name": "Like",
+			"item": [
+				{
+					"name": "Like",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTM5MjN9.JiVk_oPZ1Xv1uUFpBUrxwg2R8fZUHdeWQu4Y_itxP3Syj5ZICi8fhRRRP1Ul4bDmK-7meYBrNA34U8RsByDsc7FDtr_cJAhRYkNo1AyZImwwc0ihRUn9_Lbw0YqkxJNyDHmgLjRgDxgvmjRuIprC6IBL02rFrfdrWCZ_ya3P8pDHd0Nh5A2qFXYcGanI-5zqVMOwbakrTPpeY1GI-rjRm-dhhQB-f2vR8x6uBCH1-A7ClbF1VhVAegzft478NptSXqwmmjDy8xxw5_OkomoskJ4HZLCvwFymJR3HFMsFXoxLdirLUU0LXdKguTchHet6Qk6-OfZEmVTEMLBYmPXCCQ",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/likes/78"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTM5MjN9.JiVk_oPZ1Xv1uUFpBUrxwg2R8fZUHdeWQu4Y_itxP3Syj5ZICi8fhRRRP1Ul4bDmK-7meYBrNA34U8RsByDsc7FDtr_cJAhRYkNo1AyZImwwc0ihRUn9_Lbw0YqkxJNyDHmgLjRgDxgvmjRuIprC6IBL02rFrfdrWCZ_ya3P8pDHd0Nh5A2qFXYcGanI-5zqVMOwbakrTPpeY1GI-rjRm-dhhQB-f2vR8x6uBCH1-A7ClbF1VhVAegzft478NptSXqwmmjDy8xxw5_OkomoskJ4HZLCvwFymJR3HFMsFXoxLdirLUU0LXdKguTchHet6Qk6-OfZEmVTEMLBYmPXCCQ",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/likes/78"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 07:24:13 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "81"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Post liked successfully\",\n    \"data\": {\n        \"new_likes_count\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Unlike",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTM5MjN9.JiVk_oPZ1Xv1uUFpBUrxwg2R8fZUHdeWQu4Y_itxP3Syj5ZICi8fhRRRP1Ul4bDmK-7meYBrNA34U8RsByDsc7FDtr_cJAhRYkNo1AyZImwwc0ihRUn9_Lbw0YqkxJNyDHmgLjRgDxgvmjRuIprC6IBL02rFrfdrWCZ_ya3P8pDHd0Nh5A2qFXYcGanI-5zqVMOwbakrTPpeY1GI-rjRm-dhhQB-f2vR8x6uBCH1-A7ClbF1VhVAegzft478NptSXqwmmjDy8xxw5_OkomoskJ4HZLCvwFymJR3HFMsFXoxLdirLUU0LXdKguTchHet6Qk6-OfZEmVTEMLBYmPXCCQ",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/likes/78"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTM5MjN9.JiVk_oPZ1Xv1uUFpBUrxwg2R8fZUHdeWQu4Y_itxP3Syj5ZICi8fhRRRP1Ul4bDmK-7meYBrNA34U8RsByDsc7FDtr_cJAhRYkNo1AyZImwwc0ihRUn9_Lbw0YqkxJNyDHmgLjRgDxgvmjRuIprC6IBL02rFrfdrWCZ_ya3P8pDHd0Nh5A2qFXYcGanI-5zqVMOwbakrTPpeY1GI-rjRm-dhhQB-f2vR8x6uBCH1-A7ClbF1VhVAegzft478NptSXqwmmjDy8xxw5_OkomoskJ4HZLCvwFymJR3HFMsFXoxLdirLUU0LXdKguTchHet6Qk6-OfZEmVTEMLBYmPXCCQ",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/likes/78"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 07:23:25 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "83"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Post unliked successfully\",\n    \"data\": {\n        \"new_likes_count\": 0\n    }\n}"
+						}
+					]
+				}
+			],
+			"description": "CRUD related to Like"
+		},
+		{
+			"name": "Comment",
+			"item": [
+				{
+					"name": "GetCommentByUser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/comment/user/jack"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/comment/user/jack"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 07:26:40 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Comments retrieved successfully\",\n    \"data\": [\n        {\n            \"comment_id\": 38,\n            \"post_id\": 38,\n            \"content\": \"tes komen ajah\",\n            \"author\": {\n                \"id\": 38,\n                \"username\": \"jack\",\n                \"profile\": {\n                    \"display_name\": \"\",\n                    \"bio\": \"\",\n                    \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                    \"banner_url\": \"\",\n                    \"location\": \"\",\n                    \"followers\": 1,\n                    \"following\": 1\n                },\n                \"created_at\": \"2025-09-17T21:41:38Z\",\n                \"is_followed\": false\n            },\n            \"created_at\": \"2025-09-17T21:42:40Z\"\n        },\n        {\n            \"comment_id\": 38,\n            \"post_id\": 38,\n            \"content\": \"wha sql\",\n            \"author\": {\n                \"id\": 38,\n                \"username\": \"jack\",\n                \"profile\": {\n                    \"display_name\": \"\",\n                    \"bio\": \"\",\n                    \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                    \"banner_url\": \"\",\n                    \"location\": \"\",\n                    \"followers\": 1,\n                    \"following\": 1\n                },\n                \"created_at\": \"2025-09-17T21:41:38Z\",\n                \"is_followed\": false\n            },\n            \"created_at\": \"2025-09-19T02:02:28Z\"\n        },\n        {\n            \"comment_id\": 38,\n            \"post_id\": 38,\n            \"content\": \"gua mah malu tuh\",\n            \"author\": {\n                \"id\": 38,\n                \"username\": \"jack\",\n                \"profile\": {\n                    \"display_name\": \"\",\n                    \"bio\": \"\",\n                    \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                    \"banner_url\": \"\",\n                    \"location\": \"\",\n                    \"followers\": 1,\n                    \"following\": 1\n                },\n                \"created_at\": \"2025-09-17T21:41:38Z\",\n                \"is_followed\": false\n            },\n            \"created_at\": \"2025-09-19T02:02:35Z\"\n        },\n        {\n            \"comment_id\": 38,\n            \"post_id\": 38,\n            \"content\": \"besok aja\",\n            \"author\": {\n                \"id\": 38,\n                \"username\": \"jack\",\n                \"profile\": {\n                    \"display_name\": \"\",\n                    \"bio\": \"\",\n                    \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                    \"banner_url\": \"\",\n                    \"location\": \"\",\n                    \"followers\": 1,\n                    \"following\": 1\n                },\n                \"created_at\": \"2025-09-17T21:41:38Z\",\n                \"is_followed\": false\n            },\n            \"created_at\": \"2025-09-19T03:13:18Z\"\n        },\n        {\n            \"comment_id\": 38,\n            \"post_id\": 38,\n            \"content\": \"besok aja\",\n            \"author\": {\n                \"id\": 38,\n                \"username\": \"jack\",\n                \"profile\": {\n                    \"display_name\": \"\",\n                    \"bio\": \"\",\n                    \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                    \"banner_url\": \"\",\n                    \"location\": \"\",\n                    \"followers\": 1,\n                    \"following\": 1\n                },\n                \"created_at\": \"2025-09-17T21:41:38Z\",\n                \"is_followed\": false\n            },\n            \"created_at\": \"2025-09-19T03:13:26Z\"\n        },\n        {\n            \"comment_id\": 38,\n            \"post_id\": 38,\n            \"content\": \"Bukankah ini\",\n            \"author\": {\n                \"id\": 38,\n                \"username\": \"jack\",\n                \"profile\": {\n                    \"display_name\": \"\",\n                    \"bio\": \"\",\n                    \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758145331606245800.jpg\",\n                    \"banner_url\": \"\",\n                    \"location\": \"\",\n                    \"followers\": 1,\n                    \"following\": 1\n                },\n                \"created_at\": \"2025-09-17T21:41:38Z\",\n                \"is_followed\": false\n            },\n            \"created_at\": \"2025-09-22T06:13:40Z\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "GetCommentByPost",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/comment/post/15"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/comment/post/15"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 07:28:14 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1472"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Comments retrieved successfully\",\n    \"data\": [\n        {\n            \"comment_id\": 6,\n            \"post_id\": 6,\n            \"content\": \"yeah buddy2\",\n            \"author\": {\n                \"id\": 6,\n                \"username\": \"yogi\",\n                \"profile\": {\n                    \"display_name\": \"lort\",\n                    \"bio\": \"ngaku2 developernya njir\",\n                    \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758374417268992400.jpg\",\n                    \"banner_url\": \"https://storage.googleapis.com/assets_voidspace/1757237992695560500.jpg\",\n                    \"location\": \"Bekasi\",\n                    \"followers\": 1,\n                    \"following\": 2\n                },\n                \"created_at\": \"2025-08-24T14:33:15Z\",\n                \"is_followed\": false\n            },\n            \"created_at\": \"2025-09-15T22:54:49Z\"\n        },\n        {\n            \"comment_id\": 6,\n            \"post_id\": 6,\n            \"content\": \"yeah buddy2\",\n            \"author\": {\n                \"id\": 6,\n                \"username\": \"yogi\",\n                \"profile\": {\n                    \"display_name\": \"lort\",\n                    \"bio\": \"ngaku2 developernya njir\",\n                    \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758374417268992400.jpg\",\n                    \"banner_url\": \"https://storage.googleapis.com/assets_voidspace/1757237992695560500.jpg\",\n                    \"location\": \"Bekasi\",\n                    \"followers\": 1,\n                    \"following\": 2\n                },\n                \"created_at\": \"2025-08-24T14:33:15Z\",\n                \"is_followed\": false\n            },\n            \"created_at\": \"2025-09-15T22:56:44Z\"\n        },\n        {\n            \"comment_id\": 6,\n            \"post_id\": 6,\n            \"content\": \"halo\",\n            \"author\": {\n                \"id\": 6,\n                \"username\": \"yogi\",\n                \"profile\": {\n                    \"display_name\": \"lort\",\n                    \"bio\": \"ngaku2 developernya njir\",\n                    \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758374417268992400.jpg\",\n                    \"banner_url\": \"https://storage.googleapis.com/assets_voidspace/1757237992695560500.jpg\",\n                    \"location\": \"Bekasi\",\n                    \"followers\": 1,\n                    \"following\": 2\n                },\n                \"created_at\": \"2025-08-24T14:33:15Z\",\n                \"is_followed\": false\n            },\n            \"created_at\": \"2025-09-17T20:15:14Z\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "CreateComments",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTQ3OTN9.iSnwAQ7OGBOuJlANEm4SDn40NjRuVx4GuGQxrVdA-8QnEp5mjSW5H2rjc48DQHwX356wjEfs3JQSODB60BQUZT69eokKBBSYKxRvLBLH5tgRp9644Ad7WQBuTHE3HZYuFi3OdoxXvp1LwXndMhsIGIeTBYaFerbZJGpYsoTQp7u0zV1mweVxKnyVmPeUZ1EFqSRmW0jwai8bHesx4O4HD_4bg6V3sWfVkQAGB_vbSF6FOtrqG-ILLBEdNrQiLS_mE9HB40oGvqmYg51ZXZe8jIOiuKfKG7Qv2EWIB4reB8jrRWpJMxDjZu45vFAJ_2TBxhqWJI5G-4nxQy5COtDCTA",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"content\": \"Ini komentar contoh\",\r\n\t\"post_id\": 78\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:5000/api/v1/comment"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTQ3OTN9.iSnwAQ7OGBOuJlANEm4SDn40NjRuVx4GuGQxrVdA-8QnEp5mjSW5H2rjc48DQHwX356wjEfs3JQSODB60BQUZT69eokKBBSYKxRvLBLH5tgRp9644Ad7WQBuTHE3HZYuFi3OdoxXvp1LwXndMhsIGIeTBYaFerbZJGpYsoTQp7u0zV1mweVxKnyVmPeUZ1EFqSRmW0jwai8bHesx4O4HD_4bg6V3sWfVkQAGB_vbSF6FOtrqG-ILLBEdNrQiLS_mE9HB40oGvqmYg51ZXZe8jIOiuKfKG7Qv2EWIB4reB8jrRWpJMxDjZu45vFAJ_2TBxhqWJI5G-4nxQy5COtDCTA",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"content\": \"Ini komentar contoh\",\r\n\t\"post_id\": 78\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "localhost:5000/api/v1/comment"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 07:37:59 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "542"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Comment created successfully\",\n    \"data\": {\n        \"comment_id\": 6,\n        \"post_id\": 6,\n        \"content\": \"Ini komentar contoh\",\n        \"author\": {\n            \"id\": 6,\n            \"username\": \"yogi\",\n            \"profile\": {\n                \"display_name\": \"lort\",\n                \"bio\": \"ngaku2 developernya njir\",\n                \"avatar_url\": \"https://storage.googleapis.com/assets_voidspace/1758374417268992400.jpg\",\n                \"banner_url\": \"https://storage.googleapis.com/assets_voidspace/1757237992695560500.jpg\",\n                \"location\": \"Bekasi\",\n                \"followers\": 1,\n                \"following\": 1\n            },\n            \"created_at\": \"2025-08-24T14:33:15Z\",\n            \"is_followed\": false\n        },\n        \"created_at\": \"2025-09-23T07:37:59Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "DeleteComment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTQ3OTN9.iSnwAQ7OGBOuJlANEm4SDn40NjRuVx4GuGQxrVdA-8QnEp5mjSW5H2rjc48DQHwX356wjEfs3JQSODB60BQUZT69eokKBBSYKxRvLBLH5tgRp9644Ad7WQBuTHE3HZYuFi3OdoxXvp1LwXndMhsIGIeTBYaFerbZJGpYsoTQp7u0zV1mweVxKnyVmPeUZ1EFqSRmW0jwai8bHesx4O4HD_4bg6V3sWfVkQAGB_vbSF6FOtrqG-ILLBEdNrQiLS_mE9HB40oGvqmYg51ZXZe8jIOiuKfKG7Qv2EWIB4reB8jrRWpJMxDjZu45vFAJ_2TBxhqWJI5G-4nxQy5COtDCTA",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							}
+						],
+						"url": "localhost:5000/api/v1/comment/6"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTQ3OTN9.iSnwAQ7OGBOuJlANEm4SDn40NjRuVx4GuGQxrVdA-8QnEp5mjSW5H2rjc48DQHwX356wjEfs3JQSODB60BQUZT69eokKBBSYKxRvLBLH5tgRp9644Ad7WQBuTHE3HZYuFi3OdoxXvp1LwXndMhsIGIeTBYaFerbZJGpYsoTQp7u0zV1mweVxKnyVmPeUZ1EFqSRmW0jwai8bHesx4O4HD_4bg6V3sWfVkQAGB_vbSF6FOtrqG-ILLBEdNrQiLS_mE9HB40oGvqmYg51ZXZe8jIOiuKfKG7Qv2EWIB4reB8jrRWpJMxDjZu45vFAJ_2TBxhqWJI5G-4nxQy5COtDCTA",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									}
+								],
+								"url": "localhost:5000/api/v1/comment/6"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 07:40:00 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Comment deleted successfully\"\n}"
+						}
+					]
+				}
+			],
+			"description": "CRUD related to comments"
+		},
+		{
+			"name": "Upload",
+			"item": [
+				{
+					"name": "ImageUpload",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "shinmenmusashinokamifujiwaranoharunobu",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTUxNjB9.TH88tgqK-gppFyoLC8HY1_Ve5GRSciO3gA38JU3YgOi_shhG7OQNZbMxUuhBh-B1zbJeQ3YlNzY1utNwYw5qWqAi2lBVO8B2LVlcq8KWO0FhHThLLpD_U9YYQk7Lofdy76snti_v-kfD1nOo6uzCJ27WPhl75U0DDu_saRY9tLHEvw2kN0fh1NXmG7BqpL-FT9V7HHrSIJnVzztcppaLElsy5CiSjAi8VK2BBmRi-Zp8Vyqkfq-pLPWaqdNlYsc2M9wse2FUEFxQkjwUQ67MrFee_WcIB6m1M013rjqnWY5BeaRelOGvzwb9JHBDFWVwp7C_wX0e1gMYS_HdluNS0g",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"contentType\": \"image/jpeg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:5000/api/v1/upload/signed-url"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "shinmenmusashinokamifujiwaranoharunobu",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IjYiLCJVc2VybmFtZSI6InlvZ2kiLCJleHAiOjE3NTg2MTUxNjB9.TH88tgqK-gppFyoLC8HY1_Ve5GRSciO3gA38JU3YgOi_shhG7OQNZbMxUuhBh-B1zbJeQ3YlNzY1utNwYw5qWqAi2lBVO8B2LVlcq8KWO0FhHThLLpD_U9YYQk7Lofdy76snti_v-kfD1nOo6uzCJ27WPhl75U0DDu_saRY9tLHEvw2kN0fh1NXmG7BqpL-FT9V7HHrSIJnVzztcppaLElsy5CiSjAi8VK2BBmRi-Zp8Vyqkfq-pLPWaqdNlYsc2M9wse2FUEFxQkjwUQ67MrFee_WcIB6m1M013rjqnWY5BeaRelOGvzwb9JHBDFWVwp7C_wX0e1gMYS_HdluNS0g",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"contentType\": \"image/jpeg\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "localhost:5000/api/v1/upload/signed-url"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 07:45:30 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1038"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"detail\": \"Url Successfully generated\",\n    \"data\": {\n        \"publicUrl\": \"https://storage.googleapis.com/assets_voidspace/1758613530284396900.jpg\",\n        \"signedUrl\": \"https://storage.googleapis.com/assets_voidspace/1758613530284396900.jpg?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=voidspaceimage%40modified-fabric-379312.iam.gserviceaccount.com%2F20250923%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20250923T074530Z&X-Goog-Expires=0&X-Goog-Signature=066c326620299d0daba0a8afd58cbbf710ccb86f1317400cb9061dcb7ee7dbcdc36919fee3eceff033f52f754d71772ad02192fa34c481d9b61ca8e44724084527deedfa672d314bb29afbdc7a902aefdb8536d36735a3fab6edab3abea23a8ea63ca270a4881e1fe3e95dd593c9bd4849b618c6e89e397cf6c6251ed8838d821d21a686df696e5bba73fba948316629dc074f621ddd562e9920c27567c573e1cc11d0d42cd347c472969192aa6b646bf15ccef34e247baac98ffcabd6880a2371ff109c136d13afa1c46add895a403737fd1dd94524b3a0ba4f942df9f6992da20e54651cd5eb563ad6574463d9e0d229325ac45917217dbe4f397b9c3b80e6&X-Goog-SignedHeaders=content-type%3Bhost\"\n    }\n}"
+						}
+					]
+				}
+			],
+			"description": "Upload for requesting filename and signed url"
+		}
+	]
+}
