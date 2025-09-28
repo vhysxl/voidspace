@@ -4,12 +4,14 @@ info:
   description: >-
     This is collection API of voidspace app
 
-
     REPO:
     [https://github.com/vhysxl/voidspace](https://github.com/vhysxl/voidspace)
   version: 1.0.0
 servers:
   - url: http://localhost:5000
+    description: Local development
+  - url: https://voidspace-gateway-591941627936.asia-southeast2.run.app/api/v1
+    description: Production Cloud Run
 tags:
   - name: Auth
   - name: User
