@@ -1,0 +1,72 @@
+name: gateway-cicd
+run-name: ${{ github.actor }} triggered pipeline
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "gateway/**"
+      - ".github/workflows/gateway.yml"
+
+jobs:
+  voidspace-gateway-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+
+    defaults:
+      run:
+        working-directory: gateway
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache: true
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
+          working-directory: gateway
+
+      - name: run test
+        run: go test -v ./...
+
+      - name: build docker image
+        run: docker build -t voidspace-gateway:latest .
+
+      - uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: "projects/591941627936/locations/global/workloadIdentityPools/voidspace-cicd/providers/github-actions"
+          service_account: "voidspace-cicd@modified-fabric-379312.iam.gserviceaccount.com"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+
+      - name: "Docker auth"
+        run: gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
+
+      - name: "Push to Artifact Registry"
+        run: |
+          docker tag voidspace-gateway:latest asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/gateway:latest
+          docker push asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/gateway:latest
+
+      - name: "Deploy to Cloud Run"
+        uses: "google-github-actions/deploy-cloudrun@v2"
+        with:
+          service: "voidspace-gateway"
+          image: "asia-southeast2-docker.pkg.dev/modified-fabric-379312/voidspace/gateway:latest"
+          region: "asia-southeast2"
+          project_id: "modified-fabric-379312"
+          flags: "--use-http2 --allow-unauthenticated"
+          env_vars: |
+            PUBLIC_KEY_PATH=${{ secrets.PUBLIC_KEY_PATH }}
+            USER_SERVICE_URL=${{ secrets.USER_SERVICE_URL }}
+            POST_SERVICE_URL=${{ secrets.POST_SERVICE_URL }}
+            COMMENT_SERVICE_URL=${{ secrets.COMMENT_SERVICE_URL }}
+            BUCKET_NAME=${{ secrets.BUCKET_NAME }}
+            API_SECRET=${{ secrets.API_SECRET }}

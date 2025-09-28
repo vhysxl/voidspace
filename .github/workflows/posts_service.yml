@@ -64,4 +64,4 @@ jobs:
           project_id: "modified-fabric-379312"
           flags: "--use-http2 --allow-unauthenticated"
           env_vars: |
-            DB_CONN= ${{ secrets.POST_DB_CONN }}
+            DB_CONN=${{ secrets.POST_DB_CONN }}
