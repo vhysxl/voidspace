@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package users.v1;
+
+option go_package = "voidspace/users/proto/users/v1;usersv1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// UserService provides operations for user accounts, profiles, social connections, and auth.
+service UserService {
+  // ---------------------- AUTH ----------------------
+  rpc Register(RegisterRequest) returns (AuthResponse);
+  rpc Login(LoginRequest) returns (AuthResponse);
+  rpc RefreshToken(google.protobuf.Empty) returns (AuthResponse);
+  
+  // ---------------------- USER ----------------------
+  rpc GetCurrentUser(google.protobuf.Empty) returns (GetCurrentUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+  rpc ListFollowers(GetUserByIdRequest) returns (ListFollowersResponse);
+  rpc ListFollowing(GetUserByIdRequest) returns (ListFollowingResponse);
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
+  rpc DeleteUser(google.protobuf.Empty) returns (DeleteUserResponse);
+  rpc RestoreUser(RestoreUserRequest) returns (RestoreUserResponse);
+  rpc Follow(FollowRequest) returns (FollowResponse);
+  rpc Unfollow(UnfollowRequest) returns (UnfollowResponse);
+}
+
+// ---------------------- AUTH MESSAGES ----------------------
+
+message RegisterRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message LoginRequest {
+  string credentials = 1; // username or email
+  string password = 2;
+}
+
+message AuthResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+// ---------------------- USER MESSAGES ----------------------
+
+message GetCurrentUserResponse {
+  UserProfile user = 1;
+}
+
+message GetUserRequest {
+  string username = 1;
+}
+
+message GetUserResponse {
+  UserProfile user = 1;
+}
+
+message GetUsersRequest {
+  repeated int64 user_ids = 1;
+}
+
+message GetUsersResponse {
+  repeated UserBanner users = 1;
+}
+
+message GetUserByIdRequest {
+  int64 user_id = 1;
+}
+
+message ListFollowersResponse {
+  repeated UserBanner users = 1;
+}
+
+message ListFollowingResponse {
+  repeated UserBanner users = 1;
+}
+
+message UpdateProfileRequest {
+  string display_name = 1;
+  string bio = 2;
+  string avatar_url = 3;
+  string banner_url = 4;
+  string location = 5;
+}
+
+message UpdateProfileResponse {}
+
+message DeleteUserResponse {}
+
+message RestoreUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message RestoreUserResponse {}
+
+message FollowRequest {
+  int64 target_user_id = 1;
+}
+
+message FollowResponse {}
+
+message UnfollowRequest {
+  int64 target_user_id = 1;
+}
+
+message UnfollowResponse {}
+
+// ---------------------- SHARED TYPES ----------------------
+
+message UserProfile {
+  int64 id = 1;
+  string username = 2;
+  string display_name = 3;
+  string bio = 4;
+  string avatar_url = 5;
+  string banner_url = 6;
+  string location = 7;
+  int64 followers = 8;
+  int64 following = 9;
+  google.protobuf.Timestamp created_at = 10;
+  bool is_followed = 11;
+}
+
+message UserBanner {
+  int64 id = 1;
+  string username = 2;
+  string display_name = 3;
+  string avatar_url = 4;
+}
