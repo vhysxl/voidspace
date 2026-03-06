@@ -1,0 +1,10 @@
+tmp/
+air
+.air.toml
+.air.conf
+
+cache/
+.cache/
+**/cache/
+secret/
+.env

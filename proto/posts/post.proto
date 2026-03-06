@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+package posts.v1;
+option go_package = "./posts;posts";
+
+service PostService {
+  rpc CreatePost(CreatePostRequest) returns (PostResponse);
+  rpc GetPost(GetPostRequest) returns (PostResponse);
+  rpc UpdatePost(UpdatePostRequest) returns (google.protobuf.Empty);
+  rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty);
+  rpc GetAllPosts(GetAllPostsRequest) returns (GetFeedResponse);
+  rpc GetGlobalFeed(GetGlobalFeedRequest) returns (GetFeedResponse);
+  rpc GetFeedByUserIDs(GetFeedByUserIDsRequest) returns (GetFeedResponse);
+  rpc AccountDeletionHandle(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
+message CreatePostRequest {
+  string content = 1;
+  repeated string post_images = 3;
+}
+
+message GetPostRequest {
+  int32 id = 1;
+}
+
+message UpdatePostRequest {
+  int32 id = 1;                 
+  string content = 3;     
+  repeated string post_images = 4; 
+}
+
+message UpdateCommentReq {
+  int32 id = 1;  
+}
+
+message DeletePostRequest {
+  int32 id = 1;
+}
+
+message GetAllPostsRequest {
+  int32 user_id = 1;
+}
+
+message GetGlobalFeedRequest {
+  google.protobuf.Timestamp cursor = 1;  
+  int32 cursorID = 2;
+}
+
+message GetFeedByUserIDsRequest {
+  repeated int32 user_ids = 1;
+  google.protobuf.Timestamp cursor = 2;  
+  int32 cursorID = 3;    
+}
+
+// Response messages
+message PostResponse {
+  int32 id = 1;
+  string content = 2;
+  int32 user_id = 3;
+  repeated string post_images = 4;
+  int32 likes_count = 5;
+  google.protobuf.Timestamp created_at = 6;  
+  google.protobuf.Timestamp updated_at = 7;  
+  bool is_liked = 8;
+}
+
+message CommentResponse {
+  bool success = 1;
+}
+
+message GetFeedResponse {
+  repeated PostResponse posts = 1;
+  bool has_more = 2;
+}

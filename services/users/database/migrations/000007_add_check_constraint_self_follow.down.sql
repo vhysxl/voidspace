@@ -1,0 +1,2 @@
+ALTER TABLE user_follows
+DROP CONSTRAINT chk_no_self_follow;
