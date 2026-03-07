@@ -6,6 +6,7 @@ import (
 	"time"
 	"voidspace/users/internal/domain"
 
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,7 +24,7 @@ func (u *UserUsecase) Register(
 		bcrypt.DefaultCost,
 	)
 	if err != nil {
-		return nil, domain.ErrInternalServer
+		return nil, constants.ErrInternalServer
 	}
 
 	now := time.Now()
@@ -38,11 +39,11 @@ func (u *UserUsecase) Register(
 
 	err = u.userRepository.Create(ctx, user)
 	if err != nil {
-		if errors.Is(err, domain.ErrUserExists) {
+		if errors.Is(err, constants.ErrUserExists) {
 			return nil, err
 		}
 
-		return nil, domain.ErrInternalServer
+		return nil, constants.ErrInternalServer
 	}
 
 	return user, nil

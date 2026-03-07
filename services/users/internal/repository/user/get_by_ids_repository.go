@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"voidspace/users/internal/domain/views"
-	"voidspace/users/utils/common"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 )
 
 // TODO: idk what to do with this function
@@ -19,7 +19,7 @@ func (u *UserRepository) GetByIDs(
 		return []views.UserProfile{}, nil
 	}
 
-	queryBatch, args := common.GenerateDBPlaceholders(userIDs)
+	queryBatch, args := helper.GenerateDBPlaceholders(userIDs)
 
 	users := []views.UserProfile{}
 

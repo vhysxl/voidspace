@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"voidspace/users/internal/domain"
+
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (f *FollowUsecase) Unfollow(
@@ -21,11 +23,11 @@ func (f *FollowUsecase) Unfollow(
 
 	err := f.followRepository.Unfollow(ctx, &updates)
 	if err != nil {
-		if errors.Is(err, domain.ErrNotFollowing) {
+		if errors.Is(err, constants.ErrNotFollowing) {
 			return err
 		}
 
-		return domain.ErrInternalServer
+		return constants.ErrInternalServer
 	}
 
 	return nil

@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package users.v1;
 
-option go_package = "voidspace/users/proto/users/v1;usersv1";
-
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+
+option go_package = "./users/v1;usersv1";
 
 // UserService provides operations for user accounts, profiles, social connections, and auth.
 service UserService {
@@ -27,7 +27,7 @@ service UserService {
   rpc Unfollow(UnfollowRequest) returns (UnfollowResponse);
 }
 
-// ---------------------- AUTH MESSAGES ----------------------
+// ---------------------- REQUEST MESSAGES ----------------------
 
 message RegisterRequest {
   string username = 1;
@@ -36,39 +36,61 @@ message RegisterRequest {
 }
 
 message LoginRequest {
-  string credentials = 1; // username or email
+  string email_or_username = 1;
   string password = 2;
-}
-
-message AuthResponse {
-  string access_token = 1;
-  string refresh_token = 2;
-}
-
-// ---------------------- USER MESSAGES ----------------------
-
-message GetCurrentUserResponse {
-  UserProfile user = 1;
 }
 
 message GetUserRequest {
   string username = 1;
 }
 
-message GetUserResponse {
-  UserProfile user = 1;
+message GetUserByIdRequest {
+  int64 user_id = 1;
 }
 
 message GetUsersRequest {
   repeated int64 user_ids = 1;
 }
 
-message GetUsersResponse {
-  repeated UserBanner users = 1;
+message UpdateProfileRequest {
+  optional string display_name = 1;
+  optional string bio = 2;
+  optional string avatar_url = 3;
+  optional string banner_url = 4;
+  optional string location = 5;
 }
 
-message GetUserByIdRequest {
+message FollowRequest {
   int64 user_id = 1;
+}
+
+message UnfollowRequest {
+  int64 user_id = 1;
+}
+
+message RestoreUserRequest {
+  int64 user_id = 1;
+}
+
+// ---------------------- RESPONSE MESSAGES ----------------------
+
+message AuthResponse {
+  string access_token = 1;
+  optional string refresh_token = 2;
+  int64 expires_in = 3;
+  string message = 4;
+}
+
+message GetCurrentUserResponse {
+  UserProfile user = 1;
+}
+
+message GetUserResponse {
+  UserProfile user = 1;
+}
+
+message GetUsersResponse {
+  repeated UserProfile users = 1;
 }
 
 message ListFollowersResponse {
@@ -79,38 +101,17 @@ message ListFollowingResponse {
   repeated UserBanner users = 1;
 }
 
-message UpdateProfileRequest {
-  string display_name = 1;
-  string bio = 2;
-  string avatar_url = 3;
-  string banner_url = 4;
-  string location = 5;
-}
-
 message UpdateProfileResponse {}
 
 message DeleteUserResponse {}
 
-message RestoreUserRequest {
-  string username = 1;
-  string password = 2;
-}
-
 message RestoreUserResponse {}
-
-message FollowRequest {
-  int64 target_user_id = 1;
-}
 
 message FollowResponse {}
 
-message UnfollowRequest {
-  int64 target_user_id = 1;
-}
-
 message UnfollowResponse {}
 
-// ---------------------- SHARED TYPES ----------------------
+// ---------------------- DATA MODELS ----------------------
 
 message UserProfile {
   int64 id = 1;

@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 	pb "voidspace/users/proto/users/v1"
-	errorutils "voidspace/users/utils/error"
-	"voidspace/users/utils/interceptor"
 
+	"github.com/vhysxl/voidspace/shared/utils/helper"
+	"github.com/vhysxl/voidspace/shared/utils/interceptor"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -17,14 +17,14 @@ func (u *UserHandler) GetCurrentUser(
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()
 
-	userID, err := errorutils.GetUserIDFromContext[interceptor.CtxKey](ctx, interceptor.CtxKeyUserID)
+	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, errorutils.HandleAuthError(nil, u.Logger)
+		return nil, helper.HandleAuthError(nil, u.Logger)
 	}
 
 	user, err := u.UserUsecase.GetCurrentUser(ctx, userID)
 	if err != nil {
-		return nil, errorutils.HandleError(err, u.Logger, "Get Current User")
+		return nil, helper.HandleError(err, u.Logger, "Get Current User")
 	}
 
 	return &pb.GetCurrentUserResponse{

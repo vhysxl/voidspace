@@ -5,6 +5,7 @@ import (
 	"errors"
 	"voidspace/users/internal/domain"
 
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,16 +19,16 @@ func (u *UserUsecase) Login(
 
 	user, err := u.userRepository.GetByCredentials(ctx, credentials)
 	if err != nil {
-		if errors.Is(err, domain.ErrUserNotFound) {
+		if errors.Is(err, constants.ErrUserNotFound) {
 			return nil, err
 		}
 
-		return nil, domain.ErrInternalServer
+		return nil, constants.ErrInternalServer
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
-		return nil, domain.ErrInvalidCredentials
+		return nil, constants.ErrInvalidCredentials
 	}
 
 	return user, nil

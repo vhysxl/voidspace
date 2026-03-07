@@ -3,8 +3,9 @@ package handler
 import (
 	"context"
 	pb "voidspace/users/proto/users/v1"
-	errorutils "voidspace/users/utils/error"
 	"voidspace/users/utils/token"
+
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
@@ -16,7 +17,7 @@ func (u *UserHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Auth
 
 	user, err := u.UserUsecase.Login(ctx, req.GetEmailOrUsername(), req.GetPassword())
 	if err != nil {
-		return nil, errorutils.HandleError(err, u.Logger, "Login")
+		return nil, helper.HandleError(err, u.Logger, "Login")
 	}
 
 	g, _ := errgroup.WithContext(ctx)
@@ -41,7 +42,7 @@ func (u *UserHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Auth
 	err = g.Wait()
 	if err != nil {
 		u.Logger.Error("failed to generate token", zap.Error(err))
-		return nil, errorutils.HandleError(err, u.Logger, "Create Token")
+		return nil, helper.HandleError(err, u.Logger, "Create Token")
 	}
 
 	return &pb.AuthResponse{

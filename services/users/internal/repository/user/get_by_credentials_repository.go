@@ -7,6 +7,7 @@ import (
 
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5"
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 // GetByCredentials retrieves a user by their email or username.
@@ -32,7 +33,7 @@ func (u *UserRepository) GetByCredentials(
 	err := pgxscan.Get(ctx, u.db, &user, query, credentials)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, domain.ErrUserNotFound
+			return nil, constants.ErrUserNotFound
 		}
 
 		return nil, err

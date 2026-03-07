@@ -6,12 +6,12 @@ import (
 )
 
 type Post struct {
-	ID            int32
+	postID        int
 	Content       string
-	UserID        int32
+	UserID        int
 	PostImages    []string
-	LikesCount    int32
-	CommentsCount int32
+	LikesCount    int
+	CommentsCount int
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	IsLiked       bool
@@ -19,24 +19,32 @@ type Post struct {
 
 type PostUsecase interface {
 	CreatePost(ctx context.Context, post *Post) (*Post, error)
-	GetByID(ctx context.Context, userID, id int32) (*Post, error)
-	GetAllUserPosts(ctx context.Context, userID int32) ([]*Post, error)
+	GetByID(ctx context.Context, userID, postID int) (*Post, error)
+	GetAllUserPosts(ctx context.Context, userID int) ([]Post, error)
+	GetLikedPosts(ctx context.Context, userID int) ([]Post, error)
 	UpdatePost(ctx context.Context, post *Post) error
-	DeletePost(ctx context.Context, id int32, userID int32) error
-	GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID *int32, userID int32) ([]*Post, bool, error)
-	GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime *time.Time, cursorID *int32, userID int32) ([]*Post, bool, error)
-	AccountDeletionHandle(ctx context.Context, userId int32) error
+	DeletePost(ctx context.Context, postID, userID int) error
+	GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID, userID int) ([]Post, bool, error)
+	GetFollowFeed(ctx context.Context, userIDs []int, cursorTime *time.Time, cursorID, userID int) ([]Post, bool, error)
+	HandleAccountDeletion(ctx context.Context, userID int) error
 }
 
 type PostRepository interface {
+	// CRUD operations
 	Create(ctx context.Context, post *Post) (*Post, error)
-	GetByID(ctx context.Context, id int32) (*Post, error)
+	GetByID(ctx context.Context, postID int) (*Post, error)
+	GetAllUserPosts(ctx context.Context, userID int) ([]Post, error)
+	GetLikedPosts(ctx context.Context, userID int) ([]Post, error)
 	Update(ctx context.Context, post *Post) error
-	Delete(ctx context.Context, id int32) error
-	GetAllUserPosts(ctx context.Context, userID int32) ([]*Post, error)
+	Delete(ctx context.Context, postID int) error
+	DeleteAllPosts(ctx context.Context, userID int) error
 
-	// Feed
-	GetGlobalFeed(ctx context.Context, cursor time.Time, cursorID int32) ([]*Post, bool, error)
-	GetFollowFeed(ctx context.Context, userIDs []int32, cursorTime time.Time, cursorID int32) ([]*Post, bool, error)
-	DeleteAllPosts(ctx context.Context, userID int32) error
+	// Soft delete operations
+	SoftDeletePost(ctx context.Context, postID int) error
+	SoftDeletePosts(ctx context.Context, userID int) error
+	RestorePosts(ctx context.Context, userID int) error
+
+	// Feed operations
+	GetGlobalFeed(ctx context.Context, cursorTime time.Time, cursorID int) ([]Post, bool, error)
+	GetFollowFeed(ctx context.Context, userIDs []int, cursorTime time.Time, cursorID int) ([]Post, bool, error)
 }

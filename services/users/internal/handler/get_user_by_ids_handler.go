@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 	pb "voidspace/users/proto/users/v1"
-	errorutils "voidspace/users/utils/error"
 
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -23,7 +23,7 @@ func (u *UserHandler) GetUsers(
 
 	users, err := u.UserUsecase.GetUserByIDs(ctx, convertedIDs)
 	if err != nil {
-		return nil, errorutils.HandleError(err, u.Logger, "GetUsersByIds")
+		return nil, helper.HandleError(err, u.Logger, "GetUsersByIds")
 	}
 
 	usersRes := make([]*pb.UserProfile, 0, len(users))

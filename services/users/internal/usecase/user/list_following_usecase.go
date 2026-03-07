@@ -2,8 +2,9 @@ package user
 
 import (
 	"context"
-	"voidspace/users/internal/domain"
 	"voidspace/users/internal/domain/views"
+
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (u *UserUsecase) ListFollowing(
@@ -15,7 +16,7 @@ func (u *UserUsecase) ListFollowing(
 
 	users, err := u.userRepository.ListFollowing(ctx, userID)
 	if err != nil {
-		return nil, domain.ErrInternalServer
+		return nil, constants.ErrInternalServer
 	}
 
 	return users, nil

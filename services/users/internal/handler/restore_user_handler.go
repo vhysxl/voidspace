@@ -3,7 +3,8 @@ package handler
 import (
 	"context"
 	pb "voidspace/users/proto/users/v1"
-	errorutils "voidspace/users/utils/error"
+
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 )
 
 func (u *UserHandler) RestoreUser(
@@ -15,7 +16,7 @@ func (u *UserHandler) RestoreUser(
 
 	err := u.UserUsecase.RestoreUser(ctx, int(req.GetUserId()))
 	if err != nil {
-		return nil, errorutils.HandleError(err, u.Logger, "Restore User")
+		return nil, helper.HandleError(err, u.Logger, "Restore User")
 	}
 
 	return &pb.RestoreUserResponse{}, nil

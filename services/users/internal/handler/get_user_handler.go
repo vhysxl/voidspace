@@ -3,8 +3,9 @@ package handler
 import (
 	"context"
 	pb "voidspace/users/proto/users/v1"
-	errorutils "voidspace/users/utils/error"
-	"voidspace/users/utils/interceptor"
+
+	"github.com/vhysxl/voidspace/shared/utils/helper"
+	"github.com/vhysxl/voidspace/shared/utils/interceptor"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -16,14 +17,14 @@ func (u *UserHandler) GetUser(
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()
 
-	userID, err := errorutils.GetOptionalUserIDFromContext(ctx, interceptor.CtxKeyUserID)
+	userID, err := helper.GetOptionalUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, errorutils.HandleError(err, u.Logger, "Get User")
+		return nil, helper.HandleError(err, u.Logger, "Get User")
 	}
 
 	user, err := u.UserUsecase.GetUser(ctx, req.GetUsername(), userID)
 	if err != nil {
-		return nil, errorutils.HandleError(err, u.Logger, "Get User")
+		return nil, helper.HandleError(err, u.Logger, "Get User")
 	}
 
 	return &pb.GetUserResponse{

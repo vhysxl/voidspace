@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"voidspace/users/internal/domain"
+
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (p *ProfileUsecase) UpdateProfile(
@@ -16,11 +18,11 @@ func (p *ProfileUsecase) UpdateProfile(
 
 	err := p.profileRepository.Update(ctx, userID, updates)
 	if err != nil {
-		if errors.Is(err, domain.ErrUserNotFound) {
-			return domain.ErrUserNotFound
+		if errors.Is(err, constants.ErrUserNotFound) {
+			return err
 		}
 
-		return domain.ErrInternalServer
+		return constants.ErrInternalServer
 	}
 
 	return nil

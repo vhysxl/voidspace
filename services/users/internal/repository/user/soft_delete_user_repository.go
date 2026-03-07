@@ -2,7 +2,8 @@ package user
 
 import (
 	"context"
-	"voidspace/users/internal/domain"
+
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (u *UserRepository) SoftDelete(
@@ -22,7 +23,7 @@ func (u *UserRepository) SoftDelete(
 
 	affected := cmdTag.RowsAffected()
 	if affected == 0 {
-		return domain.ErrUserNotFound
+		return constants.ErrUserNotFound
 	}
 
 	return nil

@@ -4,8 +4,8 @@ import (
 	"voidspace/users/bootstrap"
 	handler "voidspace/users/internal/handler"
 	user_pb "voidspace/users/proto/users/v1"
-	"voidspace/users/utils/interceptor"
 
+	"github.com/vhysxl/voidspace/shared/utils/interceptor"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

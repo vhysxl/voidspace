@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"voidspace/users/internal/domain"
 	"voidspace/users/internal/domain/views"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (u *UserRepository) GetByUsername(
@@ -46,7 +46,7 @@ func (u *UserRepository) GetByUsername(
 	err := pgxscan.Get(ctx, u.db, &user, query, username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, domain.ErrUserNotFound
+			return nil, constants.ErrUserNotFound
 		}
 		return nil, err
 	}

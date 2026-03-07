@@ -12,7 +12,6 @@ import (
 	"voidspace/posts/internal/usecase"
 	"voidspace/posts/logger"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
@@ -20,7 +19,6 @@ import (
 type Application struct {
 	Config                 *config.Config
 	ContextTimeout         time.Duration
-	Validator              *validator.Validate
 	Logger                 *zap.Logger
 	DB                     *sql.DB
 	InstanceConnectionName string
@@ -54,7 +52,6 @@ func App() (*Application, error) {
 	}
 
 	// Initialize validator
-	validator := validator.New()
 
 	likeRepo := repository.NewLikeRepository(db)
 	postRepo := repository.NewPostRepository(db)
@@ -67,7 +64,6 @@ func App() (*Application, error) {
 	return &Application{
 		Config:         cfg,
 		ContextTimeout: time.Duration(cfg.ContextTimeout) * time.Second,
-		Validator:      validator,
 		Logger:         logger,
 		DB:             db,
 		LikeUsecase:    likeUsecase,

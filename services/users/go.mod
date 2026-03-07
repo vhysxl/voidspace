@@ -1,6 +1,6 @@
 module voidspace/users
 
-go 1.24.4
+go 1.24.5
 
 require (
 	github.com/georgysavva/scany/v2 v2.1.4
@@ -9,6 +9,7 @@ require (
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.11.1
+	github.com/vhysxl/voidspace/shared v0.0.0-00010101000000-000000000000
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.41.0
 	golang.org/x/sync v0.17.0
@@ -34,3 +35,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250811230008-5f3141c8851a // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/vhysxl/voidspace/shared => ../../shared

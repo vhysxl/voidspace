@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (u *UserRepository) Create(
@@ -52,7 +53,7 @@ func (u *UserRepository) Create(
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == pgerrcode.UniqueViolation {
-				return domain.ErrUserExists
+				return constants.ErrUserExists
 			}
 		}
 		return err

@@ -6,6 +6,7 @@ import (
 	"voidspace/users/internal/domain"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (u *UserRepository) GetByEmail(
@@ -20,14 +21,13 @@ func (u *UserRepository) GetByEmail(
 		`SELECT id, username, email, password_hash, created_at, updated_at
 	 FROM users
 	 WHERE email = $1
-	 AND 
-	 WHERE deleted_at IS NULL
+	 AND deleted_at IS NULL
 	`
 
 	err := pgxscan.Get(ctx, u.db, &user, query, email)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, domain.ErrUserNotFound
+			return nil, constants.ErrUserNotFound
 		}
 		return nil, err
 	}

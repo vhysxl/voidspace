@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"voidspace/users/internal/domain"
+
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (f *FollowUsecase) Follow(
@@ -15,7 +17,7 @@ func (f *FollowUsecase) Follow(
 	defer cancel()
 
 	if authUserID == targetUserID {
-		return domain.ErrSelfFollow
+		return constants.ErrCannotFollowSelf
 	}
 
 	updates := domain.Follow{
@@ -26,12 +28,12 @@ func (f *FollowUsecase) Follow(
 	err := f.followRepository.Follow(ctx, &updates)
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrUserNotFound):
-			return domain.ErrUserNotFound
-		case errors.Is(err, domain.ErrAlreadyFollow):
-			return domain.ErrAlreadyFollow
+		case errors.Is(err, constants.ErrUserNotFound):
+			return constants.ErrUserNotFound
+		case errors.Is(err, constants.ErrAlreadyFollowing):
+			return constants.ErrAlreadyFollowing
 		default:
-			return domain.ErrInternalServer
+			return constants.ErrInternalServer
 		}
 	}
 

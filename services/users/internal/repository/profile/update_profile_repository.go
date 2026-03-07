@@ -3,7 +3,9 @@ package profile
 import (
 	"context"
 	"voidspace/users/internal/domain"
-	"voidspace/users/utils/common"
+
+	"github.com/vhysxl/voidspace/shared/utils/constants"
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 )
 
 func (p *ProfileRepository) Update(
@@ -26,11 +28,11 @@ func (p *ProfileRepository) Update(
     `
 
 	args := []any{
-		common.NullIfEmpty(profile.DisplayName),
-		common.NullIfEmpty(profile.Bio),
-		common.NullIfEmpty(profile.AvatarUrl),
-		common.NullIfEmpty(profile.BannerUrl),
-		common.NullIfEmpty(profile.Location),
+		helper.NullIfEmpty(profile.DisplayName),
+		helper.NullIfEmpty(profile.Bio),
+		helper.NullIfEmpty(profile.AvatarUrl),
+		helper.NullIfEmpty(profile.BannerUrl),
+		helper.NullIfEmpty(profile.Location),
 		userID,
 	}
 
@@ -40,7 +42,7 @@ func (p *ProfileRepository) Update(
 	}
 
 	if commandTag.RowsAffected() == 0 {
-		return domain.ErrUserNotFound
+		return constants.ErrUserNotFound
 	}
 
 	return nil

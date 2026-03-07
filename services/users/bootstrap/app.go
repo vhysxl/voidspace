@@ -6,7 +6,6 @@ import (
 	"log"
 	"time"
 	"voidspace/users/config"
-	"voidspace/users/database"
 	"voidspace/users/internal/domain"
 	follow_repository "voidspace/users/internal/repository/follow"
 	profile_repository "voidspace/users/internal/repository/profile"
@@ -14,10 +13,11 @@ import (
 	follow_usecase "voidspace/users/internal/usecase/follow"
 	profile_usecase "voidspace/users/internal/usecase/profile"
 	user_usecase "voidspace/users/internal/usecase/user"
-	"voidspace/users/logger"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	util_db "github.com/vhysxl/voidspace/shared/utils/database"
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 	"go.uber.org/zap"
 )
 
@@ -42,7 +42,7 @@ func App() (*Application, error) {
 		log.Println(".env not found, using fallbacks", err)
 	}
 
-	logger, err := logger.InitLogger()
+	logger, err := helper.InitLogger()
 	if err != nil {
 		log.Println("logger failed to load", err)
 	}
@@ -63,7 +63,7 @@ func App() (*Application, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ContextTimeout)*time.Second)
 	defer cancel()
 
-	db, err := database.PostgresDatabase(ctx, cfg.DBConnectionString)
+	db, err := util_db.PostgresDatabase(ctx, cfg.DBConnectionString)
 	if err != nil {
 		logger.Error("Failed to connect to database", zap.Error(err))
 		return nil, err

@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"voidspace/users/internal/domain"
 	"voidspace/users/internal/domain/views"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (u *UserRepository) GetProfile(
@@ -37,7 +37,7 @@ func (u *UserRepository) GetProfile(
 	err := pgxscan.Get(ctx, u.db, &userProfile, query, userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, domain.ErrUserNotFound
+			return nil, constants.ErrUserNotFound
 		}
 		return nil, err
 	}

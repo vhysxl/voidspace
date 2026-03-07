@@ -7,6 +7,7 @@ import (
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (f *FollowRepository) Follow(
@@ -26,14 +27,14 @@ func (f *FollowRepository) Follow(
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == pgerrcode.UniqueViolation {
-				return domain.ErrAlreadyFollow
+				return constants.ErrAlreadyFollowing
 			}
 		}
 		return err
 	}
 
 	if cmdTag.RowsAffected() == 0 {
-		return domain.ErrUserNotFound
+		return constants.ErrUserNotFound
 	}
 
 	return nil

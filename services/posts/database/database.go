@@ -2,33 +2,35 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
 )
 
-func PostgresDatabase(ctx context.Context, connstring string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", connstring)
+func PostgresDatabase(ctx context.Context, connstring string) (*pgxpool.Pool, error) {
+	db, err := pgxpool.ParseConfig(connstring)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	db.SetMaxOpenConns(25) // max pool
-	db.SetMaxIdleConns(10)
-	db.SetConnMaxLifetime(30 * time.Minute) // conn lifetime
-	db.SetConnMaxIdleTime(15 * time.Minute) // idle lifetime
+	db.MaxConns = 25
+	db.MinConns = 5
+	db.MaxConnIdleTime = 30 * time.Minute
+	db.MaxConnIdleTime = 15 * time.Minute
 
-	if err := db.PingContext(ctx); err != nil {
-		if cerr := db.Close(); cerr != nil {
-			log.Printf("failed to close db: %v", cerr)
-		}
+	pool, err := pgxpool.NewWithConfig(ctx, db)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create pool: %w", err)
+	}
 
+	if err := pool.Ping(ctx); err != nil {
+		pool.Close()
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
 	log.Println("PostgreSQL database connected")
-	return db, nil // return db
+	return pool, nil // return db
 }

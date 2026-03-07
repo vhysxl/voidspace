@@ -3,7 +3,8 @@ package handler
 import (
 	"context"
 	pb "voidspace/users/proto/users/v1"
-	errorutils "voidspace/users/utils/error"
+
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 )
 
 func (u *UserHandler) ListFollowing(
@@ -15,7 +16,7 @@ func (u *UserHandler) ListFollowing(
 
 	users, err := u.UserUsecase.ListFollowing(ctx, int(req.GetUserId()))
 	if err != nil {
-		return nil, errorutils.HandleError(err, u.Logger, "Get Follower")
+		return nil, helper.HandleError(err, u.Logger, "Get Follower")
 	}
 
 	userBanners := make([]*pb.UserBanner, 0, len(users))

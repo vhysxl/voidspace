@@ -3,7 +3,8 @@ package user
 import (
 	"context"
 	"errors"
-	"voidspace/users/internal/domain"
+
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (u *UserUsecase) RestoreUser(
@@ -15,11 +16,11 @@ func (u *UserUsecase) RestoreUser(
 
 	err := u.userRepository.RestoreUser(ctx, userID)
 	if err != nil {
-		if errors.Is(err, domain.ErrUserNotFound) {
+		if errors.Is(err, constants.ErrUserNotFound) {
 			return err
 		}
 
-		return domain.ErrInternalServer
+		return constants.ErrInternalServer
 	}
 
 	return nil

@@ -11,48 +11,60 @@ service PostService {
   rpc GetPost(GetPostRequest) returns (PostResponse);
   rpc UpdatePost(UpdatePostRequest) returns (google.protobuf.Empty);
   rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty);
-  rpc GetAllPosts(GetAllPostsRequest) returns (GetFeedResponse);
+  rpc GetAllUserPosts(GetAllUserPostsRequest) returns (GetFeedResponse);
+  rpc GetLikedPosts(GetLikedPostsRequest) returns (GetFeedResponse);
   rpc GetGlobalFeed(GetGlobalFeedRequest) returns (GetFeedResponse);
-  rpc GetFeedByUserIDs(GetFeedByUserIDsRequest) returns (GetFeedResponse);
-  rpc AccountDeletionHandle(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc GetFollowFeed(GetFollowFeedRequest) returns (GetFeedResponse);
+  rpc HandleAccountDeletion(HandleAccountDeletionRequest) returns (google.protobuf.Empty);
+  rpc RestoreAccount(RestoreAccountRequest) returns (google.protobuf.Empty);
 }
 
+
+// Request messages
 message CreatePostRequest {
   string content = 1;
-  repeated string post_images = 3;
+  repeated string post_images = 2;
 }
 
 message GetPostRequest {
-  int32 id = 1;
+  int32 post_id = 1;
 }
 
 message UpdatePostRequest {
-  int32 id = 1;                 
-  string content = 3;     
-  repeated string post_images = 4; 
-}
-
-message UpdateCommentReq {
-  int32 id = 1;  
+  int32 post_id = 1;
+  string content = 2;
+  repeated string post_images = 3;
 }
 
 message DeletePostRequest {
-  int32 id = 1;
+  int32 post_id = 1;
 }
 
-message GetAllPostsRequest {
+message GetAllUserPostsRequest {
+  int32 user_id = 1;
+}
+
+message GetLikedPostsRequest {
   int32 user_id = 1;
 }
 
 message GetGlobalFeedRequest {
-  google.protobuf.Timestamp cursor = 1;  
-  int32 cursorID = 2;
+  google.protobuf.Timestamp cursor_time = 1;
+  int32 cursor_id = 2;
 }
 
-message GetFeedByUserIDsRequest {
+message GetFollowFeedRequest {
   repeated int32 user_ids = 1;
-  google.protobuf.Timestamp cursor = 2;  
-  int32 cursorID = 3;    
+  google.protobuf.Timestamp cursor_time = 2;
+  int32 cursor_id = 3;
+}
+
+message HandleAccountDeletionRequest {
+  int32 user_id = 1;
+}
+
+message RestoreAccountRequest {
+  int32 user_id = 1;
 }
 
 // Response messages
@@ -62,13 +74,9 @@ message PostResponse {
   int32 user_id = 3;
   repeated string post_images = 4;
   int32 likes_count = 5;
-  google.protobuf.Timestamp created_at = 6;  
-  google.protobuf.Timestamp updated_at = 7;  
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
   bool is_liked = 8;
-}
-
-message CommentResponse {
-  bool success = 1;
 }
 
 message GetFeedResponse {
