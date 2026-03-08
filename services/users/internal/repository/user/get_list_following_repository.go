@@ -5,6 +5,7 @@ import (
 	"voidspace/users/internal/domain/views"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (u *UserRepository) ListFollowing(
@@ -18,7 +19,7 @@ func (u *UserRepository) ListFollowing(
 		COALESCE(up.display_name, '') AS display_name, 
 		COALESCE(up.avatar_url, '') AS avatar_url
 		FROM user_follows uf
-		JOIN users u ON u.id = uf.user_id
+		JOIN users u ON u.id = uf.target_user_id
         JOIN user_profile up ON up.user_id = u.id
 		WHERE uf.user_id = $1
 		AND u.deleted_at IS NULL
@@ -27,5 +28,10 @@ func (u *UserRepository) ListFollowing(
 	if err != nil {
 		return nil, err
 	}
+
+	if len(users) == 0 {
+		return nil, constants.ErrUserNotFound
+	}
+
 	return users, nil
 }

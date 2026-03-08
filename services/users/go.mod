@@ -10,7 +10,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.11.1
 	github.com/vhysxl/voidspace/shared v0.0.0-00010101000000-000000000000
-	go.uber.org/zap v1.27.0
+	go.uber.org/zap v1.27.1
 	golang.org/x/crypto v0.41.0
 	golang.org/x/sync v0.17.0
 	google.golang.org/grpc v1.74.2
