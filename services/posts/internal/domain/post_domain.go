@@ -6,15 +6,22 @@ import (
 )
 
 type Post struct {
-	postID        int
+	ID            int
 	Content       string
 	UserID        int
-	PostImages    []string
+	PostImages    []PostImage
 	LikesCount    int
 	CommentsCount int
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	IsLiked       bool
+}
+
+type PostImage struct {
+	Url    string
+	Order  int
+	Width  int
+	Height int
 }
 
 type PostUsecase interface {
@@ -47,4 +54,7 @@ type PostRepository interface {
 	// Feed operations
 	GetGlobalFeed(ctx context.Context, cursorTime time.Time, cursorID int) ([]Post, bool, error)
 	GetFollowFeed(ctx context.Context, userIDs []int, cursorTime time.Time, cursorID int) ([]Post, bool, error)
+
+	// Account Deletion Handle
+	HandleDeleteAccount(ctx context.Context, userID int) error
 }

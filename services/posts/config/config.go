@@ -1,9 +1,9 @@
 package config
 
 import (
-	"os"
-	"strconv"
 	"sync"
+
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 )
 
 // Config struct
@@ -28,24 +28,8 @@ func GetConfig() *Config {
 
 func initConfig() Config {
 	return Config{
-		Port:           getEnv("PORT", "8080"),
-		DBConnString:   getEnv("DB_CONN", "postgres"),
-		ContextTimeout: getIntEnv("CONTEXT_TIMEOUT", 10),
+		Port:           helper.GetEnv("PORT", "8080"),
+		DBConnString:   helper.GetEnv("DB_CONN", "postgres"),
+		ContextTimeout: helper.GetEnvInt("CONTEXT_TIMEOUT", 10),
 	}
-}
-
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
-}
-
-func getIntEnv(key string, fallback int) int {
-	if value, ok := os.LookupEnv(key); ok {
-		if intValue, err := strconv.Atoi(value); err == nil {
-			return intValue
-		}
-	}
-	return fallback
 }

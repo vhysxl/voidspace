@@ -2,17 +2,18 @@ package bootstrap
 
 import (
 	"context"
-	"database/sql"
 	"log"
 	"time"
 	"voidspace/posts/config"
-	"voidspace/posts/database"
 	"voidspace/posts/internal/domain"
 	"voidspace/posts/internal/repository"
+	"voidspace/posts/internal/repository/post"
 	"voidspace/posts/internal/usecase"
-	"voidspace/posts/logger"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	util_db "github.com/vhysxl/voidspace/shared/utils/database"
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 	"go.uber.org/zap"
 )
 
@@ -20,7 +21,7 @@ type Application struct {
 	Config                 *config.Config
 	ContextTimeout         time.Duration
 	Logger                 *zap.Logger
-	DB                     *sql.DB
+	DB                     *pgxpool.Pool
 	InstanceConnectionName string
 	// usecase
 	LikeUsecase domain.LikeUsecase
@@ -32,20 +33,26 @@ func App() (*Application, error) {
 	if err != nil {
 		log.Println(".env not found, using fallbacks", err)
 	}
-	cfg := config.GetConfig()
 
 	// Initialize logger
-	logger, err := logger.InitLogger()
+	logger, err := helper.InitLogger()
 	if err != nil {
-		log.Println("Logger failed to load", err)
-		return nil, err
+		log.Println("logger failed to load", err)
 	}
+
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			log.Printf("failed to flush log: %v", err)
+		}
+	}()
+
+	cfg := config.GetConfig()
 
 	// Initialize database
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	db, err := database.PostgresDatabase(ctx, cfg.DBConnString)
+	db, err := util_db.PostgresDatabase(ctx, cfg.DBConnString)
 	if err != nil {
 		logger.Error("Failed to connect to database", zap.Error(err))
 		return nil, err
@@ -54,7 +61,7 @@ func App() (*Application, error) {
 	// Initialize validator
 
 	likeRepo := repository.NewLikeRepository(db)
-	postRepo := repository.NewPostRepository(db)
+	postRepo := post.NewPostRepository(db)
 
 	likeUsecase := usecase.NewLikeUsecase(likeRepo, time.Duration(cfg.ContextTimeout)*time.Second)
 	postUsecase := usecase.NewPostUsecase(postRepo, likeRepo, time.Duration(cfg.ContextTimeout)*time.Second)

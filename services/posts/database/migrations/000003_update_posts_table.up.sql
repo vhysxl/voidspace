@@ -1,3 +1,3 @@
-ALTER TABLE posts ADD COLUMN 
-comments_count 
-INT DEFAULT 0;
+ALTER TABLE posts ADD COLUMN deleted_at TIMESTAMP DEFAULT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_posts_deleted_at ON posts(deleted_at);
