@@ -15,6 +15,7 @@ type Post struct {
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	IsLiked       bool
+	IsOwner       bool
 }
 
 type PostImage struct {
@@ -25,36 +26,41 @@ type PostImage struct {
 }
 
 type PostUsecase interface {
+	// Single post operations
 	CreatePost(ctx context.Context, post *Post) (*Post, error)
-	GetByID(ctx context.Context, userID, postID int) (*Post, error)
-	GetAllUserPosts(ctx context.Context, userID int) ([]Post, error)
-	GetLikedPosts(ctx context.Context, userID int) ([]Post, error)
-	UpdatePost(ctx context.Context, post *Post) error
-	DeletePost(ctx context.Context, postID, userID int) error
-	GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID, userID int) ([]Post, bool, error)
-	GetFollowFeed(ctx context.Context, userIDs []int, cursorTime *time.Time, cursorID, userID int) ([]Post, bool, error)
+	GetPost(ctx context.Context, postID int, loggedInUserID *int) (*Post, error)
+	UpdatePost(ctx context.Context, post *Post, loggedInUserID int) error
+	DeletePost(ctx context.Context, postID int, loggedInUserID int) error
+
+	// User posts operations
+	GetUserPosts(ctx context.Context, userID int, loggedInUserID *int) ([]Post, error)
+	GetLikedPosts(ctx context.Context, userID int, loggedInUserID *int) ([]Post, error)
+
+	// Feed operations
+	GetGlobalFeed(ctx context.Context, cursorTime *time.Time, cursorID int, loggedInUserID *int) ([]Post, bool, error)
+	GetFollowingFeed(ctx context.Context, cursorTime *time.Time, cursorID int, loggedInUserID int, userIDs []int) ([]Post, bool, error)
+
+	// Account lifecycle
 	HandleAccountDeletion(ctx context.Context, userID int) error
+	HandleAccountRestoration(ctx context.Context, userID int) error
 }
 
 type PostRepository interface {
-	// CRUD operations
+	// Single post CRUD
 	Create(ctx context.Context, post *Post) (*Post, error)
 	GetByID(ctx context.Context, postID int) (*Post, error)
-	GetAllUserPosts(ctx context.Context, userID int) ([]Post, error)
-	GetLikedPosts(ctx context.Context, userID int) ([]Post, error)
 	Update(ctx context.Context, post *Post) error
-	Delete(ctx context.Context, postID int) error
-	DeleteAllPosts(ctx context.Context, userID int) error
+	SoftDelete(ctx context.Context, postID int) error
 
-	// Soft delete operations
-	SoftDeletePost(ctx context.Context, postID int) error
-	SoftDeletePosts(ctx context.Context, userID int) error
-	RestorePosts(ctx context.Context, userID int) error
+	// Bulk query operations
+	GetByUserID(ctx context.Context, userID int) ([]Post, error)
+	GetLikedByUserID(ctx context.Context, userID int) ([]Post, error)
 
 	// Feed operations
 	GetGlobalFeed(ctx context.Context, cursorTime time.Time, cursorID int) ([]Post, bool, error)
-	GetFollowFeed(ctx context.Context, userIDs []int, cursorTime time.Time, cursorID int) ([]Post, bool, error)
+	GetFollowingFeed(ctx context.Context, userIDs []int, cursorTime time.Time, cursorID int) ([]Post, bool, error)
 
-	// Account Deletion Handle
-	HandleDeleteAccount(ctx context.Context, userID int) error
+	// Account lifecycle (atomic operations with transaction)
+	HandleAccountDeletion(ctx context.Context, userID int) error
+	HandleAccountRestoration(ctx context.Context, userID int) error
 }

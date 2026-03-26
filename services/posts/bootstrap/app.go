@@ -6,9 +6,10 @@ import (
 	"time"
 	"voidspace/posts/config"
 	"voidspace/posts/internal/domain"
-	"voidspace/posts/internal/repository"
-	"voidspace/posts/internal/repository/post"
-	"voidspace/posts/internal/usecase"
+	like_repo "voidspace/posts/internal/repository/like"
+	post_repo "voidspace/posts/internal/repository/post"
+	like_usecase "voidspace/posts/internal/usecase/like"
+	post_usecase "voidspace/posts/internal/usecase/post"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
@@ -58,13 +59,11 @@ func App() (*Application, error) {
 		return nil, err
 	}
 
-	// Initialize validator
+	likeRepo := like_repo.NewLikeRepository(db)
+	postRepo := post_repo.NewPostRepository(db)
 
-	likeRepo := repository.NewLikeRepository(db)
-	postRepo := post.NewPostRepository(db)
-
-	likeUsecase := usecase.NewLikeUsecase(likeRepo, time.Duration(cfg.ContextTimeout)*time.Second)
-	postUsecase := usecase.NewPostUsecase(postRepo, likeRepo, time.Duration(cfg.ContextTimeout)*time.Second)
+	likeUsecase := like_usecase.NewLikeUsecase(likeRepo, time.Duration(cfg.ContextTimeout)*time.Second)
+	postUsecase := post_usecase.NewPostUsecase(postRepo, likeRepo, time.Duration(cfg.ContextTimeout)*time.Second)
 
 	logger.Info("Application bootstrapped successfully")
 

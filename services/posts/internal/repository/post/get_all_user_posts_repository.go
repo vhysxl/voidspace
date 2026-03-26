@@ -8,7 +8,7 @@ import (
 )
 
 // GetAllUserPosts implements [domain.PostRepository].
-func (p *PostRepository) GetAllUserPosts(ctx context.Context, userID int) ([]domain.Post, error) {
+func (p *PostRepository) GetByUserID(ctx context.Context, userID int) ([]domain.Post, error) {
 	var posts []domain.Post
 
 	query := `

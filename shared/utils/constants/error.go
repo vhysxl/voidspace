@@ -35,3 +35,10 @@ var (
 	ErrCannotFollowSelf = errors.New("Cannot follow yourself")
 	ErrNotFollowing     = errors.New("Not following this user")
 )
+
+// Post-like related errors
+var (
+	ErrAlreadyLiked       = errors.New("already liked this post")
+	ErrUserOrPostNotFound = errors.New("user or post not found")
+	ErrPostNotFound       = errors.New("post not found")
+)

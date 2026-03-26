@@ -8,7 +8,7 @@ import (
 )
 
 // GetLikedPosts implements [domain.PostRepository].
-func (p *PostRepository) GetLikedPosts(ctx context.Context, userID int) ([]domain.Post, error) {
+func (p *PostRepository) GetLikedByUserID(ctx context.Context, userID int) ([]domain.Post, error) {
 	var posts []domain.Post
 
 	query := `

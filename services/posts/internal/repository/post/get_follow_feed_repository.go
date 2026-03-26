@@ -9,7 +9,7 @@ import (
 )
 
 // GetFollowFeed implements [domain.PostRepository].
-func (p *PostRepository) GetFollowFeed(ctx context.Context, userIDs []int, cursorTime time.Time, cursorID int) ([]domain.Post, bool, error) {
+func (p *PostRepository) GetFollowingFeed(ctx context.Context, userIDs []int, cursorTime time.Time, cursorID int) ([]domain.Post, bool, error) {
 	var posts []domain.Post
 
 	query := `

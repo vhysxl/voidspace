@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"voidspace/posts/internal/domain"
+
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 // Update implements [domain.PostRepository].
@@ -30,7 +32,7 @@ func (p *PostRepository) Update(ctx context.Context, post *domain.Post) error {
 	}
 
 	if cmdTag.RowsAffected() == 0 {
-		return domain.ErrPostNotFound
+		return constants.ErrPostNotFound
 	}
 
 	return nil

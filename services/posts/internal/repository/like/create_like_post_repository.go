@@ -13,27 +13,21 @@ import (
 // LikePost implements [domain.LikeRepository].
 func (l *LikeRepository) LikePost(ctx context.Context, like *domain.Like) error {
 	query := `
-        INSERT INTO post_likes (user_id, post_id, created_at)
-        VALUES ($1, $2, $3)
-    `
-
-	cmdTag, err := l.db.Exec(ctx, query, like.UserID, like.PostID, like.CreatedAt)
+		INSERT INTO post_likes (user_id, post_id, created_at, deleted_at)
+		VALUES ($1, $2, NOW(), NULL)
+		ON CONFLICT (user_id, post_id)
+		DO UPDATE SET
+			deleted_at = NULL,
+			created_at = NOW()
+		WHERE post_likes.deleted_at IS NOT NULL
+	`
+	_, err := l.db.Exec(ctx, query, like.UserID, like.PostID)
 	if err != nil {
 		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) {
-			switch pgErr.Code {
-			case pgerrcode.UniqueViolation:
-				return constants.ErrAlreadyLiked
-			case pgerrcode.ForeignKeyViolation:
-				return constants.ErrUserOrPostNotFound
-			}
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.ForeignKeyViolation {
+			return constants.ErrUserOrPostNotFound
 		}
 		return err
 	}
-
-	if cmdTag.RowsAffected() == 0 {
-		return constants.ErrUserOrPostNotFound
-	}
-
 	return nil
 }

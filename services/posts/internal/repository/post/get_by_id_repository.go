@@ -2,12 +2,12 @@ package post
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"voidspace/posts/internal/domain"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5"
+	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 // GetByID implements [domain.PostRepository].
@@ -15,12 +15,12 @@ func (p *PostRepository) GetByID(ctx context.Context, postID int) (*domain.Post,
 	var post domain.Post
 
 	query := `
-		SELECT 
-			p.id, 
-			p.content, 
-			p.user_id, 
-			COALESCE(p.post_images, '[]'::jsonb) AS post_images, 
-			p.created_at, 
+		SELECT
+			p.id,
+			p.content,
+			p.user_id,
+			COALESCE(p.post_images, '[]'::jsonb) AS post_images,
+		p.created_at,
 			p.updated_at,
 			(SELECT COUNT(*) FROM post_likes WHERE post_id = p.id) AS likes_count
         FROM posts p
@@ -29,8 +29,8 @@ func (p *PostRepository) GetByID(ctx context.Context, postID int) (*domain.Post,
 
 	err := pgxscan.Get(ctx, p.db, &post, query, postID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) || errors.Is(err, sql.ErrNoRows) {
-			return nil, domain.ErrPostNotFound
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, constants.ErrPostNotFound
 		}
 		return nil, err
 	}

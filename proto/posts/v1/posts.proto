@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package posts.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./posts/v1;postsv1";
+
+// PostService provides operations for post creation, retrieval, and interactions like likes.
+service PostService {
+  // ---------------------- POST ----------------------
+  rpc CreatePost(CreatePostRequest) returns (Post);
+  rpc GetPost(GetPostRequest) returns (Post);
+  rpc UpdatePost(UpdatePostRequest) returns (google.protobuf.Empty);
+  rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty);
+
+  // ---------------------- USER POSTS ----------------------
+  rpc GetUserPosts(GetUserPostsRequest) returns (GetPostsResponse);
+  rpc GetLikedPosts(GetUserPostsRequest) returns (GetPostsResponse);
+
+  // ---------------------- FEED ----------------------
+  rpc GetGlobalFeed(GetGlobalFeedRequest) returns (GetFeedResponse);
+  rpc GetFollowingFeed(GetFollowingFeedRequest) returns (GetFeedResponse);
+
+  // ---------------------- LIKE ----------------------
+  rpc LikePost(LikePostRequest) returns (google.protobuf.Empty);
+  rpc UnlikePost(UnlikePostRequest) returns (google.protobuf.Empty);
+
+  // ---------------------- ACCOUNT LIFECYCLE ----------------------
+  rpc HandleAccountDeletion(HandleAccountDeletionRequest) returns (google.protobuf.Empty);
+  rpc HandleAccountRestoration(HandleAccountRestorationRequest) returns (google.protobuf.Empty);
+}
+
+// ---------------------- REQUEST MESSAGES ----------------------
+
+message CreatePostRequest {
+  string content = 1;
+  repeated PostImage images = 2;
+}
+
+message GetPostRequest {
+  int64 post_id = 1;
+}
+
+message UpdatePostRequest {
+  int64 post_id = 1;
+  string content = 2;
+  repeated PostImage images = 3;
+}
+
+message DeletePostRequest {
+  int64 post_id = 1;
+}
+
+message GetUserPostsRequest {
+  int64 user_id = 1;
+}
+
+message GetGlobalFeedRequest {
+  optional google.protobuf.Timestamp cursor_time = 1;
+  optional int64 cursor_id = 2;
+}
+
+message GetFollowingFeedRequest {
+  repeated int64 user_ids = 1;
+  optional google.protobuf.Timestamp cursor_time = 2;
+  optional int64 cursor_id = 3;
+}
+
+message LikePostRequest {
+  int64 post_id = 1;
+}
+
+message UnlikePostRequest {
+  int64 post_id = 1;
+}
+
+message HandleAccountDeletionRequest {
+  int64 user_id = 1;
+}
+
+message HandleAccountRestorationRequest {
+  int64 user_id = 1;
+}
+
+// ---------------------- RESPONSE MESSAGES ----------------------
+
+message GetPostsResponse {
+  repeated Post posts = 1;
+}
+
+message GetFeedResponse {
+  repeated Post posts = 1;
+  bool has_more = 2;
+}
+
+// ---------------------- DATA MODELS ----------------------
+
+message Post {
+  int64 id = 1;
+  string content = 2;
+  int64 user_id = 3;
+  repeated PostImage images = 4;
+  int64 likes_count = 5;
+  int64 comments_count = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+  bool is_liked = 9;
+  bool is_owner = 10;
+}
+
+message PostImage {
+  string url = 1;
+  int64 order = 2;
+  int64 width = 3;
+  int64 height = 4;
+}
