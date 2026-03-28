@@ -16,12 +16,12 @@ func (p *postUsecase) UpdatePost(
 	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
 	defer cancel()
 
-	post, err := p.postRepository.GetByID(ctx, post.ID)
+	existingPost, err := p.postRepository.GetByID(ctx, post.ID)
 	if err != nil {
 		return err
 	}
 
-	if post.UserID != loggedInUserID {
+	if existingPost.UserID != loggedInUserID {
 		return constants.ErrUnauthorized
 	}
 
