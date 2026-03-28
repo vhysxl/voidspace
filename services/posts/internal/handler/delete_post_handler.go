@@ -15,12 +15,12 @@ func (h *PostHandler) DeletePost(ctx context.Context, req *pb.DeletePostRequest)
 
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Delete Post")
+		return nil, err
 	}
 
 	err = h.PostUsecase.DeletePost(ctx, int(req.GetPostId()), userID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Delete Post")
+		return nil, err
 	}
 
 	return &emptypb.Empty{}, nil

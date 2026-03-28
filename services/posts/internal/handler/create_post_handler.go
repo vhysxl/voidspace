@@ -16,7 +16,7 @@ func (h *PostHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest)
 
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Create Post")
+		return nil, err
 	}
 
 	post := &domain.Post{
@@ -27,7 +27,7 @@ func (h *PostHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest)
 
 	createdPost, err := h.PostUsecase.CreatePost(ctx, post)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Create Post")
+		return nil, err
 	}
 
 	return utils.MapDomainPostToPb(createdPost), nil

@@ -16,7 +16,7 @@ func (h *PostHandler) GetFollowingFeed(ctx context.Context, req *pb.GetFollowing
 
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Get Following Feed")
+		return nil, err
 	}
 
 	var cursorTime *time.Time
@@ -32,7 +32,7 @@ func (h *PostHandler) GetFollowingFeed(ctx context.Context, req *pb.GetFollowing
 
 	posts, hasMore, err := h.PostUsecase.GetFollowingFeed(ctx, cursorTime, int(req.GetCursorId()), userID, userIDs)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Get Following Feed")
+		return nil, err
 	}
 
 	pbPosts := make([]*pb.Post, len(posts))

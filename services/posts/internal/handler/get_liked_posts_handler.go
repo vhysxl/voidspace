@@ -15,7 +15,7 @@ func (h *PostHandler) GetLikedPosts(ctx context.Context, req *pb.GetUserPostsReq
 
 	userID, err := helper.GetOptionalUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Get Liked Posts")
+		return nil, err
 	}
 
 	var loggedInUserID *int
@@ -25,7 +25,7 @@ func (h *PostHandler) GetLikedPosts(ctx context.Context, req *pb.GetUserPostsReq
 
 	posts, err := h.PostUsecase.GetLikedPosts(ctx, int(req.GetUserId()), loggedInUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Get Liked Posts")
+		return nil, err
 	}
 
 	pbPosts := make([]*pb.Post, len(posts))

@@ -16,7 +16,7 @@ func (h *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedRe
 
 	userID, err := helper.GetOptionalUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Get Global Feed")
+		return nil, err
 	}
 
 	var loggedInUserID *int
@@ -32,7 +32,7 @@ func (h *PostHandler) GetGlobalFeed(ctx context.Context, req *pb.GetGlobalFeedRe
 
 	posts, hasMore, err := h.PostUsecase.GetGlobalFeed(ctx, cursorTime, int(req.GetCursorId()), loggedInUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Get Global Feed")
+		return nil, err
 	}
 
 	pbPosts := make([]*pb.Post, len(posts))

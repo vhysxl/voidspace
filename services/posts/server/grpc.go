@@ -17,7 +17,6 @@ func SetupGRPCServer(app *bootstrap.Application) *grpc.Server {
 	postHandler := service.NewPostHandler(
 		app.PostUsecase,
 		app.LikeUsecase,
-		app.Logger,
 		app.ContextTimeout,
 	)
 

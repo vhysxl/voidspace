@@ -16,7 +16,7 @@ func (h *PostHandler) UnlikePost(ctx context.Context, req *pb.UnlikePostRequest)
 
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Unlike Post")
+		return nil, err
 	}
 
 	like := &domain.Like{
@@ -26,7 +26,7 @@ func (h *PostHandler) UnlikePost(ctx context.Context, req *pb.UnlikePostRequest)
 
 	err = h.LikeUsecase.UnlikePost(ctx, like)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Unlike Post")
+		return nil, err
 	}
 
 	return &emptypb.Empty{}, nil

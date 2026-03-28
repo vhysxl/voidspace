@@ -16,7 +16,7 @@ func (h *PostHandler) LikePost(ctx context.Context, req *pb.LikePostRequest) (*e
 
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Like Post")
+		return nil, err
 	}
 
 	like := &domain.Like{
@@ -26,7 +26,7 @@ func (h *PostHandler) LikePost(ctx context.Context, req *pb.LikePostRequest) (*e
 
 	err = h.LikeUsecase.LikePost(ctx, like)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Like Post")
+		return nil, err
 	}
 
 	return &emptypb.Empty{}, nil

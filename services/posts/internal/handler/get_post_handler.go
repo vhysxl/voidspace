@@ -15,7 +15,7 @@ func (h *PostHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.
 
 	userID, err := helper.GetOptionalUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Get Post")
+		return nil, err
 	}
 
 	var loggedInUserID *int
@@ -25,7 +25,7 @@ func (h *PostHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.
 
 	post, err := h.PostUsecase.GetPost(ctx, int(req.GetPostId()), loggedInUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Get Post")
+		return nil, err
 	}
 
 	return utils.MapDomainPostToPb(post), nil

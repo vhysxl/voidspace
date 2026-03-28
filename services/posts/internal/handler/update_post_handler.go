@@ -17,7 +17,7 @@ func (h *PostHandler) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest)
 
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Update Post")
+		return nil, err
 	}
 
 	post := &domain.Post{
@@ -28,7 +28,7 @@ func (h *PostHandler) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest)
 
 	err = h.PostUsecase.UpdatePost(ctx, post, userID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Update Post")
+		return nil, err
 	}
 
 	return &emptypb.Empty{}, nil

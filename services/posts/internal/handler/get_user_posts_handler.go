@@ -15,7 +15,7 @@ func (h *PostHandler) GetUserPosts(ctx context.Context, req *pb.GetUserPostsRequ
 
 	userID, err := helper.GetOptionalUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Get User Posts")
+		return nil, err
 	}
 
 	var loggedInUserID *int
@@ -25,7 +25,7 @@ func (h *PostHandler) GetUserPosts(ctx context.Context, req *pb.GetUserPostsRequ
 
 	posts, err := h.PostUsecase.GetUserPosts(ctx, int(req.GetUserId()), loggedInUserID)
 	if err != nil {
-		return nil, helper.HandleError(err, h.Logger, "Get User Posts")
+		return nil, err
 	}
 
 	pbPosts := make([]*pb.Post, len(posts))
