@@ -3,8 +3,9 @@ package server
 import (
 	"voidspace/comments/bootstrap"
 	handler "voidspace/comments/internal/handler"
-	pb "voidspace/comments/proto/generated/comments"
-	"voidspace/comments/utils/interceptor"
+	pb "voidspace/comments/proto/generated/comments/v1"
+
+	"github.com/vhysxl/voidspace/shared/utils/interceptor"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

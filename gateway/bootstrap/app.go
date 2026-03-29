@@ -7,10 +7,11 @@ import (
 	"voidspaceGateway/config"
 	"voidspaceGateway/internal/service"
 
-	logger "voidspaceGateway/logger"
 	commentpb "voidspaceGateway/proto/generated/comments"
 	postpb "voidspaceGateway/proto/generated/posts"
 	userpb "voidspaceGateway/proto/generated/users"
+
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
@@ -43,7 +44,7 @@ func App() (*Application, error) {
 
 	validator := validator.New()
 
-	logger, err := logger.InitLogger()
+	logger, err := helper.InitLogger()
 	if err != nil {
 		log.Println("Logger failed to load", err)
 		return nil, err

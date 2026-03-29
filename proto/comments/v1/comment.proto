@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package comments.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./comments/v1;commentsv1";
+
+service CommentService {
+  // ---------------------- COMMENT ----------------------
+  rpc CreateComment(CreateCommentRequest) returns (Comment);
+  rpc DeleteComment(DeleteCommentRequest) returns (google.protobuf.Empty);
+  rpc GetAllCommentsByPostId(GetAllCommentsByPostIdRequest) returns (GetBatchCommentsResponse);
+  rpc GetAllCommentsByUserId(GetAllCommentsByUserIdRequest) returns (GetBatchCommentsResponse);
+  rpc GetFeedCommentCount(GetFeedCommentCountRequest) returns (GetFeedCommentCountResponse);
+
+  // ---------------------- ACCOUNT LIFECYCLE ----------------------
+  rpc HandleAccountDeletion(HandleAccountDeletionRequest) returns (google.protobuf.Empty);
+  rpc HandleAccountRestoration(HandleAccountRestorationRequest) returns (google.protobuf.Empty);
+}
+
+// ---------------------- REQUEST MESSAGES ----------------------
+
+message CreateCommentRequest {
+  int64 post_id = 1;
+  string content = 2;
+}
+
+message DeleteCommentRequest {
+  int64 comment_id = 1;
+}
+
+message GetAllCommentsByPostIdRequest {
+  int64 post_id = 1;
+}
+
+message GetAllCommentsByUserIdRequest {
+  int64 user_id = 1;
+}
+
+message GetFeedCommentCountRequest {
+  repeated int64 post_ids = 1;
+}
+
+message HandleAccountDeletionRequest {
+  int64 user_id = 1;
+}
+
+message HandleAccountRestorationRequest {
+  int64 user_id = 1;
+}
+
+// ---------------------- RESPONSE MESSAGES ----------------------
+
+message GetBatchCommentsResponse {
+  repeated Comment comments = 1;
+  int64 comments_count = 2;
+}
+
+message GetFeedCommentCountResponse {
+  repeated CommentCount post_comments_count = 1;
+}
+
+// ---------------------- DATA MODELS ----------------------
+
+message Comment {
+  int64 id = 1;
+  int64 user_id = 2;
+  int64 post_id = 3;
+  string content = 4;
+  google.protobuf.Timestamp created_at = 5;  
+}
+
+message CommentCount {
+  int64 post_id = 1;
+  int64 count = 2;
+}

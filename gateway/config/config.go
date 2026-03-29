@@ -3,10 +3,10 @@ package config
 import (
 	"crypto/rsa"
 	"fmt"
-	"os"
-	"strconv"
 	"sync"
 	"voidspaceGateway/utils"
+
+	"github.com/vhysxl/voidspace/shared/utils/helper"
 )
 
 type Config struct {
@@ -35,39 +35,21 @@ func GetConfig() *Config {
 }
 
 func initConfig() Config {
-	publicKey, err := utils.LoadPublicKey(getEnv("PUBLIC_KEY_PATH", "/etc/secrets/public-key"))
+	publicKey, err := utils.LoadPublicKey(helper.GetEnv("PUBLIC_KEY_PATH", "/etc/secrets/public-key"))
 	if err != nil {
 		fmt.Println("FAILED TO LOAD PUBLIC KEY FROM ENV AND FALLBACK!")
 		panic("error load the public key")
 	}
 
 	return Config{
-		Port:               getEnv("PORT", "8080"),
+		Port:               helper.GetEnv("PORT", "8080"),
 		PublicKey:          publicKey,
-		ApiSecret:          getEnv("API_SECRET", "SUPER SECRET LMAO"),
-		ContextTimeout:     getIntEnv("CONTEXT_TIMEOUT", 30),
-		UserServiceAddr:    getEnv("USER_SERVICE_URL", "localhost:8080"),
-		PostServiceAddr:    getEnv("POST_SERVICE_URL", "localhost:5000"),
-		CommentServiceAddr: getEnv("COMMENT_SERVICE_URL", "localhost:8082"),
-		BucketName:         getEnv("BUCKET_NAME", "assets_voidspace"),
-		TemporalPort:       getEnv("TEMPORAL_PORT", "localhost:7233"),
+		ApiSecret:          helper.GetEnv("API_SECRET", "SUPER SECRET LMAO"),
+		ContextTimeout:     helper.GetEnvInt("CONTEXT_TIMEOUT", 30),
+		UserServiceAddr:    helper.GetEnv("USER_SERVICE_URL", "localhost:8080"),
+		PostServiceAddr:    helper.GetEnv("POST_SERVICE_URL", "localhost:5000"),
+		CommentServiceAddr: helper.GetEnv("COMMENT_SERVICE_URL", "localhost:8082"),
+		BucketName:         helper.GetEnv("BUCKET_NAME", "assets_voidspace"),
+		TemporalPort:       helper.GetEnv("TEMPORAL_PORT", "localhost:7233"),
 	}
-}
-
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-
-		return value
-	}
-
-	return fallback
-}
-
-func getIntEnv(key string, fallback int) int {
-	if value, ok := os.LookupEnv(key); ok {
-		if intValue, err := strconv.Atoi(value); err == nil {
-			return intValue
-		}
-	}
-	return fallback
 }

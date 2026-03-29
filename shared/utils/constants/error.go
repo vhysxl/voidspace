@@ -42,3 +42,8 @@ var (
 	ErrUserOrPostNotFound = errors.New("user or post not found")
 	ErrPostNotFound       = errors.New("post not found")
 )
+
+// Comment related errors
+var (
+	ErrCommentNotFound = errors.New("Comment not found")
+)

@@ -43,6 +43,11 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 			"/posts.v1.PostService/GetPost":       true,
 			"/posts.v1.PostService/GetAllPosts":   true,
 			"/posts.v1.PostService/GetGlobalFeed": true,
+
+			// Comments
+			"/comments.v1.CommentService/GetAllCommentsByPostId": true,
+			"/comments.v1.CommentService/GetAllCommentsByUserId": true,
+			"/comments.v1.CommentService/GetFeedCommentCount":    true,
 		}
 
 		isSkippedMethod := skipAuthMethods[info.FullMethod]

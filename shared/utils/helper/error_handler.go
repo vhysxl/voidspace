@@ -39,6 +39,9 @@ func HandleError(err error, logger *zap.Logger, operation string) error {
 		// Post Not found
 	case errors.Is(err, constants.ErrPostNotFound):
 		return status.Error(codes.NotFound, err.Error())
+		// Comment Not Found
+	case errors.Is(err, constants.ErrCommentNotFound):
+		return status.Error(codes.NotFound, err.Error())
 	default:
 		return status.Error(codes.Internal, constants.InternalServer)
 	}

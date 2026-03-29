@@ -2,20 +2,20 @@ package utils
 
 import (
 	"voidspace/comments/internal/domain"
-	pb "voidspace/comments/proto/generated/comments"
+	pb "voidspace/comments/proto/generated/comments/v1"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func CommentMapper(comment *domain.Comment) *pb.CommentResponse {
+func CommentMapper(comment *domain.Comment) *pb.Comment {
 	if comment == nil {
-		return &pb.CommentResponse{}
+		return &pb.Comment{}
 	}
 
-	return &pb.CommentResponse{
-		Id:        int32(comment.UserID),
-		UserId:    int32(comment.UserID),
-		PostId:    int32(comment.UserID),
+	return &pb.Comment{
+		Id:        int64(comment.ID),
+		UserId:    int64(comment.UserID),
+		PostId:    int64(comment.PostID),
 		Content:   comment.Content,
 		CreatedAt: timestamppb.New(comment.CreatedAt),
 	}
