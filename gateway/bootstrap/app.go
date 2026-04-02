@@ -6,10 +6,11 @@ import (
 	"time"
 	"voidspaceGateway/config"
 	"voidspaceGateway/internal/service"
+	user_service "voidspaceGateway/internal/service/user"
 
-	commentpb "voidspaceGateway/proto/generated/comments"
-	postpb "voidspaceGateway/proto/generated/posts"
-	userpb "voidspaceGateway/proto/generated/users"
+	commentpb "voidspaceGateway/proto/generated/comments/v1"
+	postpb "voidspaceGateway/proto/generated/posts/v1"
+	userpb "voidspaceGateway/proto/generated/users/v1"
 
 	"github.com/vhysxl/voidspace/shared/utils/helper"
 
@@ -25,13 +26,11 @@ type Application struct {
 	Validator       *validator.Validate
 	Logger          *zap.Logger
 	TemporalService *TemporalService
-	AuthService     *service.AuthService
-	UserService     *service.UserService
-	PostService     *service.PostService
-	LikeService     *service.LikeService
-	FeedService     *service.FeedService
-	UploadService   *service.UploadService
-	CommentService  *service.CommentsService
+	UserService     *user_service.UserService
+	// PostService     *service.PostService
+	// FeedService     *service.FeedService
+	UploadService *service.UploadService
+	// CommentService  *service.CommentsService
 }
 
 func App() (*Application, error) {
@@ -56,7 +55,7 @@ func App() (*Application, error) {
 	}
 
 	// gRPC Connections to microservices
-	userConn, err := NewConn(config.UserServiceAddr, false)
+	userConn, err := NewConn(config.UserServiceAddr, true)
 	if err != nil {
 		return nil, err
 	}
@@ -74,18 +73,24 @@ func App() (*Application, error) {
 	logger.Info("bucket name", zap.String("bucket", config.BucketName))
 
 	// Services
-	authService := service.NewAuthService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewAuthServiceClient(userConn), *config.PublicKey)
-	userService := service.NewUserService(time.Duration(config.ContextTimeout)*time.Second, logger, userpb.NewUserServiceClient(userConn), postpb.NewPostServiceClient(postConn), commentpb.NewCommentServiceClient(commentConn), temporalService.Client, temporalService.Service)
-	postService := service.NewPostService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
-	likeService := service.NewLikeService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewLikesServiceClient(postConn))
-	feedService := service.NewFeedService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
-	commentService := service.NewCommentService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
+	userService := user_service.NewUserService(
+		time.Duration(config.ContextTimeout)*time.Second,
+		logger,
+		*config.PublicKey,
+		userpb.NewUserServiceClient(userConn),
+		postpb.NewPostServiceClient(postConn),
+		commentpb.NewCommentServiceClient(commentConn),
+		temporalService.Client,
+		temporalService.Service,
+	)
+
+	// postService := service.NewPostService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
+	// feedService := service.NewFeedService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
+	// commentService := service.NewCommentService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
 	uploadService, err := service.NewUploadService(context.Background(), config.BucketName)
 	if err != nil {
 		panic(err)
 	}
-
-	// Register Temporal workflows
 
 	// Register Activities
 
@@ -98,12 +103,10 @@ func App() (*Application, error) {
 		Validator:       validator,
 		Logger:          logger,
 		TemporalService: temporalService,
-		AuthService:     authService,
 		UserService:     userService,
-		PostService:     postService,
-		LikeService:     likeService,
-		FeedService:     feedService,
-		UploadService:   uploadService,
-		CommentService:  commentService,
+		// PostService:     postService,
+		// FeedService:     feedService,
+		UploadService: uploadService,
+		// CommentService:  commentService,
 	}, nil
 }

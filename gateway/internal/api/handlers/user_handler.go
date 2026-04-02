@@ -6,7 +6,7 @@ import (
 	"voidspaceGateway/internal/api/responses"
 	"voidspaceGateway/internal/constants"
 	"voidspaceGateway/internal/models"
-	"voidspaceGateway/internal/service"
+	user_service "voidspaceGateway/internal/service/user"
 	"voidspaceGateway/utils"
 
 	"github.com/go-playground/validator/v10"
@@ -18,14 +18,14 @@ type UserHandler struct {
 	ContextTimeout time.Duration
 	Logger         *zap.Logger
 	Validator      *validator.Validate
-	UserService    *service.UserService
+	UserService    *user_service.UserService
 }
 
 func NewUserHandler(
 	timeout time.Duration,
 	logger *zap.Logger,
 	validator *validator.Validate,
-	userService *service.UserService,
+	userService *user_service.UserService,
 ) *UserHandler {
 	return &UserHandler{
 		ContextTimeout: timeout,

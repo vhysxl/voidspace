@@ -11,14 +11,34 @@ type RegisterRequest struct {
 	Password string `json:"password" validate:"required,min=6"`
 }
 
-type AuthResponse struct {
+// used in middleware
+type AuthUser struct {
+	ID       string
+	Username string
+}
+
+// auth service generic response
+type AuthResponseService struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 	ExpiresIn    int64  `json:"expires_in"`
 }
 
-// used in middleware
-type AuthUser struct {
-	ID       string
-	Username string
+// ======================================== API RESPONSE ===================================
+// Login Response
+type LoginResponseAPI struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int64  `json:"expires_in"`
+}
+
+// Register Response
+type RegisterResponseAPI struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int64  `json:"expires_in"`
+}
+
+// Refres Response
+type RefreshTokenResponseAPI struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int64  `json:"expires_in"`
 }
