@@ -10,10 +10,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (h *PostHandler) UnlikePost(ctx context.Context, req *pb.UnlikePostRequest) (*emptypb.Empty, error) {
-	ctx, cancel := context.WithTimeout(ctx, h.ContextTimeout)
-	defer cancel()
-
+func (h *PostHandler) UnlikePost(
+	ctx context.Context,
+	req *pb.UnlikePostRequest,
+) (*emptypb.Empty, error) {
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
 		return nil, helper.HandleError(err, h.Logger, "Unlike Post")

@@ -8,10 +8,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (h *PostHandler) HandleAccountRestoration(ctx context.Context, req *pb.HandleAccountRestorationRequest) (*emptypb.Empty, error) {
-	ctx, cancel := context.WithTimeout(ctx, h.ContextTimeout)
-	defer cancel()
-
+func (h *PostHandler) HandleAccountRestoration(
+	ctx context.Context,
+	req *pb.HandleAccountRestorationRequest,
+) (*emptypb.Empty, error) {
 	err := h.PostUsecase.HandleAccountRestoration(ctx, int(req.GetUserId()))
 	if err != nil {
 		return nil, helper.HandleError(err, h.Logger, "Handle Account Restoration")

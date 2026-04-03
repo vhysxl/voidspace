@@ -10,10 +10,10 @@ import (
 	"github.com/vhysxl/voidspace/shared/utils/interceptor"
 )
 
-func (h *PostHandler) GetFollowingFeed(ctx context.Context, req *pb.GetFollowingFeedRequest) (*pb.GetFeedResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, h.ContextTimeout)
-	defer cancel()
-
+func (h *PostHandler) GetFollowingFeed(
+	ctx context.Context,
+	req *pb.GetFollowingFeedRequest,
+) (*pb.GetFeedResponse, error) {
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
 		return nil, helper.HandleError(err, h.Logger, "Get Following Feed")

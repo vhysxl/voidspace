@@ -13,10 +13,8 @@ func (p *postUsecase) GetGlobalFeed(
 	cursorID int,
 	loggedInUserID *int,
 ) ([]domain.Post, bool, error) {
-	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
-	defer cancel()
-
 	var cursor time.Time
+
 	if cursorTime != nil {
 		cursor = *cursorTime
 	} else {

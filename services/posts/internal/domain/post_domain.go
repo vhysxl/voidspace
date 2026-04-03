@@ -50,7 +50,7 @@ type PostRepository interface {
 	Create(ctx context.Context, post *Post) (*Post, error)
 	GetByID(ctx context.Context, postID int) (*Post, error)
 	Update(ctx context.Context, post *Post) error
-	SoftDelete(ctx context.Context, postID int) error
+	Delete(ctx context.Context, postID int) error
 
 	// Bulk query operations
 	GetByUserID(ctx context.Context, userID int) ([]Post, error)

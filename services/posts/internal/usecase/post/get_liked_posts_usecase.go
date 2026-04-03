@@ -11,9 +11,6 @@ func (p *postUsecase) GetLikedPosts(
 	userID int,
 	loggedInUserID *int,
 ) ([]domain.Post, error) {
-	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
-	defer cancel()
-
 	posts, err := p.postRepository.GetLikedByUserID(ctx, userID)
 	if err != nil {
 		return []domain.Post{}, err

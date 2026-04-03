@@ -12,9 +12,6 @@ func (p *postUsecase) DeletePost(
 	postID int,
 	loggedInUserID int,
 ) error {
-	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
-	defer cancel()
-
 	post, err := p.postRepository.GetByID(ctx, postID)
 	if err != nil {
 		return err
@@ -24,5 +21,5 @@ func (p *postUsecase) DeletePost(
 		return constants.ErrUnauthorized
 	}
 
-	return p.postRepository.SoftDelete(ctx, postID)
+	return p.postRepository.Delete(ctx, postID)
 }

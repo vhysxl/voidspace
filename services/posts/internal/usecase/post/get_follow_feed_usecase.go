@@ -14,10 +14,8 @@ func (p *postUsecase) GetFollowingFeed(
 	loggedInUserID int,
 	userIDs []int,
 ) ([]domain.Post, bool, error) {
-	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
-	defer cancel()
-
 	var cursor time.Time
+
 	if cursorTime != nil {
 		cursor = *cursorTime
 	} else {

@@ -11,9 +11,6 @@ func (p *postUsecase) GetPost(
 	postID int,
 	loggedInUserID *int,
 ) (*domain.Post, error) {
-	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
-	defer cancel()
-
 	post, err := p.postRepository.GetByID(ctx, postID)
 	if err != nil {
 		return nil, err

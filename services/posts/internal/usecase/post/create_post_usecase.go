@@ -10,9 +10,6 @@ func (p *postUsecase) CreatePost(
 	ctx context.Context,
 	post *domain.Post,
 ) (*domain.Post, error) {
-	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
-	defer cancel()
-
 	post, err := p.postRepository.Create(ctx, post)
 	if err != nil {
 		return nil, err

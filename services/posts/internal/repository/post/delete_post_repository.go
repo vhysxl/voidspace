@@ -7,11 +7,10 @@ import (
 )
 
 // SoftDeletePost implements [domain.PostRepository].
-func (p *PostRepository) SoftDelete(ctx context.Context, postID int) error {
+func (p *PostRepository) Delete(ctx context.Context, postID int) error {
 	cmdTag, err := p.db.Exec(
 		ctx,
-		`UPDATE posts SET deleted_at = NOW() WHERE id = $1
-		AND deleted_at IS NULL`,
+		`DELETE FROM posts  WHERE id = $1`,
 		postID,
 	)
 	if err != nil {

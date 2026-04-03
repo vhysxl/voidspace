@@ -13,9 +13,6 @@ func (p *postUsecase) UpdatePost(
 	post *domain.Post,
 	loggedInUserID int,
 ) error {
-	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
-	defer cancel()
-
 	existingPost, err := p.postRepository.GetByID(ctx, post.ID)
 	if err != nil {
 		return err

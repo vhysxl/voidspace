@@ -7,9 +7,6 @@ func (p *postUsecase) HandleAccountDeletion(
 	ctx context.Context,
 	userID int,
 ) error {
-	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
-	defer cancel()
-
 	err := p.postRepository.HandleAccountDeletion(ctx, userID)
 	if err != nil {
 		return err
