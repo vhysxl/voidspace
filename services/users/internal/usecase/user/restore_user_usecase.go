@@ -11,9 +11,6 @@ func (u *UserUsecase) RestoreUser(
 	ctx context.Context,
 	userID int,
 ) error {
-	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
-	defer cancel()
-
 	err := u.userRepository.RestoreUser(ctx, userID)
 	if err != nil {
 		if errors.Is(err, constants.ErrUserNotFound) {

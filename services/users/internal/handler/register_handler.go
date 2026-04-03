@@ -12,9 +12,6 @@ import (
 )
 
 func (u *UserHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.AuthResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	defer cancel()
-
 	user, err := u.UserUsecase.Register(ctx, req.GetUsername(), req.GetEmail(), req.GetPassword())
 	if err != nil {
 		return nil, helper.HandleError(err, u.Logger, "Register")

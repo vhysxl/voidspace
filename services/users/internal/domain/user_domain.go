@@ -33,7 +33,6 @@ type UserUsecase interface {
 
 type UserRepository interface {
 	Create(ctx context.Context, user *User) error
-	Delete(ctx context.Context, userID int) error
 	SoftDelete(ctx context.Context, userID int) error
 
 	GetByUsername(ctx context.Context, username string) (*views.UserProfile, error)

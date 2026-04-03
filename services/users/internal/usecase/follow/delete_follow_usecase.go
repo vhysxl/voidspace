@@ -13,8 +13,9 @@ func (f *FollowUsecase) Unfollow(
 	authUserID int,
 	targetUserID int,
 ) error {
-	ctx, cancel := context.WithTimeout(ctx, f.contextTimeout)
-	defer cancel()
+	if authUserID == targetUserID {
+		return constants.ErrCannotFollowSelf
+	}
 
 	updates := domain.Follow{
 		UserID:       authUserID,

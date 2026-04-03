@@ -13,9 +13,6 @@ import (
 )
 
 func (u *UserHandler) RefreshToken(ctx context.Context, _ *emptypb.Empty) (*pb.AuthResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	defer cancel()
-
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
 		return nil, helper.HandleAuthError(nil, u.Logger)

@@ -12,9 +12,6 @@ func (u *UserUsecase) ListFollowers(
 	ctx context.Context,
 	userID int,
 ) ([]views.UserBanner, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
-	defer cancel()
-
 	users, err := u.userRepository.ListFollowers(ctx, userID)
 	if err != nil {
 		if errors.Is(err, constants.ErrUserNotFound) {

@@ -14,9 +14,6 @@ func (u *UserHandler) GetCurrentUser(
 	ctx context.Context,
 	_ *emptypb.Empty,
 ) (*pb.GetCurrentUserResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	defer cancel()
-
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
 		return nil, helper.HandleAuthError(nil, u.Logger)

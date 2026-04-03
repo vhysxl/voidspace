@@ -13,9 +13,6 @@ func (u *UserUsecase) GetUser(
 	username string,
 	authUserID int,
 ) (*views.UserProfile, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
-	defer cancel()
-
 	user, err := u.userRepository.GetByUsername(ctx, username)
 	if err != nil {
 		if errors.Is(err, constants.ErrUserNotFound) {
@@ -23,6 +20,10 @@ func (u *UserUsecase) GetUser(
 		}
 
 		return nil, constants.ErrInternalServer
+	}
+
+	if authUserID == 0 {
+		return user, nil
 	}
 
 	exist, err := u.followRepository.IsFollowing(ctx, authUserID, user.ID)

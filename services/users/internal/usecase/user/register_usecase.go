@@ -16,9 +16,6 @@ func (u *UserUsecase) Register(
 	email string,
 	password string,
 ) (*domain.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
-	defer cancel()
-
 	hashedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(password),
 		bcrypt.DefaultCost,

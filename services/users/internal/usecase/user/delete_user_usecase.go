@@ -11,9 +11,6 @@ func (u *UserUsecase) DeleteUser(
 	ctx context.Context,
 	userID int,
 ) error {
-	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
-	defer cancel()
-
 	err := u.userRepository.SoftDelete(ctx, userID)
 	if err != nil {
 		if errors.Is(err, constants.ErrUserNotFound) {

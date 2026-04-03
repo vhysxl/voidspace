@@ -5,7 +5,6 @@ import (
 	"voidspace/users/internal/domain/views"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
-	"github.com/vhysxl/voidspace/shared/utils/constants"
 )
 
 func (u *UserRepository) ListFollowers(
@@ -29,10 +28,6 @@ func (u *UserRepository) ListFollowers(
 	err := pgxscan.Select(ctx, u.db, &users, query, userID)
 	if err != nil {
 		return nil, err
-	}
-
-	if len(users) == 0 {
-		return nil, constants.ErrUserNotFound
 	}
 
 	return users, nil

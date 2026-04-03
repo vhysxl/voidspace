@@ -12,10 +12,6 @@ func (u *UserHandler) GetUsers(
 	ctx context.Context,
 	req *pb.GetUsersRequest) (
 	*pb.GetUsersResponse, error) {
-
-	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	defer cancel()
-
 	convertedIDs := make([]int, 0, len(req.GetUserIds()))
 	for _, ID := range req.GetUserIds() {
 		convertedIDs = append(convertedIDs, int(ID))

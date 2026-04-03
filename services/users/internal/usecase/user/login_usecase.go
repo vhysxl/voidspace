@@ -14,9 +14,6 @@ func (u *UserUsecase) Login(
 	credentials string,
 	password string,
 ) (*domain.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
-	defer cancel()
-
 	user, err := u.userRepository.GetByCredentials(ctx, credentials)
 	if err != nil {
 		if errors.Is(err, constants.ErrUserNotFound) {

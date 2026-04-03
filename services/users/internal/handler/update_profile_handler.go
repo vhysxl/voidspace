@@ -13,9 +13,6 @@ func (u *UserHandler) UpdateProfile(
 	ctx context.Context,
 	req *pb.UpdateProfileRequest) (
 	*pb.UpdateProfileResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	defer cancel()
-
 	userId, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
 		return nil, helper.HandleAuthError(nil, u.Logger)

@@ -14,9 +14,6 @@ func (u *UserHandler) GetUser(
 	ctx context.Context,
 	req *pb.GetUserRequest,
 ) (*pb.GetUserResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	defer cancel()
-
 	userID, err := helper.GetOptionalUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
 		return nil, helper.HandleError(err, u.Logger, "Get User")

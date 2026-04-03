@@ -10,10 +10,6 @@ import (
 func (u *UserHandler) ListFollowers(
 	ctx context.Context,
 	req *pb.GetUserByIdRequest) (*pb.ListFollowersResponse, error) {
-
-	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	defer cancel()
-
 	users, err := u.UserUsecase.ListFollowers(ctx, int(req.GetUserId()))
 	if err != nil {
 		return nil, helper.HandleError(err, u.Logger, "Get Follower")

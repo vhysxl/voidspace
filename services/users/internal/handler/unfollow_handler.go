@@ -12,9 +12,6 @@ func (u *UserHandler) Unfollow(
 	ctx context.Context,
 	req *pb.UnfollowRequest,
 ) (*pb.UnfollowResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	defer cancel()
-
 	userID, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
 		return nil, helper.HandleAuthError(nil, u.Logger)

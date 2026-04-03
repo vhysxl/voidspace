@@ -12,9 +12,6 @@ import (
 )
 
 func (u *UserHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.AuthResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
-	defer cancel()
-
 	user, err := u.UserUsecase.Login(ctx, req.GetEmailOrUsername(), req.GetPassword())
 	if err != nil {
 		return nil, helper.HandleError(err, u.Logger, "Login")

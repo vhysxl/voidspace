@@ -13,9 +13,6 @@ func (p *ProfileUsecase) UpdateProfile(
 	userID int,
 	updates *domain.Profile,
 ) error {
-	ctx, cancel := context.WithTimeout(ctx, p.contextTimeout)
-	defer cancel()
-
 	err := p.profileRepository.Update(ctx, userID, updates)
 	if err != nil {
 		if errors.Is(err, constants.ErrUserNotFound) {
