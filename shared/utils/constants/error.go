@@ -32,7 +32,7 @@ var (
 // Follow-related errors
 var (
 	ErrAlreadyFollowing = errors.New("Already following this user")
-	ErrCannotFollowSelf = errors.New("Cannot follow yourself")
+	ErrCannotFollowSelf = errors.New("Cannot follow or unfollow yourself")
 	ErrNotFollowing     = errors.New("Not following this user")
 )
 
