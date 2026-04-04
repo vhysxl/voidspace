@@ -13,18 +13,20 @@ service UserService {
   rpc Register(RegisterRequest) returns (AuthResponse);
   rpc Login(LoginRequest) returns (AuthResponse);
   rpc RefreshToken(google.protobuf.Empty) returns (AuthResponse);
-  
+
   // ---------------------- USER ----------------------
   rpc GetCurrentUser(google.protobuf.Empty) returns (GetCurrentUserResponse);
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc GetUserById(GetUserByIdRequest) returns (GetUserResponse);
   rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
   rpc ListFollowers(GetUserByIdRequest) returns (ListFollowersResponse);
   rpc ListFollowing(GetUserByIdRequest) returns (ListFollowingResponse);
-  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
-  rpc DeleteUser(google.protobuf.Empty) returns (DeleteUserResponse);
-  rpc RestoreUser(RestoreUserRequest) returns (RestoreUserResponse);
   rpc Follow(FollowRequest) returns (FollowResponse);
   rpc Unfollow(UnfollowRequest) returns (UnfollowResponse);
+
+  rpc DeleteUser(google.protobuf.Empty) returns (DeleteUserResponse);
+  rpc RestoreUser(RestoreUserRequest) returns (RestoreUserResponse);
 }
 
 // ---------------------- REQUEST MESSAGES ----------------------

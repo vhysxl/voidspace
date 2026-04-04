@@ -98,12 +98,12 @@ message GetFeedResponse {
 // ---------------------- DATA MODELS ----------------------
 
 message Post {
+  reserved 6; 
   int64 id = 1;
   string content = 2;
   int64 user_id = 3;
   repeated PostImage images = 4;
   int64 likes_count = 5;
-  int64 comments_count = 6;
   google.protobuf.Timestamp created_at = 7;
   google.protobuf.Timestamp updated_at = 8;
   bool is_liked = 9;
