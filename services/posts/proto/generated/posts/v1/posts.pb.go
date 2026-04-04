@@ -658,7 +658,6 @@ type Post struct {
 	UserId        int64                  `protobuf:"varint,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Images        []*PostImage           `protobuf:"bytes,4,rep,name=images,proto3" json:"images,omitempty"`
 	LikesCount    int64                  `protobuf:"varint,5,opt,name=likes_count,json=likesCount,proto3" json:"likes_count,omitempty"`
-	CommentsCount int64                  `protobuf:"varint,6,opt,name=comments_count,json=commentsCount,proto3" json:"comments_count,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	IsLiked       bool                   `protobuf:"varint,9,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
@@ -728,13 +727,6 @@ func (x *Post) GetImages() []*PostImage {
 func (x *Post) GetLikesCount() int64 {
 	if x != nil {
 		return x.LikesCount
-	}
-	return 0
-}
-
-func (x *Post) GetCommentsCount() int64 {
-	if x != nil {
-		return x.CommentsCount
 	}
 	return 0
 }
@@ -880,22 +872,21 @@ const file_posts_v1_posts_proto_rawDesc = "" +
 	"\x05posts\x18\x01 \x03(\v2\x0e.posts.v1.PostR\x05posts\"R\n" +
 	"\x0fGetFeedResponse\x12$\n" +
 	"\x05posts\x18\x01 \x03(\v2\x0e.posts.v1.PostR\x05posts\x12\x19\n" +
-	"\bhas_more\x18\x02 \x01(\bR\ahasMore\"\xea\x02\n" +
+	"\bhas_more\x18\x02 \x01(\bR\ahasMore\"\xc9\x02\n" +
 	"\x04Post\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x18\n" +
 	"\acontent\x18\x02 \x01(\tR\acontent\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12+\n" +
 	"\x06images\x18\x04 \x03(\v2\x13.posts.v1.PostImageR\x06images\x12\x1f\n" +
 	"\vlikes_count\x18\x05 \x01(\x03R\n" +
-	"likesCount\x12%\n" +
-	"\x0ecomments_count\x18\x06 \x01(\x03R\rcommentsCount\x129\n" +
+	"likesCount\x129\n" +
 	"\n" +
 	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
 	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x19\n" +
 	"\bis_liked\x18\t \x01(\bR\aisLiked\x12\x19\n" +
 	"\bis_owner\x18\n" +
-	" \x01(\bR\aisOwner\"a\n" +
+	" \x01(\bR\aisOwnerJ\x04\b\x06\x10\a\"a\n" +
 	"\tPostImage\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x14\n" +
 	"\x05order\x18\x02 \x01(\x03R\x05order\x12\x14\n" +

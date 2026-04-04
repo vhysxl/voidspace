@@ -19,16 +19,15 @@ func MapDomainPostToPb(p *domain.Post) *pb.Post {
 	}
 
 	return &pb.Post{
-		Id:            int64(p.ID),
-		Content:       p.Content,
-		UserId:        int64(p.UserID),
-		Images:        images,
-		LikesCount:    int64(p.LikesCount),
-		CommentsCount: int64(p.CommentsCount),
-		CreatedAt:     timestamppb.New(p.CreatedAt),
-		UpdatedAt:     timestamppb.New(p.UpdatedAt),
-		IsLiked:       p.IsLiked,
-		IsOwner:       p.IsOwner,
+		Id:         int64(p.ID),
+		Content:    p.Content,
+		UserId:     int64(p.UserID),
+		Images:     images,
+		LikesCount: int64(p.LikesCount),
+		CreatedAt:  timestamppb.New(p.CreatedAt),
+		UpdatedAt:  timestamppb.New(p.UpdatedAt),
+		IsLiked:    p.IsLiked,
+		IsOwner:    p.IsOwner,
 	}
 }
 

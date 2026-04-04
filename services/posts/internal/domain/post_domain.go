@@ -6,16 +6,15 @@ import (
 )
 
 type Post struct {
-	ID            int
-	Content       string
-	UserID        int
-	PostImages    []PostImage
-	LikesCount    int
-	CommentsCount int
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	IsLiked       bool
-	IsOwner       bool
+	ID         int
+	Content    string
+	UserID     int
+	PostImages []PostImage
+	LikesCount int
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	IsLiked    bool
+	IsOwner    bool
 }
 
 type PostImage struct {
