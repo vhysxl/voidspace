@@ -10,9 +10,6 @@ import (
 )
 
 func (ch *CommentHandler) DeleteComment(ctx context.Context, req *pb.DeleteCommentRequest) (*emptypb.Empty, error) {
-	ctx, cancel := context.WithTimeout(ctx, ch.ContextTimeout)
-	defer cancel()
-
 	userId, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
 		return nil, helper.HandleAuthError(nil, ch.Logger)

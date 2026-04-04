@@ -9,9 +9,6 @@ import (
 )
 
 func (ch *CommentHandler) HandleAccountRestoration(ctx context.Context, req *pb.HandleAccountRestorationRequest) (*emptypb.Empty, error) {
-	ctx, cancel := context.WithTimeout(ctx, ch.ContextTimeout)
-	defer cancel()
-
 	err := ch.CommentUsecase.HandleAccountRestoration(ctx, int(req.GetUserId()))
 	if err != nil {
 		return nil, helper.HandleError(err, ch.Logger, "HandleAccountRestoration")

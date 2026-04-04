@@ -11,11 +11,8 @@ import (
 // DeleteComment implements [domain.CommentUsecase].
 func (c *commentUsecase) DeleteComment(
 	ctx context.Context,
-	commentID int, userID int) error {
-
-	ctx, cancel := context.WithTimeout(ctx, c.contextTimeout)
-	defer cancel()
-
+	commentID int, userID int,
+) error {
 	comment, err := c.commentRepository.GetCommentByID(ctx, commentID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -29,7 +26,7 @@ func (c *commentUsecase) DeleteComment(
 		return constants.ErrUnauthorized
 	}
 
-	_, err = c.commentRepository.SoftDelete(ctx, commentID)
+	_, err = c.commentRepository.Delete(ctx, commentID)
 	if err != nil {
 		return err
 	}

@@ -10,8 +10,6 @@ func (c *commentUsecase) GetAllCommentsByUserID(
 	ctx context.Context,
 	userID int) (
 	domain.CommentRes, error) {
-	ctx, cancel := context.WithTimeout(ctx, c.contextTimeout)
-	defer cancel()
 
 	comments, err := c.commentRepository.GetAllByUserID(ctx, userID)
 	if err != nil {

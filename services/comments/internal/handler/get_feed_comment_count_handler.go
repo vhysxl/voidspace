@@ -8,9 +8,6 @@ import (
 )
 
 func (ch *CommentHandler) GetFeedCommentCount(ctx context.Context, req *pb.GetFeedCommentCountRequest) (*pb.GetFeedCommentCountResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, ch.ContextTimeout)
-	defer cancel()
-
 	postIds := make([]int, len(req.GetPostIds()))
 	for i, postId := range req.GetPostIds() {
 		postIds[i] = int(postId)

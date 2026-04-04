@@ -9,9 +9,6 @@ import (
 )
 
 func (ch *CommentHandler) HandleAccountDeletion(ctx context.Context, req *pb.HandleAccountDeletionRequest) (*emptypb.Empty, error) {
-	ctx, cancel := context.WithTimeout(ctx, ch.ContextTimeout)
-	defer cancel()
-
 	err := ch.CommentUsecase.HandleAccountDeletion(ctx, int(req.GetUserId()))
 	if err != nil {
 		return nil, helper.HandleError(err, ch.Logger, "HandleAccountDeletion")

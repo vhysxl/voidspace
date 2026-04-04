@@ -6,8 +6,6 @@ import "context"
 func (c *commentUsecase) HandleAccountDeletion(
 	ctx context.Context,
 	userID int) error {
-	ctx, cancel := context.WithTimeout(ctx, c.contextTimeout)
-	defer cancel()
 
 	err := c.commentRepository.HandleAccountDeletion(ctx, userID)
 	if err != nil {

@@ -11,9 +11,6 @@ import (
 )
 
 func (ch *CommentHandler) CreateComment(ctx context.Context, req *pb.CreateCommentRequest) (*pb.Comment, error) {
-	ctx, cancel := context.WithTimeout(ctx, ch.ContextTimeout)
-	defer cancel()
-
 	userId, err := helper.GetUserIDFromContext(ctx, interceptor.CtxKeyUserID)
 	if err != nil {
 		return nil, helper.HandleAuthError(nil, ch.Logger)

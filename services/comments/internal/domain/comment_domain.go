@@ -27,7 +27,7 @@ type CommentUsecase interface {
 
 type CommentRepository interface {
 	Create(ctx context.Context, comment *Comment) (*Comment, error)
-	SoftDelete(ctx context.Context, commentID int) (int, error)
+	Delete(ctx context.Context, commentID int) (int, error)
 
 	GetCommentByID(ctx context.Context, commentID int) (*Comment, error)
 	GetAllByPostID(ctx context.Context, postID int) ([]*Comment, error)

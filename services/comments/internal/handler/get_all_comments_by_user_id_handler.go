@@ -9,9 +9,6 @@ import (
 )
 
 func (ch *CommentHandler) GetAllCommentsByUserId(ctx context.Context, req *pb.GetAllCommentsByUserIdRequest) (*pb.GetBatchCommentsResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, ch.ContextTimeout)
-	defer cancel()
-
 	res, err := ch.CommentUsecase.GetAllCommentsByUserID(ctx, int(req.GetUserId()))
 	if err != nil {
 		return nil, helper.HandleError(err, ch.Logger, "GetAllCommentsByUserId")
