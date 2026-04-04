@@ -3,9 +3,9 @@ export
 
 APP_NAME=voidspace
 PROTO_PATH := ../../proto
-PROTO_FILE := users/user.proto
+PROTO_FILE := users/v1/users.proto
 MIGRATION_DIR=database/migrations/
-GENERATED_PROTO=./proto/generated
+GENERATED_PROTO=./proto
 DB_URL=mysql://$(DB_USER):$(DB_PASS)@tcp($(DB_HOST):$(DB_PORT))/$(DB_NAME)?multiStatements=true
 
 .PHONY: migration_up migration_down migration_fix

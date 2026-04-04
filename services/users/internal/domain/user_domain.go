@@ -22,6 +22,7 @@ type UserUsecase interface {
 
 	GetCurrentUser(ctx context.Context, userID int) (*views.UserProfile, error)
 	GetUser(ctx context.Context, username string, authUserID int) (*views.UserProfile, error)
+	GetUserByID(ctx context.Context, userID int) (*views.UserProfile, error)
 	GetUserByIDs(ctx context.Context, userIDs []int) ([]views.UserProfile, error)
 
 	ListFollowers(ctx context.Context, userID int) ([]views.UserBanner, error)
@@ -38,6 +39,7 @@ type UserRepository interface {
 	GetByUsername(ctx context.Context, username string) (*views.UserProfile, error)
 	GetByEmail(ctx context.Context, email string) (*User, error)
 	GetByCredentials(ctx context.Context, credentials string) (*User, error)
+	GetByID(ctx context.Context, userID int) (*views.UserProfile, error)
 
 	GetByIDs(ctx context.Context, userIDs []int) ([]views.UserProfile, error)
 
