@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"voidspaceGateway/internal/api/responses"
 	"voidspaceGateway/internal/constants"
+	shared_constants "github.com/vhysxl/voidspace/shared/utils/constants"
 	"voidspaceGateway/internal/models"
 	"voidspaceGateway/utils"
 
@@ -16,7 +17,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 
 	requestBody := new(models.LoginRequest)
 	if err := c.Bind(requestBody); err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
+		return responses.ErrorResponseMessage(c, http.StatusBadRequest, shared_constants.InvalidRequest)
 	}
 
 	if err := h.Validator.Struct(requestBody); err != nil {

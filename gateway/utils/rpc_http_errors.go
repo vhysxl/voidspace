@@ -3,7 +3,7 @@ package utils
 import (
 	"net/http"
 	"voidspaceGateway/internal/api/responses"
-	"voidspaceGateway/internal/constants"
+	shared_constants "github.com/vhysxl/voidspace/shared/utils/constants"
 
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
@@ -14,7 +14,7 @@ import (
 func GRPCErrorToHTTP(err error) (int, string) {
 	st, ok := status.FromError(err)
 	if !ok {
-		return http.StatusInternalServerError, constants.ErrInternalServer
+		return http.StatusInternalServerError, shared_constants.InternalServer
 	}
 
 	switch st.Code() {

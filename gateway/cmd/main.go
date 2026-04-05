@@ -10,7 +10,7 @@ import (
 	"time"
 	"voidspaceGateway/bootstrap"
 	"voidspaceGateway/internal/api/router"
-	// "voidspaceGateway/temporal"
+	"voidspaceGateway/temporal"
 
 	cstmMiddleware "voidspaceGateway/middleware"
 
@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// temporal.RegisterTemporal(app)
+	temporal.RegisterTemporal(app)
 
 	go func() {
 		if err := app.TemporalService.TemporalStart(); err != nil {

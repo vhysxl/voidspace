@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"voidspaceGateway/internal/api/responses"
 	"voidspaceGateway/internal/constants"
+	shared_constants "github.com/vhysxl/voidspace/shared/utils/constants"
 	"voidspaceGateway/internal/models"
 	"voidspaceGateway/utils"
 
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 )
 
 func (h *FollowHandler) Follow(c echo.Context) error {
@@ -17,7 +17,7 @@ func (h *FollowHandler) Follow(c echo.Context) error {
 
 	requestBody := new(models.FollowRequest)
 	if err := c.Bind(requestBody); err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
+		return responses.ErrorResponseMessage(c, http.StatusBadRequest, shared_constants.InvalidRequest)
 	}
 
 	if err := h.Validator.Struct(requestBody); err != nil {
@@ -26,9 +26,7 @@ func (h *FollowHandler) Follow(c echo.Context) error {
 
 	err := h.UserService.Follow(ctx, user.ID, user.Username, requestBody.TargetUsername)
 	if err != nil {
-		h.Logger.Error("failed to follow user", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(h.Logger, c, err, "failed to follow user")
 	}
 
 	return responses.SuccessResponseMessage(

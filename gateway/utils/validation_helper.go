@@ -3,7 +3,7 @@ package utils
 import (
 	"net/http"
 	"voidspaceGateway/internal/api/responses"
-	"voidspaceGateway/internal/constants"
+	shared_constants "github.com/vhysxl/voidspace/shared/utils/constants"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -12,7 +12,7 @@ import (
 // this code is buggy, fix later
 func BindAndValidate(c echo.Context, validator *validator.Validate, req any) error {
 	if err := c.Bind(req); err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
+		return responses.ErrorResponseMessage(c, http.StatusBadRequest, shared_constants.InvalidRequest)
 	}
 
 	if err := validator.Struct(req); err != nil {

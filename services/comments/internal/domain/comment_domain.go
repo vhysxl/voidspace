@@ -23,6 +23,7 @@ type CommentUsecase interface {
 
 	HandleAccountDeletion(ctx context.Context, userID int) error
 	HandleAccountRestoration(ctx context.Context, userID int) error
+	DeleteByPostID(ctx context.Context, postID int) error
 }
 
 type CommentRepository interface {
@@ -36,4 +37,5 @@ type CommentRepository interface {
 
 	HandleAccountDeletion(ctx context.Context, userID int) error
 	HandleAccountRestoration(ctx context.Context, userID int) error
+	DeleteByPostID(ctx context.Context, postID int) error
 }

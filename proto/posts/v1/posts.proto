@@ -19,7 +19,7 @@ service PostService {
   rpc GetUserPosts(GetUserPostsRequest) returns (GetPostsResponse);
   rpc GetLikedPosts(GetUserPostsRequest) returns (GetPostsResponse);
 
-  // ---------------------- FEED ----------------------
+// ---------------------- FEED ----------------------
   rpc GetGlobalFeed(GetGlobalFeedRequest) returns (GetFeedResponse);
   rpc GetFollowingFeed(GetFollowingFeedRequest) returns (GetFeedResponse);
 

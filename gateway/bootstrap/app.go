@@ -6,6 +6,8 @@ import (
 	"time"
 	"voidspaceGateway/config"
 	"voidspaceGateway/internal/service"
+	comment_service "voidspaceGateway/internal/service/comment"
+	post_service "voidspaceGateway/internal/service/post"
 	user_service "voidspaceGateway/internal/service/user"
 
 	commentpb "voidspaceGateway/proto/generated/comments/v1"
@@ -27,10 +29,9 @@ type Application struct {
 	Logger          *zap.Logger
 	TemporalService *TemporalService
 	UserService     *user_service.UserService
-	// PostService     *service.PostService
-	// FeedService     *service.FeedService
-	UploadService *service.UploadService
-	// CommentService  *service.CommentsService
+	PostService     *post_service.PostService
+	UploadService   *service.UploadService
+	CommentService  *comment_service.CommentService
 }
 
 func App() (*Application, error) {
@@ -60,12 +61,12 @@ func App() (*Application, error) {
 		return nil, err
 	}
 
-	postConn, err := NewConn(config.PostServiceAddr, false)
+	postConn, err := NewConn(config.PostServiceAddr, true)
 	if err != nil {
 		return nil, err
 	}
 
-	commentConn, err := NewConn(config.CommentServiceAddr, false)
+	commentConn, err := NewConn(config.CommentServiceAddr, true)
 	if err != nil {
 		return nil, err
 	}
@@ -84,16 +85,30 @@ func App() (*Application, error) {
 		temporalService.Service,
 	)
 
-	// postService := service.NewPostService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
-	// feedService := service.NewFeedService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
-	// commentService := service.NewCommentService(time.Duration(config.ContextTimeout)*time.Second, logger, postpb.NewPostServiceClient(postConn), userpb.NewUserServiceClient(userConn), commentpb.NewCommentServiceClient(commentConn))
+	postService := post_service.NewPostService(
+		time.Duration(config.ContextTimeout)*time.Second,
+		logger,
+		userpb.NewUserServiceClient(userConn),
+		postpb.NewPostServiceClient(postConn),
+		commentpb.NewCommentServiceClient(commentConn),
+		temporalService.Client,
+		temporalService.Service,
+	)
+
+	commentService := comment_service.NewCommentService(
+		time.Duration(config.ContextTimeout)*time.Second,
+		logger,
+		postpb.NewPostServiceClient(postConn),
+		commentpb.NewCommentServiceClient(commentConn),
+		userpb.NewUserServiceClient(userConn),
+	)
+
 	uploadService, err := service.NewUploadService(context.Background(), config.BucketName)
 	if err != nil {
 		panic(err)
 	}
 
 	// Register Activities
-
 	logger.Info("Gateway Ready")
 
 	return &Application{
@@ -104,9 +119,8 @@ func App() (*Application, error) {
 		Logger:          logger,
 		TemporalService: temporalService,
 		UserService:     userService,
-		// PostService:     postService,
-		// FeedService:     feedService,
-		UploadService: uploadService,
-		// CommentService:  commentService,
+		PostService:     postService,
+		UploadService:   uploadService,
+		CommentService:  commentService,
 	}, nil
 }

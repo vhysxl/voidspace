@@ -3,7 +3,7 @@ export
 
 APP_NAME=voidspace
 PROTO_PATH := ../../proto
-PROTO_FILE := comments/v1/comment.proto
+PROTO_FILE := comments/v1/comments.proto
 MIGRATION_DIR=database/migrations/
 GENERATED_PROTO=./proto/generated
 DB_URL=mysql://$(DB_USER):$(DB_PASS)@tcp($(DB_HOST):$(DB_PORT))/$(DB_NAME)?multiStatements=true

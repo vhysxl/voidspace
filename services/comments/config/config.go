@@ -28,7 +28,7 @@ func GetConfig() *Config {
 
 func initConfig() Config {
 	return Config{
-		Port:           helper.GetEnv("PORT", "8080"),
+		Port:           helper.GetEnv("PORT", "8082"),
 		DBConnString:   helper.GetEnv("DB_CONN", "postgres"),
 		ContextTimeout: helper.GetEnvInt("CONTEXT_TIMEOUT", 10),
 	}

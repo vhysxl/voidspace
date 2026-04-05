@@ -1217,22 +1217,23 @@ const file_users_v1_users_proto_rawDesc = "" +
 	"\busername\x18\x02 \x01(\tR\busername\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12\x1d\n" +
 	"\n" +
-	"avatar_url\x18\x04 \x01(\tR\tavatarUrl2\x96\a\n" +
+	"avatar_url\x18\x04 \x01(\tR\tavatarUrl2\xde\a\n" +
 	"\vUserService\x12=\n" +
 	"\bRegister\x12\x19.users.v1.RegisterRequest\x1a\x16.users.v1.AuthResponse\x127\n" +
 	"\x05Login\x12\x16.users.v1.LoginRequest\x1a\x16.users.v1.AuthResponse\x12>\n" +
 	"\fRefreshToken\x12\x16.google.protobuf.Empty\x1a\x16.users.v1.AuthResponse\x12J\n" +
 	"\x0eGetCurrentUser\x12\x16.google.protobuf.Empty\x1a .users.v1.GetCurrentUserResponse\x12>\n" +
-	"\aGetUser\x12\x18.users.v1.GetUserRequest\x1a\x19.users.v1.GetUserResponse\x12A\n" +
-	"\bGetUsers\x12\x19.users.v1.GetUsersRequest\x1a\x1a.users.v1.GetUsersResponse\x12N\n" +
+	"\aGetUser\x12\x18.users.v1.GetUserRequest\x1a\x19.users.v1.GetUserResponse\x12F\n" +
+	"\vGetUserById\x12\x1c.users.v1.GetUserByIdRequest\x1a\x19.users.v1.GetUserResponse\x12A\n" +
+	"\bGetUsers\x12\x19.users.v1.GetUsersRequest\x1a\x1a.users.v1.GetUsersResponse\x12P\n" +
+	"\rUpdateProfile\x12\x1e.users.v1.UpdateProfileRequest\x1a\x1f.users.v1.UpdateProfileResponse\x12N\n" +
 	"\rListFollowers\x12\x1c.users.v1.GetUserByIdRequest\x1a\x1f.users.v1.ListFollowersResponse\x12N\n" +
-	"\rListFollowing\x12\x1c.users.v1.GetUserByIdRequest\x1a\x1f.users.v1.ListFollowingResponse\x12P\n" +
-	"\rUpdateProfile\x12\x1e.users.v1.UpdateProfileRequest\x1a\x1f.users.v1.UpdateProfileResponse\x12B\n" +
+	"\rListFollowing\x12\x1c.users.v1.GetUserByIdRequest\x1a\x1f.users.v1.ListFollowingResponse\x12;\n" +
+	"\x06Follow\x12\x17.users.v1.FollowRequest\x1a\x18.users.v1.FollowResponse\x12A\n" +
+	"\bUnfollow\x12\x19.users.v1.UnfollowRequest\x1a\x1a.users.v1.UnfollowResponse\x12B\n" +
 	"\n" +
 	"DeleteUser\x12\x16.google.protobuf.Empty\x1a\x1c.users.v1.DeleteUserResponse\x12J\n" +
-	"\vRestoreUser\x12\x1c.users.v1.RestoreUserRequest\x1a\x1d.users.v1.RestoreUserResponse\x12;\n" +
-	"\x06Follow\x12\x17.users.v1.FollowRequest\x1a\x18.users.v1.FollowResponse\x12A\n" +
-	"\bUnfollow\x12\x19.users.v1.UnfollowRequest\x1a\x1a.users.v1.UnfollowResponseB\x14Z\x12./users/v1;usersv1b\x06proto3"
+	"\vRestoreUser\x12\x1c.users.v1.RestoreUserRequest\x1a\x1d.users.v1.RestoreUserResponseB\x14Z\x12./users/v1;usersv1b\x06proto3"
 
 var (
 	file_users_v1_users_proto_rawDescOnce sync.Once
@@ -1285,29 +1286,31 @@ var file_users_v1_users_proto_depIdxs = []int32{
 	23, // 8: users.v1.UserService.RefreshToken:input_type -> google.protobuf.Empty
 	23, // 9: users.v1.UserService.GetCurrentUser:input_type -> google.protobuf.Empty
 	2,  // 10: users.v1.UserService.GetUser:input_type -> users.v1.GetUserRequest
-	4,  // 11: users.v1.UserService.GetUsers:input_type -> users.v1.GetUsersRequest
-	3,  // 12: users.v1.UserService.ListFollowers:input_type -> users.v1.GetUserByIdRequest
-	3,  // 13: users.v1.UserService.ListFollowing:input_type -> users.v1.GetUserByIdRequest
-	5,  // 14: users.v1.UserService.UpdateProfile:input_type -> users.v1.UpdateProfileRequest
-	23, // 15: users.v1.UserService.DeleteUser:input_type -> google.protobuf.Empty
-	8,  // 16: users.v1.UserService.RestoreUser:input_type -> users.v1.RestoreUserRequest
-	6,  // 17: users.v1.UserService.Follow:input_type -> users.v1.FollowRequest
-	7,  // 18: users.v1.UserService.Unfollow:input_type -> users.v1.UnfollowRequest
-	9,  // 19: users.v1.UserService.Register:output_type -> users.v1.AuthResponse
-	9,  // 20: users.v1.UserService.Login:output_type -> users.v1.AuthResponse
-	9,  // 21: users.v1.UserService.RefreshToken:output_type -> users.v1.AuthResponse
-	10, // 22: users.v1.UserService.GetCurrentUser:output_type -> users.v1.GetCurrentUserResponse
-	11, // 23: users.v1.UserService.GetUser:output_type -> users.v1.GetUserResponse
-	12, // 24: users.v1.UserService.GetUsers:output_type -> users.v1.GetUsersResponse
-	13, // 25: users.v1.UserService.ListFollowers:output_type -> users.v1.ListFollowersResponse
-	14, // 26: users.v1.UserService.ListFollowing:output_type -> users.v1.ListFollowingResponse
+	3,  // 11: users.v1.UserService.GetUserById:input_type -> users.v1.GetUserByIdRequest
+	4,  // 12: users.v1.UserService.GetUsers:input_type -> users.v1.GetUsersRequest
+	5,  // 13: users.v1.UserService.UpdateProfile:input_type -> users.v1.UpdateProfileRequest
+	3,  // 14: users.v1.UserService.ListFollowers:input_type -> users.v1.GetUserByIdRequest
+	3,  // 15: users.v1.UserService.ListFollowing:input_type -> users.v1.GetUserByIdRequest
+	6,  // 16: users.v1.UserService.Follow:input_type -> users.v1.FollowRequest
+	7,  // 17: users.v1.UserService.Unfollow:input_type -> users.v1.UnfollowRequest
+	23, // 18: users.v1.UserService.DeleteUser:input_type -> google.protobuf.Empty
+	8,  // 19: users.v1.UserService.RestoreUser:input_type -> users.v1.RestoreUserRequest
+	9,  // 20: users.v1.UserService.Register:output_type -> users.v1.AuthResponse
+	9,  // 21: users.v1.UserService.Login:output_type -> users.v1.AuthResponse
+	9,  // 22: users.v1.UserService.RefreshToken:output_type -> users.v1.AuthResponse
+	10, // 23: users.v1.UserService.GetCurrentUser:output_type -> users.v1.GetCurrentUserResponse
+	11, // 24: users.v1.UserService.GetUser:output_type -> users.v1.GetUserResponse
+	11, // 25: users.v1.UserService.GetUserById:output_type -> users.v1.GetUserResponse
+	12, // 26: users.v1.UserService.GetUsers:output_type -> users.v1.GetUsersResponse
 	15, // 27: users.v1.UserService.UpdateProfile:output_type -> users.v1.UpdateProfileResponse
-	16, // 28: users.v1.UserService.DeleteUser:output_type -> users.v1.DeleteUserResponse
-	17, // 29: users.v1.UserService.RestoreUser:output_type -> users.v1.RestoreUserResponse
+	13, // 28: users.v1.UserService.ListFollowers:output_type -> users.v1.ListFollowersResponse
+	14, // 29: users.v1.UserService.ListFollowing:output_type -> users.v1.ListFollowingResponse
 	18, // 30: users.v1.UserService.Follow:output_type -> users.v1.FollowResponse
 	19, // 31: users.v1.UserService.Unfollow:output_type -> users.v1.UnfollowResponse
-	19, // [19:32] is the sub-list for method output_type
-	6,  // [6:19] is the sub-list for method input_type
+	16, // 32: users.v1.UserService.DeleteUser:output_type -> users.v1.DeleteUserResponse
+	17, // 33: users.v1.UserService.RestoreUser:output_type -> users.v1.RestoreUserResponse
+	20, // [20:34] is the sub-list for method output_type
+	6,  // [6:20] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name
 	6,  // [6:6] is the sub-list for extension extendee
 	0,  // [0:6] is the sub-list for field type_name

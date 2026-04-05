@@ -1,32 +1,34 @@
 package constants
 
 const (
-	// Errors
-	ErrRequestTimeout = "Request timeout"
-	ErrInvalidRequest = "Invalid request"
-	ErrInternalServer = "Internal server error"
-	ErrUnauthorized   = "Unauthorized"
-	ErrNoField        = "No fields to update"
+	// Gateway Specific Error
 
 	// Auth
-	TokenRefresh    = "Token refreshed successfully"
-	LoginSuccess    = "Login successful"
-	RegisterSuccess = "Registration successful"
-	LogoutSuccess   = "Logout successful"
+	ErrUsernameRequired = "Username is required"
+	TokenRefresh        = "Token refreshed successfully"
+	LoginSuccess        = "Login successful"
+	RegisterSuccess     = "Registration successful"
+	LogoutSuccess       = "Logout successful"
 
 	// User
-	GetProfileSuccess    = "Profile retrieved successfully"
-	GetUserSuccess       = "User retrieved successfully"
-	UpdateProfileSuccess = "Profile updated successfully"
-	DeleteUserSuccess    = "User deleted successfully"
-	FollowSuccess        = "User followed successfully"
-	UnfollowSuccess      = "User unfollowed successfully"
+	ErrNoField             = "No fields to update"
+	GetProfileSuccess      = "Profile retrieved successfully"
+	GetUserSuccess         = "User retrieved successfully"
+	UpdateProfileSuccess   = "Profile updated successfully"
+	DeleteUserSuccess      = "User deleted successfully"
+	FollowSuccess          = "User followed successfully"
+	UnfollowSuccess        = "User unfollowed successfully"
+	ListFollowersSuccess   = "Followers retrieved successfully"
+	ListFollowingSuccess   = "Following retrieved successfully"
 
 	// Post
-	PostCreated       = "Post created successfully"
-	GetPostSuccess    = "Post retrieved successfully"
-	UpdatePostSuccess = "Post updated successfully"
-	DeletePostSuccess = "Post deleted successfully"
+	PostCreated        = "Post created successfully"
+	GetPostSuccess     = "Post retrieved successfully"
+	UpdatePostSuccess  = "Post updated successfully"
+	DeletePostSuccess  = "Post deleted successfully"
+	GetFeedSuccess     = "Feed retrieved successfully"
+	GetUserPostsSuccess  = "User posts retrieved successfully"
+	GetLikedPostsSuccess = "Liked posts retrieved successfully"
 
 	// Like
 	LikeSuccess   = "Post liked successfully"

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"voidspaceGateway/internal/api/responses"
 	"voidspaceGateway/internal/constants"
+	shared_constants "github.com/vhysxl/voidspace/shared/utils/constants"
 	"voidspaceGateway/internal/models"
 	"voidspaceGateway/utils"
 
@@ -16,7 +17,7 @@ func (h *AuthHandler) Register(c echo.Context) error {
 
 	r := new(models.RegisterRequest)
 	if err := c.Bind(r); err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
+		return responses.ErrorResponseMessage(c, http.StatusBadRequest, shared_constants.InvalidRequest)
 	}
 
 	if err := h.Validator.Struct(r); err != nil {
@@ -25,9 +26,7 @@ func (h *AuthHandler) Register(c echo.Context) error {
 
 	res, err := h.UserService.Register(ctx, r)
 	if err != nil {
-		h.Logger.Error("failed to register", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(h.Logger, c, err, "failed to register")
 	}
 
 	if res.RefreshToken != "" {

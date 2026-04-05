@@ -1,0 +1,37 @@
+package post
+
+import (
+	"net/http"
+	"voidspaceGateway/internal/api/responses"
+	"voidspaceGateway/internal/constants"
+	"voidspaceGateway/internal/models"
+	"voidspaceGateway/utils"
+
+	shared_constants "github.com/vhysxl/voidspace/shared/utils/constants"
+
+	"github.com/labstack/echo/v4"
+)
+
+func (h *PostHandler) GetLikedPosts(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	val := c.Get("authUser")
+	authUser, _ := val.(*models.AuthUser)
+	if authUser == nil {
+		authUser = &models.AuthUser{}
+	}
+
+	username := c.Param("username")
+
+	data := &models.GetUserRequest{Username: username}
+	if err := h.Validator.Struct(data); err != nil {
+		return responses.ErrorResponseMessage(c, http.StatusBadRequest, shared_constants.InvalidRequest)
+	}
+
+	res, err := h.PostService.GetLikedPosts(ctx, username, authUser.ID, authUser.Username)
+	if err != nil {
+		return utils.HandleDialError(h.Logger, c, err, "failed to get liked posts")
+	}
+
+	return responses.SuccessResponseMessage(c, http.StatusOK, constants.GetLikedPostsSuccess, res)
+}

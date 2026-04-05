@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"voidspaceGateway/internal/api/responses"
 	"voidspaceGateway/internal/constants"
+	shared_constants "github.com/vhysxl/voidspace/shared/utils/constants"
 	"voidspaceGateway/internal/models"
 	"voidspaceGateway/utils"
 
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 )
 
 func (h *AuthHandler) RefreshToken(c echo.Context) error {
@@ -16,14 +16,14 @@ func (h *AuthHandler) RefreshToken(c echo.Context) error {
 
 	cookie, err := c.Cookie("refresh_token")
 	if err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, constants.ErrInvalidRequest)
+		return responses.ErrorResponseMessage(c, http.StatusBadRequest, shared_constants.InvalidRequest)
 	}
 
 	refreshToken := cookie.Value
 
-	claims, err := utils.VerifyRefreshToken(refreshToken, h.PublicKey)
+	claims, err := utils.VerifyToken(refreshToken, h.PublicKey)
 	if err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusUnauthorized, constants.ErrUnauthorized)
+		return responses.ErrorResponseMessage(c, http.StatusUnauthorized, shared_constants.Unauthorized)
 	}
 
 	userID := claims["ID"].(string)
@@ -31,9 +31,7 @@ func (h *AuthHandler) RefreshToken(c echo.Context) error {
 
 	res, err := h.UserService.RefreshToken(ctx, userID, username)
 	if err != nil {
-		h.Logger.Error("failed to refresh token", zap.Error(err))
-		code, msg := utils.GRPCErrorToHTTP(err)
-		return responses.ErrorResponseMessage(c, code, msg)
+		return utils.HandleDialError(h.Logger, c, err, "failed to refresh token")
 	}
 
 	refreshRes := models.RefreshTokenResponseAPI{

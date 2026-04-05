@@ -18,6 +18,9 @@ service CommentService {
   // ---------------------- ACCOUNT LIFECYCLE ----------------------
   rpc HandleAccountDeletion(HandleAccountDeletionRequest) returns (google.protobuf.Empty);
   rpc HandleAccountRestoration(HandleAccountRestorationRequest) returns (google.protobuf.Empty);
+
+  // ---------------------- POST LIFECYCLE ----------------------
+  rpc HandlePostDeletion(HandlePostDeletionRequest) returns (google.protobuf.Empty);
 }
 
 // ---------------------- REQUEST MESSAGES ----------------------
@@ -49,6 +52,10 @@ message HandleAccountDeletionRequest {
 
 message HandleAccountRestorationRequest {
   int64 user_id = 1;
+}
+
+message HandlePostDeletionRequest {
+  int64 post_id = 1;
 }
 
 // ---------------------- RESPONSE MESSAGES ----------------------

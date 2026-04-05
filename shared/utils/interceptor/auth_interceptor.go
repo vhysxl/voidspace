@@ -36,18 +36,25 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 			"/users.v1.UserService/Login":         true,
 			"/users.v1.UserService/Register":      true,
 			"/users.v1.UserService/GetUser":       true,
-			"/users.v1.UserService/GetUsersByIds": true,
+			"/users.v1.UserService/GetUsers":      true,
 			"/users.v1.UserService/GetUserById":   true,
+			"/users.v1.UserService/ListFollowers": true,
+			"/users.v1.UserService/ListFollowing": true,
 
 			// Post
-			"/posts.v1.PostService/GetPost":       true,
-			"/posts.v1.PostService/GetAllPosts":   true,
-			"/posts.v1.PostService/GetGlobalFeed": true,
+			"/posts.v1.PostService/GetPost":                  true,
+			"/posts.v1.PostService/GetAllPosts":              true,
+			"/posts.v1.PostService/GetGlobalFeed":            true,
+			"/posts.v1.PostService/HandleAccountDeletion":    true,
+			"/posts.v1.PostService/HandleAccountRestoration": true,
 
 			// Comments
-			"/comments.v1.CommentService/GetAllCommentsByPostId": true,
-			"/comments.v1.CommentService/GetAllCommentsByUserId": true,
-			"/comments.v1.CommentService/GetFeedCommentCount":    true,
+			"/comments.v1.CommentService/GetAllCommentsByPostId":   true,
+			"/comments.v1.CommentService/GetAllCommentsByUserId":   true,
+			"/comments.v1.CommentService/GetFeedCommentCount":      true,
+			"/comments.v1.CommentService/HandleAccountDeletion":    true,
+			"/comments.v1.CommentService/HandleAccountRestoration": true,
+			"/comments.v1.CommentService/HandlePostDeletion":       true,
 		}
 
 		isSkippedMethod := skipAuthMethods[info.FullMethod]

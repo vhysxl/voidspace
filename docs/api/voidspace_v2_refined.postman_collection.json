@@ -1,0 +1,372 @@
+{
+	"info": {
+		"_postman_id": "9158b95f-ffb7-4f30-b1a7-363a996e3354",
+		"name": "Voidspace V2 - Refined",
+		"description": "Refined Postman collection for Voidspace V2 API. Use collection variables for baseUrl and apiKey.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"geminitester\",\n    \"email\": \"geminitester@gemini.com\",\n    \"password\": \"Password123!\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+					}
+				},
+				{
+					"name": "Log In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.success && jsonData.data.access_token) {",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.data.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usernameoremail\": \"geminitester\",\n    \"password\": \"Password123!\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+					}
+				},
+				{
+					"name": "Refresh",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] }
+					}
+				},
+				{
+					"name": "Log Out",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/user/geminitester", "host": ["{{baseUrl}}"], "path": ["user", "geminitester"] }
+					}
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/user/me", "host": ["{{baseUrl}}"], "path": ["user", "me"] }
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"display_name\": \"Gemini Tester\",\n    \"bio\": \"Automated API Testing\",\n    \"location\": \"The Cloud\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/user/me", "host": ["{{baseUrl}}"], "path": ["user", "me"] }
+					}
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/user/me", "host": ["{{baseUrl}}"], "path": ["user", "me"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Create Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"Hello Voidspace!\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/posts", "host": ["{{baseUrl}}"], "path": ["posts"] }
+					}
+				},
+				{
+					"name": "Get Post",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/posts/19", "host": ["{{baseUrl}}"], "path": ["posts", "19"] }
+					}
+				},
+				{
+					"name": "Get User Posts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/posts/user/geminitester", "host": ["{{baseUrl}}"], "path": ["posts", "user", "geminitester"] }
+					}
+				},
+				{
+					"name": "Get Liked Posts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/posts/liked/geminitester", "host": ["{{baseUrl}}"], "path": ["posts", "liked", "geminitester"] }
+					}
+				},
+				{
+					"name": "Update Post",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"Updated content\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/posts/19", "host": ["{{baseUrl}}"], "path": ["posts", "19"] }
+					}
+				},
+				{
+					"name": "Delete Post",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/posts/19", "host": ["{{baseUrl}}"], "path": ["posts", "19"] }
+					}
+				},
+				{
+					"name": "Like Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/posts/19/like", "host": ["{{baseUrl}}"], "path": ["posts", "19", "like"] }
+					}
+				},
+				{
+					"name": "Unlike Post",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/posts/19/like", "host": ["{{baseUrl}}"], "path": ["posts", "19", "like"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "Create Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"post_id\": 19,\n    \"content\": \"Great post!\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/comments", "host": ["{{baseUrl}}"], "path": ["comments"] }
+					}
+				},
+				{
+					"name": "Get Comments by Post",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/comments/post/19", "host": ["{{baseUrl}}"], "path": ["comments", "post", "19"] }
+					}
+				},
+				{
+					"name": "Get Comments by User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/comments/user/geminitester", "host": ["{{baseUrl}}"], "path": ["comments", "user", "geminitester"] }
+					}
+				},
+				{
+					"name": "Delete Comment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/comments/5", "host": ["{{baseUrl}}"], "path": ["comments", "5"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Follow",
+			"item": [
+				{
+					"name": "Follow User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"target_username\": \"geminitester2\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/follow", "host": ["{{baseUrl}}"], "path": ["follow"] }
+					}
+				},
+				{
+					"name": "Unfollow User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"target_username\": \"geminitester2\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/follow", "host": ["{{baseUrl}}"], "path": ["follow"] }
+					}
+				},
+				{
+					"name": "List Followers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/user/geminitester/followers", "host": ["{{baseUrl}}"], "path": ["user", "geminitester", "followers"] }
+					}
+				},
+				{
+					"name": "List Following",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/user/geminitester/following", "host": ["{{baseUrl}}"], "path": ["user", "geminitester", "following"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Feed",
+			"item": [
+				{
+					"name": "Global Feed",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/feed", "host": ["{{baseUrl}}"], "path": ["feed"] }
+					}
+				},
+				{
+					"name": "Following Feed",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+						],
+						"url": { "raw": "{{baseUrl}}/feed/following", "host": ["{{baseUrl}}"], "path": ["feed", "following"] }
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{ "key": "baseUrl", "value": "http://localhost:5000/api/v2", "type": "string" },
+		{ "key": "apiKey", "value": "shinmenmusashinokamifujiwaranoharunobu", "type": "string" },
+		{ "key": "accessToken", "value": "", "type": "string" }
+	]
+}
