@@ -37,7 +37,8 @@ jobs:
         run: go test -v ./...
 
       - name: build docker image
-        run: docker build -t voidspace-gateway:latest .
+        run: docker build -f gateway/Dockerfile -t voidspace-gateway:latest .
+        working-directory: ${{ github.workspace }}
 
       - uses: "google-github-actions/auth@v2"
         with:
@@ -69,3 +70,6 @@ jobs:
             COMMENT_SERVICE_URL=${{ secrets.COMMENT_SERVICE_URL }}
             BUCKET_NAME=${{ secrets.BUCKET_NAME }}
             API_SECRET=${{ secrets.API_SECRET }}
+            TEMPORAL_HOST=${{ secrets.TEMPORAL_HOST }}
+            TEMPORAL_NAMESPACE=${{ secrets.TEMPORAL_NAMESPACE }}
+            TEMPORAL_APIKEY=${{ secrets.TEMPORAL_API_KEY }}

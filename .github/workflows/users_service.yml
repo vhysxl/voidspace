@@ -37,7 +37,8 @@ jobs:
         run: go test -v ./...
 
       - name: build docker image
-        run: docker build -t voidspace-users:latest .
+        run: docker build -f services/users/Dockerfile -t voidspace-users:latest .
+        working-directory: ${{ github.workspace }}
 
       - uses: "google-github-actions/auth@v2"
         with:
@@ -65,7 +66,4 @@ jobs:
           project_id: "modified-fabric-379312"
           flags: "--use-http2 --allow-unauthenticated --update-secrets=/etc/secrets/private-key=voidspace_private_key:1"
           env_vars: |
-            PROD_DB_USER=${{ secrets.PROD_DB_USER }}
-            PROD_DB_PASS=${{ secrets.PROD_DB_PASS }}
-            PROD_DB_NAME=${{ secrets.PROD_DB_NAME }}
-            PROD_DB_ADDRESS=${{ secrets.PROD_DB_ADDRESS }}
+            DB_CONN=${{ secrets.USER_DB_CONN }}

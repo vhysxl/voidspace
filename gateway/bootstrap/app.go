@@ -56,17 +56,17 @@ func App() (*Application, error) {
 	}
 
 	// gRPC Connections to microservices
-	userConn, err := NewConn(config.UserServiceAddr, true)
+	userConn, err := NewConn(config.UserServiceAddr, false)
 	if err != nil {
 		return nil, err
 	}
 
-	postConn, err := NewConn(config.PostServiceAddr, true)
+	postConn, err := NewConn(config.PostServiceAddr, false)
 	if err != nil {
 		return nil, err
 	}
 
-	commentConn, err := NewConn(config.CommentServiceAddr, true)
+	commentConn, err := NewConn(config.CommentServiceAddr, false)
 	if err != nil {
 		return nil, err
 	}

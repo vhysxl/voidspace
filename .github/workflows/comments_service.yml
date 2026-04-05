@@ -38,7 +38,8 @@ jobs:
         run: go test -v ./...
 
       - name: build docker image
-        run: docker build -t voidspace-comments:latest .
+        run: docker build -f services/comments/Dockerfile -t voidspace-comments:latest .
+        working-directory: ${{ github.workspace }}
 
       - uses: "google-github-actions/auth@v2"
         with:
@@ -65,7 +66,4 @@ jobs:
           project_id: "modified-fabric-379312"
           flags: "--use-http2 --allow-unauthenticated"
           env_vars: |
-            PROD_DB_USER=${{ secrets.COMMENTS_DB_USER }}
-            PROD_DB_PASS=${{ secrets.COMMENTS_DB_PASS }}
-            PROD_DB_NAME=${{ secrets.COMMENTS_DB_NAME }}
-            PROD_DB_ADDRESS=${{ secrets.COMMENTS_DB_ADDRESS }}
+            DB_CONN=${{ secrets.COMMENT_DB_CONN }}

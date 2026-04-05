@@ -2,7 +2,10 @@ FROM golang:1.24 AS builder
 
 WORKDIR /app
 
-COPY . .
+COPY shared/ ./shared/
+COPY gateway/ ./gateway/
+
+WORKDIR /app/gateway
 
 RUN go mod download
 
@@ -14,8 +17,8 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /app
 
-COPY --from=builder /app/gateway .
-COPY --from=builder /app/api_docs.yaml ./api_docs.yaml
+COPY --from=builder /app/gateway/gateway .
+COPY --from=builder /app/gateway/api_docs.yaml ./api_docs.yaml
 
 EXPOSE 8080
 

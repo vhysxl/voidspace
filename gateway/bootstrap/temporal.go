@@ -1,7 +1,9 @@
 package bootstrap
 
 import (
+	"crypto/tls"
 	"fmt"
+	"os"
 
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
@@ -23,8 +25,13 @@ func TemporalServiceInit(logger *zap.Logger, port string) (*TemporalService, err
 	temporalService := "Voidspace Gateway"
 	temporalLogger := logur.LoggerToKV(zapadapter.New(logger))
 	temporalOptions := client.Options{
-		Logger:   temporalLogger,
-		HostPort: port,
+		Logger:      temporalLogger,
+		HostPort:    os.Getenv("TEMPORAL_HOST"),
+		Namespace:   os.Getenv("TEMPORAL_NAMESPACE"),
+		Credentials: client.NewAPIKeyStaticCredentials(os.Getenv("TEMPORAL_API_KEY")),
+		ConnectionOptions: client.ConnectionOptions{
+			TLS: &tls.Config{},
+		},
 	}
 
 	temporalClient, err := client.Dial(temporalOptions)

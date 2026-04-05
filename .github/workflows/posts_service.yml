@@ -37,7 +37,8 @@ jobs:
         run: go test -v ./...
 
       - name: build docker image
-        run: docker build -t voidspace-posts:latest .
+        run: docker build -f services/posts/Dockerfile -t voidspace-posts:latest .
+        working-directory: ${{ github.workspace }}
 
       - uses: "google-github-actions/auth@v2"
         with:
