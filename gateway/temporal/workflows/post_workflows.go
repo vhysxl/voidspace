@@ -14,7 +14,7 @@ const DeletePostWorkflowName = "DeletePostWorkflow"
 func DeletePostWorkflow(ctx workflow.Context, param temporal_dto.DeletePostWorkflowParam) (*temporal_dto.DeletePostWorkflowResult, error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
-		RetryPolicy:         &temporal.RetryPolicy{
+		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    1 * time.Second,
 			BackoffCoefficient: 2.0,
 			MaximumInterval:    10 * time.Second,
@@ -23,12 +23,7 @@ func DeletePostWorkflow(ctx workflow.Context, param temporal_dto.DeletePostWorkf
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	actParam := temporal_dto.DeletePostReq{
-		PostID:   param.PostID,
-		Username: param.Username,
-		UserID:   param.UserID,
-	}
-
+	actParam := temporal_dto.DeletePostReq(param)
 	// 1. Delete Post (Hard Delete)
 	errPost := workflow.ExecuteActivity(ctx, post.DeletePostActivity, actParam).Get(ctx, nil)
 	if errPost != nil {
