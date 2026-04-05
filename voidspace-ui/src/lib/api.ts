@@ -30,6 +30,7 @@ export async function apiFetch<T>(endpoint: string, options: FetchOptions = {}):
   const response = await fetch(url.toString(), {
     ...options,
     headers,
+    credentials: "include",
   });
 
   const data = await response.json();

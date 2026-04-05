@@ -19,7 +19,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-white text-black hover:bg-neutral-200 font-bold text-[12px] tracking-[2.4px] uppercase h-[56px] w-full disabled:opacity-50",
+    primary: "bg-white text-black hover:bg-neutral-200 font-bold text-[14px] tracking-[2.4px] uppercase h-[56px] w-full disabled:opacity-50",
     secondary: "border border-white/20 bg-transparent text-white/60 hover:text-white hover:border-white/40 disabled:opacity-50",
     ghost: "text-[#666] hover:text-white transition-colors disabled:opacity-50",
   };
