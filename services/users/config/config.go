@@ -37,6 +37,6 @@ func initConfig() Config {
 		ContextTimeout:       helper.GetEnvInt("CONTEXT_TIMEOUT", 10),
 		AccessTokenDuration:  helper.GetEnvInt("ACCESS_TOKEN_DURATION", 30),
 		RefreshTokenDuration: helper.GetEnvInt("REFRESH_TOKEN_DURATION", 7),
-		SecretPath:           helper.GetEnv("SECRET_PATH", "SECRETS"),
+		SecretPath:           helper.GetEnv("SECRET_PATH", "/etc/secrets/private-key"),
 	}
 }
