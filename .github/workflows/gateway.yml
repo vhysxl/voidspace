@@ -72,4 +72,4 @@ jobs:
             API_SECRET=${{ secrets.API_SECRET }}
             TEMPORAL_HOST=${{ secrets.TEMPORAL_HOST }}
             TEMPORAL_NAMESPACE=${{ secrets.TEMPORAL_NAMESPACE }}
-            TEMPORAL_APIKEY=${{ secrets.TEMPORAL_API_KEY }}
+            TEMPORAL_API_KEY=${{ secrets.TEMPORAL_API_KEY }}
