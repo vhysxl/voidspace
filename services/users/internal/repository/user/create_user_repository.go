@@ -37,6 +37,8 @@ func (u *UserRepository) Create(
 			return err
 		}
 
+		user.ID = userID
+
 		// Insert UserProfile (Create User Profile)
 		_, err = tx.Exec(
 			ctx,
