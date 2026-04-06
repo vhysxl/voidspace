@@ -7,13 +7,16 @@
   --color-void-border: rgba(255, 255, 255, 0.1);
   --color-void-accent: #ffffff;
   
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
   --font-space-grotesk: var(--font-space-grotesk);
   --font-manrope: var(--font-manrope);
 }
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
 }
 
 .dark {

@@ -7,11 +7,14 @@ interface AuthState {
   accessToken: string | null;
   expiresAt: number | null;
   isLoggedIn: boolean;
-  
-  setAuth: (token: string, expires_in: number, user: User) => void;
+  _hasHydrated: boolean;
+
+  setToken: (token: string, expires_in: number) => void;
+  setUser: (user: User) => void;
   updateUser: (user: User) => void;
   logout: () => void;
   clearAuth: () => void;
+  setHasHydrated: (state: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -21,11 +24,17 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       expiresAt: null,
       isLoggedIn: false,
+      _hasHydrated: false,
 
-      setAuth: (token, expires_in, user) => {
+      setToken: (token: string, expires_in: number) => {
         set({
           accessToken: token,
           expiresAt: Date.now() + expires_in * 1000,
+        });
+      },
+
+      setUser: (user: User) => {
+        set({
           user,
           isLoggedIn: true,
         });
@@ -52,9 +61,16 @@ export const useAuthStore = create<AuthState>()(
           isLoggedIn: false,
         });
       },
+
+      setHasHydrated: (state) => {
+        set({ _hasHydrated: state });
+      },
     }),
     {
       name: "voidspace-auth",
+      onRehydrateStorage: (state) => {
+        return () => state.setHasHydrated(true);
+      },
     }
   )
 );

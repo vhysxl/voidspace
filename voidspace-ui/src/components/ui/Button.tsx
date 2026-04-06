@@ -1,4 +1,3 @@
-import React from "react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -19,9 +18,9 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-white text-black hover:bg-neutral-200 font-bold text-[14px] tracking-[2.4px] uppercase h-[56px] w-full disabled:opacity-50",
-    secondary: "border border-white/20 bg-transparent text-white/60 hover:text-white hover:border-white/40 disabled:opacity-50",
-    ghost: "text-[#666] hover:text-white transition-colors disabled:opacity-50",
+    primary: "bg-foreground text-background hover:opacity-90 font-bold text-[14px] tracking-[2.4px] uppercase h-[56px] w-full disabled:opacity-50",
+    secondary: "border border-foreground/20 bg-transparent text-foreground/60 hover:text-foreground hover:border-foreground/40 disabled:opacity-50",
+    ghost: "text-foreground/40 hover:text-foreground transition-colors disabled:opacity-50",
   };
 
   return (

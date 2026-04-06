@@ -1,4 +1,4 @@
-import React from "react";
+import { ReactNode, ElementType } from "react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -7,16 +7,16 @@ function cn(...inputs: ClassValue[]) {
 }
 
 interface TypographyProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
-  as?: React.ElementType;
+  as?: ElementType;
 }
 
 export function Heading({ children, className, as: Component = "h1" }: TypographyProps) {
   return (
     <Component
       className={cn(
-        "font-space-grotesk font-bold text-[36px] text-white tracking-[-1.08px] uppercase",
+        "font-space-grotesk font-bold text-[28px] md:text-[36px] text-white tracking-[-1.08px] uppercase",
         className
       )}
     >

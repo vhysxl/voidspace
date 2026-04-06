@@ -4,7 +4,7 @@ import { ApiResponse, AuthResponse, User } from "@/types";
 import { useRouter } from "next/navigation";
 
 export const useAuth = () => {
-  const { setAuth, logout: clearAuth } = useAuthStore();
+  const { setToken, setUser, logout: clearAuth } = useAuthStore();
   const router = useRouter();
 
   const login = async (usernameoremail: string, password: string) => {
@@ -14,15 +14,14 @@ export const useAuth = () => {
     });
 
     if (response.success && response.data) {
+      // Set the token immediately so subsequent call to /user/me uses it
+      setToken(response.data.access_token, response.data.expires_in);
+
       // After login, we need to fetch user profile to populate store
-      const userProfile = await apiFetch<ApiResponse<User>>("/user/me", {
-        headers: {
-          Authorization: `Bearer ${response.data.access_token}`,
-        },
-      });
+      const userProfile = await apiFetch<ApiResponse<User>>("/user/me");
 
       if (userProfile.success && userProfile.data) {
-        setAuth(response.data.access_token, response.data.expires_in, userProfile.data);
+        setUser(userProfile.data);
         router.push("/");
       }
     }
@@ -36,14 +35,12 @@ export const useAuth = () => {
     });
 
     if (response.success && response.data) {
-      const userProfile = await apiFetch<ApiResponse<User>>("/user/me", {
-        headers: {
-          Authorization: `Bearer ${response.data.access_token}`,
-        },
-      });
+      setToken(response.data.access_token, response.data.expires_in);
+
+      const userProfile = await apiFetch<ApiResponse<User>>("/user/me");
 
       if (userProfile.success && userProfile.data) {
-        setAuth(response.data.access_token, response.data.expires_in, userProfile.data);
+        setUser(userProfile.data);
         router.push("/");
       }
     }

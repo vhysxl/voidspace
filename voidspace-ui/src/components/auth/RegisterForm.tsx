@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import Input from "@/components/ui/Input";
@@ -58,8 +58,8 @@ export default function RegisterForm() {
         subtitle="Create your your account to get started" 
       />
 
-      <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-        <div className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8" noValidate>
+        <div className="space-y-6 md:space-y-8">
           <Input
             label="Username"
             placeholder="Username"
@@ -96,7 +96,7 @@ export default function RegisterForm() {
           </div>
         )}
 
-        <div className="space-y-8 pt-2">
+        <div className="space-y-6 md:space-y-8 pt-2">
           <Button type="submit" isLoading={isLoading}>
             Register {!isLoading && <MoveRight size={16} />}
           </Button>

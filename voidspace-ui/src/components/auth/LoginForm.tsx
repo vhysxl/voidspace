@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import Input from "@/components/ui/Input";
@@ -57,8 +57,8 @@ export default function LoginForm() {
         subtitle="Log in to your your account"
       />
 
-      <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-        <div className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8" noValidate>
+        <div className="space-y-6 md:space-y-8">
           <Input
             label="Username or Email"
             placeholder="Username or Email"
@@ -86,7 +86,7 @@ export default function LoginForm() {
           </div>
         )}
 
-        <div className="space-y-8 pt-2">
+        <div className="space-y-6 md:space-y-8 pt-2">
           <Button type="submit" isLoading={isLoading}>
             Sign In {!isLoading && <MoveRight size={16} />}
           </Button>
