@@ -60,7 +60,7 @@ export default function UserMiniProfile() {
           e.preventDefault();
           logout();
         }}
-        className="text-foreground/40 hover:text-red-500 transition-colors p-3 mr-1"
+        className="text-foreground/40 hover:text-red-500 transition-colors p-3 mr-1 cursor-pointer"
         title="Log Out"
       >
         <LogOut size={16} />

@@ -2,29 +2,19 @@
 
 import { useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { useThemeStore } from "@/store/useThemeStore";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Sun, Moon, Trash2, AlertTriangle, X } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Trash2, AlertTriangle, X, LogOut, Loader2, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 export default function SettingsPage() {
-  const { theme, toggleTheme, _hasHydrated } = useThemeStore();
-  const { user } = useAuthStore();
+  const { user, isLoggedIn, _hasHydrated } = useAuthStore();
+  const { logout } = useAuth();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [confirmUsername, setConfirmUsername] = useState("");
 
   const isConfirmed = confirmUsername === user?.username;
-
-  if (!_hasHydrated) {
-    return (
-      <DashboardLayout fullWidth={true}>
-        <div className="flex flex-col min-h-screen animate-pulse p-6">
-          <div className="h-8 bg-foreground/5 w-32 mb-8" />
-          <div className="h-20 bg-foreground/5 w-full rounded-sm" />
-        </div>
-      </DashboardLayout>
-    );
-  }
 
   const handleDeleteAccount = () => {
     if (isConfirmed) {
@@ -33,6 +23,16 @@ export default function SettingsPage() {
       setShowDeleteModal(false);
     }
   };
+
+  if (!_hasHydrated) {
+    return (
+      <DashboardLayout fullWidth={true}>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="size-8 text-foreground/20 animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout fullWidth={true}>
@@ -45,76 +45,85 @@ export default function SettingsPage() {
         </div>
 
         <div className="p-6 space-y-10">
-          {/* Theme Section */}
-          <section className="space-y-4">
-            <h2 className="text-[11px] font-bold uppercase tracking-[2px] text-foreground/40">
-              Appearance
-            </h2>
-            <div className="flex items-center justify-between p-4 border border-foreground/10 rounded-sm bg-foreground/5">
-              <div className="flex items-center gap-3">
-                {theme === "dark" ? <Moon size={20} /> : <Sun size={20} />}
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-tight">
-                    {theme === "dark" ? "Dark Mode" : "Light Mode"}
-                  </p>
-                  <p className="text-[11px] text-foreground/40 uppercase tracking-[1px]">
-                    Switch between celestial modes
-                  </p>
-                </div>
+          {!isLoggedIn ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
+              <div className="size-16 rounded-full bg-foreground/5 flex items-center justify-center">
+                <LogIn size={24} className="text-foreground/20" />
               </div>
-              <button
-                onClick={toggleTheme}
-                className="relative inline-flex h-6 w-11 items-center rounded-full bg-foreground/10 transition-colors focus:outline-none"
-              >
-                <span
-                  className={`${
-                    theme === "dark" ? "translate-x-6 bg-foreground" : "translate-x-1 bg-foreground/40"
-                  } inline-block h-4 w-4 transform rounded-full transition-transform`}
-                />
-              </button>
-            </div>
-          </section>
-
-          {/* Account Section */}
-          <section className="space-y-4">
-            <h2 className="text-[11px] font-bold uppercase tracking-[2px] text-foreground/40">
-              Account
-            </h2>
-            <div className="border border-foreground/10 rounded-sm divide-y divide-foreground/10">
-              <div className="p-4 flex flex-col gap-1">
-                <p className="text-[11px] text-foreground/40 uppercase tracking-[1px]">
-                  Logged in as
-                </p>
-                <p className="text-sm font-bold uppercase tracking-tight">
-                  {user?.name || "GUEST VOYAGER"}
-                </p>
-                <p className="text-[11px] text-foreground/40 tracking-[1px]">
-                  @{user?.username || "guest"}
+              <div className="space-y-2">
+                <h2 className="font-space-grotesk text-xl font-bold uppercase tracking-tight">
+                  Authentication Required
+                </h2>
+                <p className="text-foreground/40 text-sm max-w-xs mx-auto uppercase tracking-widest leading-loose">
+                  You need to sign in to access and manage your settings.
                 </p>
               </div>
-
-              <button
-                onClick={() => setShowDeleteModal(true)}
-                className="w-full p-4 flex items-center gap-3 text-red-500 hover:bg-red-500/5 transition-colors text-left"
+              <Link 
+                href="/auth/login"
+                className="px-8 py-3 bg-foreground text-background font-bold uppercase text-[11px] tracking-[2px] hover:opacity-90 transition-all"
               >
-                <Trash2 size={20} />
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-tight">
-                    Delete Account
-                  </p>
-                  <p className="text-[11px] opacity-60 uppercase tracking-[1px]">
-                    Permanently erase your data from the void
-                  </p>
-                </div>
-              </button>
+                Sign In
+              </Link>
             </div>
-          </section>
+          ) : (
+            <>
+              {/* Account Section */}
+              <section className="space-y-4">
+                <h2 className="text-[11px] font-bold uppercase tracking-[2px] text-foreground/40">
+                  Account
+                </h2>
+                <div className="border border-foreground/10 rounded-sm divide-y divide-foreground/10">
+                  <div className="p-4 flex flex-col gap-1">
+                    <p className="text-[11px] text-foreground/40 uppercase tracking-[1px]">
+                      Logged in as
+                    </p>
+                    <p className="text-sm font-bold uppercase tracking-tight">
+                      {user?.profile.display_name || user?.username || "VOYAGER"}
+                    </p>
+                    <p className="text-[11px] text-foreground/40 tracking-[1px]">
+                      @{user?.username}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => logout()}
+                    className="w-full p-4 flex items-center gap-3 text-foreground/60 hover:bg-foreground/5 hover:text-foreground transition-colors text-left cursor-pointer"
+                  >
+                    <LogOut size={20} />
+                    <div>
+                      <p className="text-sm font-bold uppercase tracking-tight">
+                        Log Out
+                      </p>
+                      <p className="text-[11px] opacity-60 uppercase tracking-[1px]">
+                        End your current session
+                      </p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="w-full p-4 flex items-center gap-3 text-red-500 hover:bg-red-500/5 transition-colors text-left cursor-pointer"
+                  >
+                    <Trash2 size={20} />
+                    <div>
+                      <p className="text-sm font-bold uppercase tracking-tight">
+                        Delete Account
+                      </p>
+                      <p className="text-[11px] opacity-60 uppercase tracking-[1px]">
+                        Permanently erase your data from the void
+                      </p>
+                    </div>
+                  </button>
+                </div>
+              </section>
+            </>
+          )}
         </div>
       </div>
 
       {/* Delete Confirmation Modal */}
       <AnimatePresence>
-        {showDeleteModal && (
+        {showDeleteModal && isLoggedIn && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -128,7 +137,7 @@ export default function SettingsPage() {
                 </div>
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="text-foreground/40 hover:text-foreground transition-colors"
+                  className="text-foreground/40 hover:text-foreground transition-colors cursor-pointer"
                 >
                   <X size={20} />
                 </button>
@@ -138,7 +147,7 @@ export default function SettingsPage() {
                 <h3 className="font-space-grotesk text-xl font-bold uppercase tracking-tight text-red-500">
                   Are you absolutely sure?
                 </h3>
-                <p className="text-sm text-foreground/60 leading-relaxed">
+                <p className="text-sm text-foreground/60 leading-relaxed uppercase tracking-widest">
                   This action is irreversible. It will permanently delete your posts, comments, and profile from VOIDSPACE.
                 </p>
               </div>
@@ -148,7 +157,7 @@ export default function SettingsPage() {
                   <p className="text-xs text-foreground/40 uppercase tracking-[1px] mb-2">
                     To confirm, please type your username:
                     <span className="block mt-1 font-bold text-foreground">
-                      {user?.username || "guest"}
+                      {user?.username}
                     </span>
                   </p>
                   <input
@@ -166,7 +175,7 @@ export default function SettingsPage() {
                     onClick={handleDeleteAccount}
                     className={`w-full py-4 rounded-sm font-bold text-[11px] uppercase tracking-[2px] transition-all ${
                       isConfirmed
-                        ? "bg-red-500 text-white hover:bg-red-600 active:scale-[0.98]"
+                        ? "bg-red-500 text-white hover:bg-red-600 active:scale-[0.98] cursor-pointer"
                         : "bg-foreground/5 text-foreground/20 cursor-not-allowed"
                     }`}
                   >
@@ -174,7 +183,7 @@ export default function SettingsPage() {
                   </button>
                   <button
                     onClick={() => setShowDeleteModal(false)}
-                    className="w-full py-4 rounded-sm font-bold text-[11px] uppercase tracking-[2px] border border-foreground/10 hover:bg-foreground/5 transition-all"
+                    className="w-full py-4 rounded-sm font-bold text-[11px] uppercase tracking-[2px] border border-foreground/10 hover:bg-foreground/5 transition-all cursor-pointer"
                   >
                     Cancel
                   </button>

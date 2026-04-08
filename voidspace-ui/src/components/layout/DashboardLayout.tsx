@@ -5,6 +5,8 @@ import Sidebar from "./Sidebar";
 import RightSidebar from "./RightSidebar";
 import MobileNav from "./MobileNav";
 import NewPostModal from "./NewPostModal";
+import EditPostModal from "../posts/EditPostModal";
+import EditProfileModal from "../profile/EditProfileModal";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -32,6 +34,8 @@ export default function DashboardLayout({ children, fullWidth = true }: Dashboar
 
       {/* Modals */}
       <NewPostModal />
+      <EditPostModal />
+      <EditProfileModal />
     </div>
   );
 }

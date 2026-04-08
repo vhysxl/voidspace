@@ -52,7 +52,7 @@ export const useAuth = () => {
       await apiFetch("/auth/logout", { method: "POST" });
     } finally {
       clearAuth();
-      router.push("/auth/login");
+      router.push("/");
     }
   };
 
