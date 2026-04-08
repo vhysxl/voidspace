@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"voidspaceGateway/internal/api/responses"
 	"voidspaceGateway/internal/constants"
-	shared_constants "github.com/vhysxl/voidspace/shared/utils/constants"
 	"voidspaceGateway/internal/models"
 	"voidspaceGateway/utils"
+
+	shared_constants "github.com/vhysxl/voidspace/shared/utils/constants"
 
 	"github.com/labstack/echo/v4"
 )
@@ -14,17 +15,25 @@ import (
 func (h *FollowHandler) Unfollow(c echo.Context) error {
 	ctx := c.Request().Context()
 	user := c.Get("authUser").(*models.AuthUser)
+	targetUsername := c.Param("username")
 
-	requestBody := new(models.FollowRequest)
-	if err := c.Bind(requestBody); err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, shared_constants.InvalidRequest)
+	if targetUsername == "" {
+		return responses.ErrorResponseMessage(
+			c,
+			http.StatusBadRequest,
+			constants.ErrUsernameRequired,
+		)
 	}
 
-	if err := h.Validator.Struct(requestBody); err != nil {
-		return responses.ErrorResponseMessage(c, http.StatusBadRequest, utils.FormatValidationError(err))
+	if len(targetUsername) > 50 {
+		return responses.ErrorResponseMessage(
+			c,
+			http.StatusBadRequest,
+			shared_constants.InvalidRequest,
+		)
 	}
 
-	err := h.UserService.Unfollow(ctx, user.ID, user.Username, requestBody.TargetUsername)
+	err := h.UserService.Unfollow(ctx, user.ID, user.Username, targetUsername)
 	if err != nil {
 		return utils.HandleDialError(h.Logger, c, err, "failed to unfollow user")
 	}

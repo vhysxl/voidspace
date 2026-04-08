@@ -14,6 +14,6 @@ func FollowRoutes(
 	follow := api.Group("/follow")
 	follow.Use(authMiddleware)
 
-	follow.POST("", followHandler.Follow)
-	follow.DELETE("", followHandler.Unfollow)
+	follow.POST("/:username", followHandler.Follow)
+	follow.DELETE("/:username", followHandler.Unfollow)
 }
