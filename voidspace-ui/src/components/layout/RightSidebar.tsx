@@ -58,17 +58,6 @@ export default function RightSidebar() {
         </button>
       </div>
 
-      {/* Footer Links */}
-      <div className="px-2 flex flex-wrap gap-x-4 gap-y-2">
-        {["Terms", "Privacy", "Cookies", "Ads", "More"].map((link) => (
-          <span key={link} className="text-[10px] text-[#444] uppercase tracking-[1px] hover:underline cursor-pointer">
-            {link}
-          </span>
-        ))}
-        <p className="text-[10px] text-[#444] uppercase tracking-[1px] w-full mt-2">
-          © 2026 VOIDSPACE
-        </p>
-      </div>
     </aside>
   );
 }

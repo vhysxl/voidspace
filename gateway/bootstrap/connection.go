@@ -11,11 +11,11 @@ import (
 
 // NewConn creates a new gRPC connection.
 // host should be of the form domain:port, e.g., example.com:443
-func NewConn(host string, insecure bool) (*grpc.ClientConn, error) {
+func NewConn(host string, env string) (*grpc.ClientConn, error) {
 
 	var opts []grpc.DialOption
 
-	if insecure {
+	if env == "DEV" {
 		opts = append(opts, grpc.WithTransportCredentials(grpcInsecure.NewCredentials()))
 	} else {
 		systemRoots, err := x509.SystemCertPool()

@@ -27,3 +27,76 @@ export interface User {
   created_at: string;
   is_followed: boolean;
 }
+
+export interface PostImage {
+  image_url: string;
+  order: number;
+  width: number;
+  height: number;
+}
+
+export interface Post {
+  id: number;
+  content: string;
+  post_images: PostImage[];
+  author: User;
+  created_at: string;
+  likes_count: number;
+  comments_count: number;
+  is_liked: boolean;
+}
+
+export interface Comment {
+  id: number;
+  content: string;
+  author: User;
+  created_at: string;
+  post_id: number;
+}
+
+export interface FeedResponse {
+  posts: Post[];
+  has_more: boolean;
+}
+
+// Request Types
+export interface UpdateProfileRequest {
+  display_name?: string;
+  bio?: string;
+  location?: string;
+  avatar_url?: string;
+  banner_url?: string;
+}
+
+export interface CreatePostRequest {
+  content: string;
+  post_images?: PostImage[];
+}
+
+export interface UpdatePostRequest {
+  content: string;
+}
+
+export interface CreateCommentRequest {
+  post_id: number;
+  content: string;
+}
+
+export interface FollowUserRequest {
+  target_username: string;
+}
+
+// Upload Types
+export type UploadFolder = "posts" | "avatars" | "banners";
+
+export interface SignedURLRequest {
+  contentType: string;
+  folder: UploadFolder;
+}
+
+export interface SignedURLResponse {
+  signedUrl: string;
+  publicUrl: string;
+  fileName: string;
+  folder: string;
+}
