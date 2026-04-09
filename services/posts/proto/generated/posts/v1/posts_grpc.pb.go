@@ -32,6 +32,7 @@ const (
 	PostService_UnlikePost_FullMethodName               = "/posts.v1.PostService/UnlikePost"
 	PostService_HandleAccountDeletion_FullMethodName    = "/posts.v1.PostService/HandleAccountDeletion"
 	PostService_HandleAccountRestoration_FullMethodName = "/posts.v1.PostService/HandleAccountRestoration"
+	PostService_SearchPosts_FullMethodName              = "/posts.v1.PostService/SearchPosts"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -57,6 +58,7 @@ type PostServiceClient interface {
 	// ---------------------- ACCOUNT LIFECYCLE ----------------------
 	HandleAccountDeletion(ctx context.Context, in *HandleAccountDeletionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	HandleAccountRestoration(ctx context.Context, in *HandleAccountRestorationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SearchPosts(ctx context.Context, in *SearchPostsRequest, opts ...grpc.CallOption) (*SearchPostsResponse, error)
 }
 
 type postServiceClient struct {
@@ -187,6 +189,16 @@ func (c *postServiceClient) HandleAccountRestoration(ctx context.Context, in *Ha
 	return out, nil
 }
 
+func (c *postServiceClient) SearchPosts(ctx context.Context, in *SearchPostsRequest, opts ...grpc.CallOption) (*SearchPostsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchPostsResponse)
+	err := c.cc.Invoke(ctx, PostService_SearchPosts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility.
@@ -210,6 +222,7 @@ type PostServiceServer interface {
 	// ---------------------- ACCOUNT LIFECYCLE ----------------------
 	HandleAccountDeletion(context.Context, *HandleAccountDeletionRequest) (*emptypb.Empty, error)
 	HandleAccountRestoration(context.Context, *HandleAccountRestorationRequest) (*emptypb.Empty, error)
+	SearchPosts(context.Context, *SearchPostsRequest) (*SearchPostsResponse, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -255,6 +268,9 @@ func (UnimplementedPostServiceServer) HandleAccountDeletion(context.Context, *Ha
 }
 func (UnimplementedPostServiceServer) HandleAccountRestoration(context.Context, *HandleAccountRestorationRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HandleAccountRestoration not implemented")
+}
+func (UnimplementedPostServiceServer) SearchPosts(context.Context, *SearchPostsRequest) (*SearchPostsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchPosts not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 func (UnimplementedPostServiceServer) testEmbeddedByValue()                     {}
@@ -493,6 +509,24 @@ func _PostService_HandleAccountRestoration_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_SearchPosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchPostsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).SearchPosts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_SearchPosts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).SearchPosts(ctx, req.(*SearchPostsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -547,6 +581,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HandleAccountRestoration",
 			Handler:    _PostService_HandleAccountRestoration_Handler,
+		},
+		{
+			MethodName: "SearchPosts",
+			Handler:    _PostService_SearchPosts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
