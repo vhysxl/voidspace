@@ -30,6 +30,7 @@ type UserUsecase interface {
 
 	DeleteUser(ctx context.Context, userID int) error
 	RestoreUser(ctx context.Context, userID int) error
+	SearchUsers(ctx context.Context, query string) ([]views.UserBanner, error)
 }
 
 type UserRepository interface {
@@ -50,4 +51,5 @@ type UserRepository interface {
 
 	// Compensation
 	RestoreUser(ctx context.Context, userID int) error
+	SearchUsers(ctx context.Context, query string) ([]views.UserBanner, error)
 }

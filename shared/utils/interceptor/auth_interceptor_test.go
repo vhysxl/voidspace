@@ -36,6 +36,15 @@ func TestAuthInterceptor(t *testing.T) {
 			expectedError: codes.OK,
 		},
 		{
+			name:   "Skip auth for search users",
+			method: "/users.v1.UserService/SearchUsers",
+			metadata: metadata.New(map[string]string{
+				"user_id":  "1",
+				"username": "test",
+			}),
+			expectedError: codes.OK,
+		},
+		{
 			name:          "Missing metadata for protected endpoint",
 			method:        "/users.v1.UserService/UpdateUser",
 			metadata:      metadata.MD{},
