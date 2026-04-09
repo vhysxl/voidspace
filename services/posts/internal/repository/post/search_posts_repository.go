@@ -21,7 +21,9 @@ func (p *PostRepository) SearchPosts(
 			COALESCE(p.post_images, '[]'::jsonb) AS post_images,
 			p.created_at,
 			p.updated_at,
-			(SELECT COUNT(*) FROM post_likes WHERE post_id = p.id) AS likes_count
+			(SELECT COUNT(*) FROM post_likes WHERE post_id = p.id
+			AND deleted_at IS NULL
+			) AS likes_count
 		FROM posts p
 		WHERE p.content ILIKE '%' || $1 || '%'
 		AND p.deleted_at IS NULL

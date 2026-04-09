@@ -20,7 +20,9 @@ func (p *PostRepository) GetGlobalFeed(ctx context.Context, cursorTime time.Time
 			COALESCE(p.post_images, '[]'::jsonb) AS post_images, 
 			p.created_at, 
 			p.updated_at,
-			(SELECT COUNT(*) FROM post_likes WHERE post_id = p.id) AS likes_count
+			(SELECT COUNT(*) FROM post_likes WHERE post_id = p.id
+			AND deleted_at IS NULL
+			) AS likes_count
 		FROM posts p
 		WHERE p.deleted_at IS NULL 
 		  AND ((p.created_at < $1) OR (p.created_at = $1 AND p.id < $2))

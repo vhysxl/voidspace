@@ -19,7 +19,9 @@ func (p *PostRepository) GetLikedByUserID(ctx context.Context, userID int) ([]do
 			COALESCE(p.post_images, '[]'::jsonb) AS post_images, 
 			p.created_at, 
 			p.updated_at,
-			(SELECT COUNT(*) FROM post_likes WHERE post_id = p.id) AS likes_count
+			(SELECT COUNT(*) FROM post_likes WHERE post_id = p.id
+			AND deleted_at IS NULL
+			) AS likes_count
 		FROM posts p
 		JOIN post_likes pl ON p.id = pl.post_id
 		WHERE pl.user_id = $1 
