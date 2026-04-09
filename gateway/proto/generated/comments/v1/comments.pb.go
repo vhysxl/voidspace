@@ -383,6 +383,50 @@ func (x *HandlePostDeletionRequest) GetPostId() int64 {
 	return 0
 }
 
+type SearchCommentsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Query         string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchCommentsRequest) Reset() {
+	*x = SearchCommentsRequest{}
+	mi := &file_comments_v1_comments_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchCommentsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchCommentsRequest) ProtoMessage() {}
+
+func (x *SearchCommentsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_comments_v1_comments_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchCommentsRequest.ProtoReflect.Descriptor instead.
+func (*SearchCommentsRequest) Descriptor() ([]byte, []int) {
+	return file_comments_v1_comments_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *SearchCommentsRequest) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
 type GetBatchCommentsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Comments      []*Comment             `protobuf:"bytes,1,rep,name=comments,proto3" json:"comments,omitempty"`
@@ -393,7 +437,7 @@ type GetBatchCommentsResponse struct {
 
 func (x *GetBatchCommentsResponse) Reset() {
 	*x = GetBatchCommentsResponse{}
-	mi := &file_comments_v1_comments_proto_msgTypes[8]
+	mi := &file_comments_v1_comments_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -405,7 +449,7 @@ func (x *GetBatchCommentsResponse) String() string {
 func (*GetBatchCommentsResponse) ProtoMessage() {}
 
 func (x *GetBatchCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_comments_v1_comments_proto_msgTypes[8]
+	mi := &file_comments_v1_comments_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -418,7 +462,7 @@ func (x *GetBatchCommentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBatchCommentsResponse.ProtoReflect.Descriptor instead.
 func (*GetBatchCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_comments_v1_comments_proto_rawDescGZIP(), []int{8}
+	return file_comments_v1_comments_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetBatchCommentsResponse) GetComments() []*Comment {
@@ -444,7 +488,7 @@ type GetFeedCommentCountResponse struct {
 
 func (x *GetFeedCommentCountResponse) Reset() {
 	*x = GetFeedCommentCountResponse{}
-	mi := &file_comments_v1_comments_proto_msgTypes[9]
+	mi := &file_comments_v1_comments_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -456,7 +500,7 @@ func (x *GetFeedCommentCountResponse) String() string {
 func (*GetFeedCommentCountResponse) ProtoMessage() {}
 
 func (x *GetFeedCommentCountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_comments_v1_comments_proto_msgTypes[9]
+	mi := &file_comments_v1_comments_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -469,12 +513,56 @@ func (x *GetFeedCommentCountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFeedCommentCountResponse.ProtoReflect.Descriptor instead.
 func (*GetFeedCommentCountResponse) Descriptor() ([]byte, []int) {
-	return file_comments_v1_comments_proto_rawDescGZIP(), []int{9}
+	return file_comments_v1_comments_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetFeedCommentCountResponse) GetPostCommentsCount() []*CommentCount {
 	if x != nil {
 		return x.PostCommentsCount
+	}
+	return nil
+}
+
+type SearchCommentsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Comments      []*Comment             `protobuf:"bytes,1,rep,name=comments,proto3" json:"comments,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchCommentsResponse) Reset() {
+	*x = SearchCommentsResponse{}
+	mi := &file_comments_v1_comments_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchCommentsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchCommentsResponse) ProtoMessage() {}
+
+func (x *SearchCommentsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_comments_v1_comments_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchCommentsResponse.ProtoReflect.Descriptor instead.
+func (*SearchCommentsResponse) Descriptor() ([]byte, []int) {
+	return file_comments_v1_comments_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *SearchCommentsResponse) GetComments() []*Comment {
+	if x != nil {
+		return x.Comments
 	}
 	return nil
 }
@@ -492,7 +580,7 @@ type Comment struct {
 
 func (x *Comment) Reset() {
 	*x = Comment{}
-	mi := &file_comments_v1_comments_proto_msgTypes[10]
+	mi := &file_comments_v1_comments_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -504,7 +592,7 @@ func (x *Comment) String() string {
 func (*Comment) ProtoMessage() {}
 
 func (x *Comment) ProtoReflect() protoreflect.Message {
-	mi := &file_comments_v1_comments_proto_msgTypes[10]
+	mi := &file_comments_v1_comments_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -517,7 +605,7 @@ func (x *Comment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Comment.ProtoReflect.Descriptor instead.
 func (*Comment) Descriptor() ([]byte, []int) {
-	return file_comments_v1_comments_proto_rawDescGZIP(), []int{10}
+	return file_comments_v1_comments_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Comment) GetId() int64 {
@@ -565,7 +653,7 @@ type CommentCount struct {
 
 func (x *CommentCount) Reset() {
 	*x = CommentCount{}
-	mi := &file_comments_v1_comments_proto_msgTypes[11]
+	mi := &file_comments_v1_comments_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -577,7 +665,7 @@ func (x *CommentCount) String() string {
 func (*CommentCount) ProtoMessage() {}
 
 func (x *CommentCount) ProtoReflect() protoreflect.Message {
-	mi := &file_comments_v1_comments_proto_msgTypes[11]
+	mi := &file_comments_v1_comments_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -590,7 +678,7 @@ func (x *CommentCount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommentCount.ProtoReflect.Descriptor instead.
 func (*CommentCount) Descriptor() ([]byte, []int) {
-	return file_comments_v1_comments_proto_rawDescGZIP(), []int{11}
+	return file_comments_v1_comments_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CommentCount) GetPostId() int64 {
@@ -629,12 +717,16 @@ const file_comments_v1_comments_proto_rawDesc = "" +
 	"\x1fHandleAccountRestorationRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\"4\n" +
 	"\x19HandlePostDeletionRequest\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\"s\n" +
+	"\apost_id\x18\x01 \x01(\x03R\x06postId\"-\n" +
+	"\x15SearchCommentsRequest\x12\x14\n" +
+	"\x05query\x18\x01 \x01(\tR\x05query\"s\n" +
 	"\x18GetBatchCommentsResponse\x120\n" +
 	"\bcomments\x18\x01 \x03(\v2\x14.comments.v1.CommentR\bcomments\x12%\n" +
 	"\x0ecomments_count\x18\x02 \x01(\x03R\rcommentsCount\"h\n" +
 	"\x1bGetFeedCommentCountResponse\x12I\n" +
-	"\x13post_comments_count\x18\x01 \x03(\v2\x19.comments.v1.CommentCountR\x11postCommentsCount\"\xa0\x01\n" +
+	"\x13post_comments_count\x18\x01 \x03(\v2\x19.comments.v1.CommentCountR\x11postCommentsCount\"J\n" +
+	"\x16SearchCommentsResponse\x120\n" +
+	"\bcomments\x18\x01 \x03(\v2\x14.comments.v1.CommentR\bcomments\"\xa0\x01\n" +
 	"\aComment\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12\x17\n" +
@@ -644,7 +736,7 @@ const file_comments_v1_comments_proto_rawDesc = "" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"=\n" +
 	"\fCommentCount\x12\x17\n" +
 	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12\x14\n" +
-	"\x05count\x18\x02 \x01(\x03R\x05count2\xfe\x05\n" +
+	"\x05count\x18\x02 \x01(\x03R\x05count2\xd9\x06\n" +
 	"\x0eCommentService\x12H\n" +
 	"\rCreateComment\x12!.comments.v1.CreateCommentRequest\x1a\x14.comments.v1.Comment\x12J\n" +
 	"\rDeleteComment\x12!.comments.v1.DeleteCommentRequest\x1a\x16.google.protobuf.Empty\x12k\n" +
@@ -653,7 +745,8 @@ const file_comments_v1_comments_proto_rawDesc = "" +
 	"\x13GetFeedCommentCount\x12'.comments.v1.GetFeedCommentCountRequest\x1a(.comments.v1.GetFeedCommentCountResponse\x12Z\n" +
 	"\x15HandleAccountDeletion\x12).comments.v1.HandleAccountDeletionRequest\x1a\x16.google.protobuf.Empty\x12`\n" +
 	"\x18HandleAccountRestoration\x12,.comments.v1.HandleAccountRestorationRequest\x1a\x16.google.protobuf.Empty\x12T\n" +
-	"\x12HandlePostDeletion\x12&.comments.v1.HandlePostDeletionRequest\x1a\x16.google.protobuf.EmptyB\x1aZ\x18./comments/v1;commentsv1b\x06proto3"
+	"\x12HandlePostDeletion\x12&.comments.v1.HandlePostDeletionRequest\x1a\x16.google.protobuf.Empty\x12Y\n" +
+	"\x0eSearchComments\x12\".comments.v1.SearchCommentsRequest\x1a#.comments.v1.SearchCommentsResponseB\x1aZ\x18./comments/v1;commentsv1b\x06proto3"
 
 var (
 	file_comments_v1_comments_proto_rawDescOnce sync.Once
@@ -667,7 +760,7 @@ func file_comments_v1_comments_proto_rawDescGZIP() []byte {
 	return file_comments_v1_comments_proto_rawDescData
 }
 
-var file_comments_v1_comments_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_comments_v1_comments_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_comments_v1_comments_proto_goTypes = []any{
 	(*CreateCommentRequest)(nil),            // 0: comments.v1.CreateCommentRequest
 	(*DeleteCommentRequest)(nil),            // 1: comments.v1.DeleteCommentRequest
@@ -677,38 +770,43 @@ var file_comments_v1_comments_proto_goTypes = []any{
 	(*HandleAccountDeletionRequest)(nil),    // 5: comments.v1.HandleAccountDeletionRequest
 	(*HandleAccountRestorationRequest)(nil), // 6: comments.v1.HandleAccountRestorationRequest
 	(*HandlePostDeletionRequest)(nil),       // 7: comments.v1.HandlePostDeletionRequest
-	(*GetBatchCommentsResponse)(nil),        // 8: comments.v1.GetBatchCommentsResponse
-	(*GetFeedCommentCountResponse)(nil),     // 9: comments.v1.GetFeedCommentCountResponse
-	(*Comment)(nil),                         // 10: comments.v1.Comment
-	(*CommentCount)(nil),                    // 11: comments.v1.CommentCount
-	(*timestamppb.Timestamp)(nil),           // 12: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                   // 13: google.protobuf.Empty
+	(*SearchCommentsRequest)(nil),           // 8: comments.v1.SearchCommentsRequest
+	(*GetBatchCommentsResponse)(nil),        // 9: comments.v1.GetBatchCommentsResponse
+	(*GetFeedCommentCountResponse)(nil),     // 10: comments.v1.GetFeedCommentCountResponse
+	(*SearchCommentsResponse)(nil),          // 11: comments.v1.SearchCommentsResponse
+	(*Comment)(nil),                         // 12: comments.v1.Comment
+	(*CommentCount)(nil),                    // 13: comments.v1.CommentCount
+	(*timestamppb.Timestamp)(nil),           // 14: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                   // 15: google.protobuf.Empty
 }
 var file_comments_v1_comments_proto_depIdxs = []int32{
-	10, // 0: comments.v1.GetBatchCommentsResponse.comments:type_name -> comments.v1.Comment
-	11, // 1: comments.v1.GetFeedCommentCountResponse.post_comments_count:type_name -> comments.v1.CommentCount
-	12, // 2: comments.v1.Comment.created_at:type_name -> google.protobuf.Timestamp
-	0,  // 3: comments.v1.CommentService.CreateComment:input_type -> comments.v1.CreateCommentRequest
-	1,  // 4: comments.v1.CommentService.DeleteComment:input_type -> comments.v1.DeleteCommentRequest
-	2,  // 5: comments.v1.CommentService.GetAllCommentsByPostId:input_type -> comments.v1.GetAllCommentsByPostIdRequest
-	3,  // 6: comments.v1.CommentService.GetAllCommentsByUserId:input_type -> comments.v1.GetAllCommentsByUserIdRequest
-	4,  // 7: comments.v1.CommentService.GetFeedCommentCount:input_type -> comments.v1.GetFeedCommentCountRequest
-	5,  // 8: comments.v1.CommentService.HandleAccountDeletion:input_type -> comments.v1.HandleAccountDeletionRequest
-	6,  // 9: comments.v1.CommentService.HandleAccountRestoration:input_type -> comments.v1.HandleAccountRestorationRequest
-	7,  // 10: comments.v1.CommentService.HandlePostDeletion:input_type -> comments.v1.HandlePostDeletionRequest
-	10, // 11: comments.v1.CommentService.CreateComment:output_type -> comments.v1.Comment
-	13, // 12: comments.v1.CommentService.DeleteComment:output_type -> google.protobuf.Empty
-	8,  // 13: comments.v1.CommentService.GetAllCommentsByPostId:output_type -> comments.v1.GetBatchCommentsResponse
-	8,  // 14: comments.v1.CommentService.GetAllCommentsByUserId:output_type -> comments.v1.GetBatchCommentsResponse
-	9,  // 15: comments.v1.CommentService.GetFeedCommentCount:output_type -> comments.v1.GetFeedCommentCountResponse
-	13, // 16: comments.v1.CommentService.HandleAccountDeletion:output_type -> google.protobuf.Empty
-	13, // 17: comments.v1.CommentService.HandleAccountRestoration:output_type -> google.protobuf.Empty
-	13, // 18: comments.v1.CommentService.HandlePostDeletion:output_type -> google.protobuf.Empty
-	11, // [11:19] is the sub-list for method output_type
-	3,  // [3:11] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	12, // 0: comments.v1.GetBatchCommentsResponse.comments:type_name -> comments.v1.Comment
+	13, // 1: comments.v1.GetFeedCommentCountResponse.post_comments_count:type_name -> comments.v1.CommentCount
+	12, // 2: comments.v1.SearchCommentsResponse.comments:type_name -> comments.v1.Comment
+	14, // 3: comments.v1.Comment.created_at:type_name -> google.protobuf.Timestamp
+	0,  // 4: comments.v1.CommentService.CreateComment:input_type -> comments.v1.CreateCommentRequest
+	1,  // 5: comments.v1.CommentService.DeleteComment:input_type -> comments.v1.DeleteCommentRequest
+	2,  // 6: comments.v1.CommentService.GetAllCommentsByPostId:input_type -> comments.v1.GetAllCommentsByPostIdRequest
+	3,  // 7: comments.v1.CommentService.GetAllCommentsByUserId:input_type -> comments.v1.GetAllCommentsByUserIdRequest
+	4,  // 8: comments.v1.CommentService.GetFeedCommentCount:input_type -> comments.v1.GetFeedCommentCountRequest
+	5,  // 9: comments.v1.CommentService.HandleAccountDeletion:input_type -> comments.v1.HandleAccountDeletionRequest
+	6,  // 10: comments.v1.CommentService.HandleAccountRestoration:input_type -> comments.v1.HandleAccountRestorationRequest
+	7,  // 11: comments.v1.CommentService.HandlePostDeletion:input_type -> comments.v1.HandlePostDeletionRequest
+	8,  // 12: comments.v1.CommentService.SearchComments:input_type -> comments.v1.SearchCommentsRequest
+	12, // 13: comments.v1.CommentService.CreateComment:output_type -> comments.v1.Comment
+	15, // 14: comments.v1.CommentService.DeleteComment:output_type -> google.protobuf.Empty
+	9,  // 15: comments.v1.CommentService.GetAllCommentsByPostId:output_type -> comments.v1.GetBatchCommentsResponse
+	9,  // 16: comments.v1.CommentService.GetAllCommentsByUserId:output_type -> comments.v1.GetBatchCommentsResponse
+	10, // 17: comments.v1.CommentService.GetFeedCommentCount:output_type -> comments.v1.GetFeedCommentCountResponse
+	15, // 18: comments.v1.CommentService.HandleAccountDeletion:output_type -> google.protobuf.Empty
+	15, // 19: comments.v1.CommentService.HandleAccountRestoration:output_type -> google.protobuf.Empty
+	15, // 20: comments.v1.CommentService.HandlePostDeletion:output_type -> google.protobuf.Empty
+	11, // 21: comments.v1.CommentService.SearchComments:output_type -> comments.v1.SearchCommentsResponse
+	13, // [13:22] is the sub-list for method output_type
+	4,  // [4:13] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_comments_v1_comments_proto_init() }
@@ -722,7 +820,7 @@ func file_comments_v1_comments_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_comments_v1_comments_proto_rawDesc), len(file_comments_v1_comments_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

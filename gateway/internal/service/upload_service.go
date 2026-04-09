@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 )
 
 type UploadService struct {
@@ -14,8 +15,10 @@ type UploadService struct {
 }
 
 // NewUploadService inisialisasi UploadService
-func NewUploadService(ctx context.Context, bucket string) (*UploadService, error) {
-	client, err := storage.NewClient(ctx)
+func NewUploadService(ctx context.Context, bucket string, credPath string) (*UploadService, error) {
+	client, err := storage.NewClient(ctx,
+		option.WithCredentialsFile(credPath),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create storage client: %w", err)
 	}
