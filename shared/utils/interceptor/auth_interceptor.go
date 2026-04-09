@@ -44,7 +44,8 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 
 			// Post
 			"/posts.v1.PostService/GetPost":                  true,
-			"/posts.v1.PostService/GetAllPosts":              true,
+			"/posts.v1.PostService/GetLikedPosts":            true,
+			"/posts.v1.PostService/GetUserPosts":             true,
 			"/posts.v1.PostService/GetGlobalFeed":            true,
 			"/posts.v1.PostService/HandleAccountDeletion":    true,
 			"/posts.v1.PostService/HandleAccountRestoration": true,
