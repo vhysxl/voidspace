@@ -50,17 +50,17 @@ func (h *SearchHandler) Search(c echo.Context) error {
 		}
 		return responses.SuccessResponseMessage(c, http.StatusOK, "Search users success", res.Users)
 	case "post":
-		res, err := h.PostService.SearchPosts(ctx, query)
+		posts, err := h.PostService.SearchPosts(ctx, query)
 		if err != nil {
 			return utils.HandleDialError(h.Logger, c, err, "failed to search posts")
 		}
-		return responses.SuccessResponseMessage(c, http.StatusOK, "Search posts success", res.Posts)
+		return responses.SuccessResponseMessage(c, http.StatusOK, "Search posts success", posts)
 	case "comment":
-		res, err := h.CommentService.SearchComments(ctx, query)
+		comments, err := h.CommentService.SearchComments(ctx, query)
 		if err != nil {
 			return utils.HandleDialError(h.Logger, c, err, "failed to search comments")
 		}
-		return responses.SuccessResponseMessage(c, http.StatusOK, "Search comments success", res.Comments)
+		return responses.SuccessResponseMessage(c, http.StatusOK, "Search comments success", comments)
 	default:
 		return responses.ErrorResponseMessage(c, http.StatusBadRequest, "invalid search type: must be 'user', 'post', or 'comment'")
 	}
