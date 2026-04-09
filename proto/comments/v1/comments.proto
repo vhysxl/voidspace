@@ -21,6 +21,8 @@ service CommentService {
 
   // ---------------------- POST LIFECYCLE ----------------------
   rpc HandlePostDeletion(HandlePostDeletionRequest) returns (google.protobuf.Empty);
+
+  rpc SearchComments(SearchCommentsRequest) returns (SearchCommentsResponse);
 }
 
 // ---------------------- REQUEST MESSAGES ----------------------
@@ -58,6 +60,10 @@ message HandlePostDeletionRequest {
   int64 post_id = 1;
 }
 
+message SearchCommentsRequest {
+  string query = 1;
+}
+
 // ---------------------- RESPONSE MESSAGES ----------------------
 
 message GetBatchCommentsResponse {
@@ -67,6 +73,10 @@ message GetBatchCommentsResponse {
 
 message GetFeedCommentCountResponse {
   repeated CommentCount post_comments_count = 1;
+}
+
+message SearchCommentsResponse {
+  repeated Comment comments = 1;
 }
 
 // ---------------------- DATA MODELS ----------------------

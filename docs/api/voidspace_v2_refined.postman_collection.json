@@ -141,7 +141,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"content\": \"Hello Voidspace!\"\n}",
+							"raw": "{\n    \"content\": \"Hello Voidspace with Cosmic Visions!\",\n    \"post_images\": [\n        {\n            \"image_url\": \"https://storage.googleapis.com/voidspace-assets/demo/void-gate.jpg\",\n            \"order\": 1,\n            \"width\": 1920,\n            \"height\": 1080\n        }\n    ]\n}",
 							"options": { "raw": { "language": "json" } }
 						},
 						"url": { "raw": "{{baseUrl}}/posts", "host": ["{{baseUrl}}"], "path": ["posts"] }
@@ -291,12 +291,7 @@
 							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
 							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"target_username\": \"geminitester2\"\n}",
-							"options": { "raw": { "language": "json" } }
-						},
-						"url": { "raw": "{{baseUrl}}/follow", "host": ["{{baseUrl}}"], "path": ["follow"] }
+						"url": { "raw": "{{baseUrl}}/follow/geminitester2", "host": ["{{baseUrl}}"], "path": ["follow", "geminitester2"] }
 					}
 				},
 				{
@@ -307,12 +302,7 @@
 							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" },
 							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"target_username\": \"geminitester2\"\n}",
-							"options": { "raw": { "language": "json" } }
-						},
-						"url": { "raw": "{{baseUrl}}/follow", "host": ["{{baseUrl}}"], "path": ["follow"] }
+						"url": { "raw": "{{baseUrl}}/follow/geminitester2", "host": ["{{baseUrl}}"], "path": ["follow", "geminitester2"] }
 					}
 				},
 				{
@@ -359,6 +349,65 @@
 							{ "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
 						],
 						"url": { "raw": "{{baseUrl}}/feed/following", "host": ["{{baseUrl}}"], "path": ["feed", "following"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Search Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/search?q=gemini&type=user",
+							"host": ["{{baseUrl}}"],
+							"path": ["search"],
+							"query": [
+								{ "key": "q", "value": "gemini" },
+								{ "key": "type", "value": "user" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Posts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/search?q=hello&type=post",
+							"host": ["{{baseUrl}}"],
+							"path": ["search"],
+							"query": [
+								{ "key": "q", "value": "hello" },
+								{ "key": "type", "value": "post" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Comments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/search?q=great&type=comment",
+							"host": ["{{baseUrl}}"],
+							"path": ["search"],
+							"query": [
+								{ "key": "q", "value": "great" },
+								{ "key": "type", "value": "comment" }
+							]
+						}
 					}
 				}
 			]

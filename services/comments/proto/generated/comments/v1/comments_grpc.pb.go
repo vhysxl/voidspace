@@ -28,6 +28,7 @@ const (
 	CommentService_HandleAccountDeletion_FullMethodName    = "/comments.v1.CommentService/HandleAccountDeletion"
 	CommentService_HandleAccountRestoration_FullMethodName = "/comments.v1.CommentService/HandleAccountRestoration"
 	CommentService_HandlePostDeletion_FullMethodName       = "/comments.v1.CommentService/HandlePostDeletion"
+	CommentService_SearchComments_FullMethodName           = "/comments.v1.CommentService/SearchComments"
 )
 
 // CommentServiceClient is the client API for CommentService service.
@@ -45,6 +46,7 @@ type CommentServiceClient interface {
 	HandleAccountRestoration(ctx context.Context, in *HandleAccountRestorationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ---------------------- POST LIFECYCLE ----------------------
 	HandlePostDeletion(ctx context.Context, in *HandlePostDeletionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SearchComments(ctx context.Context, in *SearchCommentsRequest, opts ...grpc.CallOption) (*SearchCommentsResponse, error)
 }
 
 type commentServiceClient struct {
@@ -135,6 +137,16 @@ func (c *commentServiceClient) HandlePostDeletion(ctx context.Context, in *Handl
 	return out, nil
 }
 
+func (c *commentServiceClient) SearchComments(ctx context.Context, in *SearchCommentsRequest, opts ...grpc.CallOption) (*SearchCommentsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchCommentsResponse)
+	err := c.cc.Invoke(ctx, CommentService_SearchComments_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommentServiceServer is the server API for CommentService service.
 // All implementations must embed UnimplementedCommentServiceServer
 // for forward compatibility.
@@ -150,6 +162,7 @@ type CommentServiceServer interface {
 	HandleAccountRestoration(context.Context, *HandleAccountRestorationRequest) (*emptypb.Empty, error)
 	// ---------------------- POST LIFECYCLE ----------------------
 	HandlePostDeletion(context.Context, *HandlePostDeletionRequest) (*emptypb.Empty, error)
+	SearchComments(context.Context, *SearchCommentsRequest) (*SearchCommentsResponse, error)
 	mustEmbedUnimplementedCommentServiceServer()
 }
 
@@ -183,6 +196,9 @@ func (UnimplementedCommentServiceServer) HandleAccountRestoration(context.Contex
 }
 func (UnimplementedCommentServiceServer) HandlePostDeletion(context.Context, *HandlePostDeletionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HandlePostDeletion not implemented")
+}
+func (UnimplementedCommentServiceServer) SearchComments(context.Context, *SearchCommentsRequest) (*SearchCommentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchComments not implemented")
 }
 func (UnimplementedCommentServiceServer) mustEmbedUnimplementedCommentServiceServer() {}
 func (UnimplementedCommentServiceServer) testEmbeddedByValue()                        {}
@@ -349,6 +365,24 @@ func _CommentService_HandlePostDeletion_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommentService_SearchComments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchCommentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommentServiceServer).SearchComments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommentService_SearchComments_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommentServiceServer).SearchComments(ctx, req.(*SearchCommentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CommentService_ServiceDesc is the grpc.ServiceDesc for CommentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -387,6 +421,10 @@ var CommentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HandlePostDeletion",
 			Handler:    _CommentService_HandlePostDeletion_Handler,
+		},
+		{
+			MethodName: "SearchComments",
+			Handler:    _CommentService_SearchComments_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
