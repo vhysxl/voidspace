@@ -78,7 +78,7 @@ export default function ProfileHeader({
     year: 'numeric'
   });
 
-  const tabs = ["Posts", "Comments", "Likes"];
+  const tabs = ["Posts", "Comments"];
 
   return (
     <div className="border-b border-foreground/10">

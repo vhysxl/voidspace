@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useMemo } from "react";
 import { apiFetch } from "@/lib/api";
 import { ApiResponse, Post, CreatePostRequest, UpdatePostRequest, PostImage } from "@/types";
