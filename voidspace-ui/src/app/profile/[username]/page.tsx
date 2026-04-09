@@ -13,13 +13,13 @@ import { usePosts } from "@/hooks/usePosts";
 import { useComments } from "@/hooks/useComments";
 import { Loader2 } from "lucide-react";
 
-type TabType = "Posts" | "Comments" | "Likes";
+type TabType = "Posts" | "Comments";
 
 export default function UserProfilePage() {
   const params = useParams();
   const router = useRouter();
   const { getUser } = useUser();
-  const { getUserPosts, getLikedPosts } = usePosts();
+  const { getUserPosts } = usePosts();
   const { getUserComments } = useComments();
   const { user: currentUser, _hasHydrated } = useAuthStore();
   
@@ -30,7 +30,6 @@ export default function UserProfilePage() {
   const [contentLoading, setContentLoading] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [fetchedTabs, setFetchedTabs] = useState<Set<TabType>>(new Set());
 
   const username = params.username as string;
 
@@ -39,7 +38,6 @@ export default function UserProfilePage() {
     setUser(null);
     setPosts([]);
     setComments([]);
-    setFetchedTabs(new Set());
     setIsUserLoading(true);
   }, [username]);
 
@@ -69,52 +67,35 @@ export default function UserProfilePage() {
   }, [_hasHydrated, username, currentUser, getUser, user]);
 
   const fetchTabContent = useCallback(async (tab: TabType) => {
-    if (!username || fetchedTabs.has(tab)) return;
+    if (!username) return;
     
     setContentLoading(true);
     try {
-      let success = false;
       if (tab === "Posts") {
         const res = await getUserPosts(username);
-        if (res.success && res.data) {
-          setPosts(res.data);
-          success = true;
-        }
+        if (res.success && res.data) setPosts(res.data);
       } else if (tab === "Comments") {
         const res = await getUserComments(username);
-        if (res.success && res.data) {
-          setComments(res.data);
-          success = true;
-        }
-      } else if (tab === "Likes") {
-        const res = await getLikedPosts(username);
-        if (res.success && res.data) {
-          setPosts(res.data);
-          success = true;
-        }
-      }
-
-      if (success) {
-        setFetchedTabs(prev => new Set(prev).add(tab));
+        if (res.success && res.data) setComments(res.data);
       }
     } catch (err) {
       console.error(`Failed to fetch ${tab}:`, err);
     } finally {
       setContentLoading(false);
     }
-  }, [username, fetchedTabs, getUserPosts, getUserComments, getLikedPosts]);
+  }, [username, getUserPosts, getUserComments]);
 
   // Initial User Fetch
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
 
-  // Tab Content Fetch (only when tab changes and not already fetched)
+  // Tab Content Fetch (refetch on every tab change)
   useEffect(() => {
-    if (user && !fetchedTabs.has(activeTab)) {
+    if (user) {
       fetchTabContent(activeTab);
     }
-  }, [user, activeTab, fetchTabContent, fetchedTabs]);
+  }, [user, activeTab, fetchTabContent]);
 
   if (!_hasHydrated || isUserLoading) {
     return (
@@ -163,7 +144,7 @@ export default function UserProfilePage() {
             </div>
           ) : (
             <>
-              {(activeTab === "Posts" || activeTab === "Likes") && (
+              {activeTab === "Posts" && (
                 <>
                   {posts.map((post) => (
                     <PostCard key={post.id} post={post} />
@@ -171,7 +152,7 @@ export default function UserProfilePage() {
                   {posts.length === 0 && (
                     <div className="p-20 text-center">
                       <p className="text-foreground/40 uppercase text-xs tracking-widest">
-                        {activeTab === "Posts" ? "No transmissions from this sector." : "No resonated matter found."}
+                        No transmissions from this sector.
                       </p>
                     </div>
                   )}
