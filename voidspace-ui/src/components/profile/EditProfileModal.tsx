@@ -5,7 +5,7 @@ import { useUIStore } from "@/store/useUIStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUser } from "@/hooks/useUser";
 import { useUpload } from "@/hooks/useUpload";
-import { X, Camera, MapPin, AlignLeft, User as UserIcon, Loader2, Image as ImageIcon } from "lucide-react";
+import { X, Camera, MapPin, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Input from "@/components/ui/Input";
 
@@ -25,6 +25,8 @@ export default function EditProfileModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
@@ -43,6 +45,11 @@ export default function EditProfileModal() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, type: "avatars" | "banners") => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE) {
+      setError("File size must be less than 10MB");
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);
@@ -215,24 +222,6 @@ export default function EditProfileModal() {
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   disabled={isSubmitting}
                   action={<MapPin size={14} className="text-foreground/20" />}
-                />
-
-                <Input
-                  label="Avatar URL (Optional)"
-                  placeholder="Link to your avatar image"
-                  value={formData.avatar_url}
-                  onChange={(e) => setFormData({ ...formData, avatar_url: e.target.value })}
-                  disabled={isSubmitting}
-                  action={<UserIcon size={14} className="text-foreground/20" />}
-                />
-
-                <Input
-                  label="Banner URL (Optional)"
-                  placeholder="Link to your banner image"
-                  value={formData.banner_url}
-                  onChange={(e) => setFormData({ ...formData, banner_url: e.target.value })}
-                  disabled={isSubmitting}
-                  action={<ImageIcon size={14} className="text-foreground/20" />}
                 />
               </div>
             </div>

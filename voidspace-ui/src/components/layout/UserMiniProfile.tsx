@@ -49,7 +49,7 @@ export default function UserMiniProfile() {
           <span className="text-foreground text-[13px] font-bold tracking-[0.5px] truncate">
             {user.profile.display_name || user.username}
           </span>
-          <span className="text-foreground/40 text-[11px] uppercase tracking-[1px] truncate">
+          <span className="text-foreground/40 text-[11px] tracking-[1px] truncate">
             @{user.username}
           </span>
         </div>

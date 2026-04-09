@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import PostCard from "@/components/posts/PostCard";
 import CommentItem from "@/components/posts/CommentItem";
+import CommentInput from "@/components/posts/CommentInput";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Post, Comment } from "@/types";
 import { usePosts } from "@/hooks/usePosts";
@@ -16,10 +17,10 @@ export default function PostDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { getPost } = usePosts();
-  const { getPostComments } = useComments();
+  const { getPostComments, createComment } = useComments();
   const { _hasHydrated } = useAuthStore();
   const { activePost, setActivePost } = usePostStore();
-  
+
   const postId = params.id as string;
   const [post, setPost] = useState<Post | null>(activePost);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -29,9 +30,12 @@ export default function PostDetailPage() {
   // Ref to ensure we only fetch once per postId
   const initialFetchDone = useRef<string | null>(null);
 
+  // Ref for the comment input to scroll to it
+  const commentInputRef = useRef<HTMLDivElement>(null);
+
   const fetchPostData = useCallback(async () => {
     if (!postId || !_hasHydrated) return;
-    
+
     if (!post) setIsLoading(true);
     setError(null);
     try {
@@ -56,6 +60,47 @@ export default function PostDetailPage() {
     }
   }, [postId, getPost, getPostComments, _hasHydrated, post]);
 
+
+  const handleCommentCreate = async (content: string) => {
+    if (!postId || !content.trim()) return;
+
+    try {
+      const response = await createComment(Number(postId), content);
+      if (response.success) {
+        if (response.data) {
+          handleCommentAdded(response.data);
+        } else {
+          // If backend doesn't return the comment object, refresh the list
+          fetchPostData();
+        }
+      } else {
+        throw new Error(response.detail || "Failed to post comment");
+      }
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  const handleCommentAdded = (newComment: Comment) => {
+    setComments(prev => [newComment, ...prev]);
+    if (post) {
+      setPost({
+        ...post,
+        comments_count: (post.comments_count || 0) + 1
+      });
+    }
+  };
+
+  const scrollToCommentInput = () => {
+    commentInputRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Focus the textarea inside CommentInput if possible
+    const textarea = commentInputRef.current?.querySelector("textarea");
+    if (textarea) {
+      textarea.focus();
+    }
+  };
+
+
   useEffect(() => {
     if (_hasHydrated && postId && initialFetchDone.current !== postId) {
       initialFetchDone.current = postId;
@@ -77,7 +122,7 @@ export default function PostDetailPage() {
       <div className="flex flex-col min-h-screen">
         {/* Header */}
         <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-foreground/10 px-4 py-4 flex items-center gap-4">
-          <button 
+          <button
             onClick={() => router.back()}
             className="p-2 hover:bg-foreground/5 rounded-full transition-colors text-foreground/60 hover:text-foreground"
           >
@@ -96,7 +141,7 @@ export default function PostDetailPage() {
           ) : error ? (
             <div className="p-20 text-center space-y-4">
               <p className="text-red-500 uppercase text-xs tracking-widest font-bold">{error}</p>
-              <button 
+              <button
                 onClick={() => {
                   initialFetchDone.current = null;
                   fetchPostData();
@@ -109,19 +154,31 @@ export default function PostDetailPage() {
           ) : post ? (
             <>
               {/* The Post */}
-              <PostCard post={post} isDetailed={true} />
+              <PostCard 
+                post={post} 
+                isDetailed={true} 
+                onCommentClick={scrollToCommentInput}
+              />
+
+              {/* Comment Input */}
+              <div ref={commentInputRef}>
+                <CommentInput 
+                  postId={post.id} 
+                  onSubmit={handleCommentCreate}
+                />
+              </div>
 
               {/* Comments Section */}
               <div className="border-b border-foreground/10 bg-foreground/[0.01] px-6 py-4">
                 <h2 className="text-[11px] font-bold uppercase tracking-[2px] text-foreground/40">
-                  Comments ({comments.length})
+                  Comments ({post.comments_count})
                 </h2>
               </div>
 
               <div className="divide-y divide-foreground/10">
                 {comments.length > 0 ? (
                   comments.map((comment) => (
-                    <CommentItem key={comment.id} comment={comment} />
+                    <CommentItem key={comment.comment_id} comment={comment} />
                   ))
                 ) : (
                   <div className="p-10 text-center">

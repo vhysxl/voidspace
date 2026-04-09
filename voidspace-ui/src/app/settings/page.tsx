@@ -4,23 +4,42 @@ import { useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useAuth } from "@/hooks/useAuth";
+import { useUser } from "@/hooks/useUser";
 import { Trash2, AlertTriangle, X, LogOut, Loader2, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
   const { user, isLoggedIn, _hasHydrated } = useAuthStore();
   const { logout } = useAuth();
+  const { deleteUser } = useUser();
+  const router = useRouter();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [confirmUsername, setConfirmUsername] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const isConfirmed = confirmUsername === user?.username;
+  const isConfirmed = confirmUsername.trim().toLowerCase() === user?.username?.toLowerCase();
 
-  const handleDeleteAccount = () => {
-    if (isConfirmed) {
-      alert("Account deletion process started. (Simulated)");
-      // Add actual deletion logic here
-      setShowDeleteModal(false);
+  const handleDeleteAccount = async () => {
+    console.log("Delete attempt:", { isConfirmed, isDeleting, username: user?.username, confirmed: confirmUsername });
+    if (!isConfirmed || isDeleting) return;
+
+    setIsDeleting(true);
+    setError(null);
+    try {
+      const res = await deleteUser();
+      if (res.success) {
+        logout();
+        router.push("/");
+      } else {
+        setError(res.detail || "Failed to delete account");
+      }
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -77,7 +96,7 @@ export default function SettingsPage() {
                     <p className="text-[11px] text-foreground/40 uppercase tracking-[1px]">
                       Logged in as
                     </p>
-                    <p className="text-sm font-bold uppercase tracking-tight">
+                    <p className="text-sm font-bold tracking-tight">
                       {user?.profile.display_name || user?.username || "VOYAGER"}
                     </p>
                     <p className="text-[11px] text-foreground/40 tracking-[1px]">
@@ -165,22 +184,39 @@ export default function SettingsPage() {
                     value={confirmUsername}
                     onChange={(e) => setConfirmUsername(e.target.value)}
                     placeholder="ENTER USERNAME"
-                    className="w-full bg-transparent border-b border-foreground/20 py-2 text-sm tracking-[2px] uppercase outline-none focus:border-red-500 transition-all placeholder:text-foreground/20"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck="false"
+                    className="w-full bg-transparent border-b border-foreground/20 py-2 text-sm tracking-[2px] outline-none focus:border-red-500 transition-all placeholder:text-foreground/20"
                   />
                 </div>
 
-                <div className="flex flex-col gap-3">
-                  <button
-                    disabled={!isConfirmed}
-                    onClick={handleDeleteAccount}
-                    className={`w-full py-4 rounded-sm font-bold text-[11px] uppercase tracking-[2px] transition-all ${
-                      isConfirmed
-                        ? "bg-red-500 text-white hover:bg-red-600 active:scale-[0.98] cursor-pointer"
-                        : "bg-foreground/5 text-foreground/20 cursor-not-allowed"
-                    }`}
-                  >
-                    Permanently Delete
-                  </button>
+                  {error && (
+                    <p className="text-red-500 text-[10px] uppercase tracking-wider font-bold">
+                      {error}
+                    </p>
+                  )}
+
+                  <div className="flex flex-col gap-3">
+                    <button
+                      disabled={!isConfirmed || isDeleting}
+                      onClick={handleDeleteAccount}
+                      className={`w-full py-4 rounded-sm font-bold text-[11px] uppercase tracking-[2px] transition-all ${
+                        isConfirmed && !isDeleting
+                          ? "bg-red-500 text-white hover:bg-red-600 active:scale-[0.98] cursor-pointer"
+                          : "bg-foreground/5 text-foreground/20 cursor-not-allowed"
+                      }`}
+                    >
+                      {isDeleting ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin" />
+                          Erasing...
+                        </>
+                      ) : (
+                        "Permanently Delete"
+                      )}
+                    </button>
                   <button
                     onClick={() => setShowDeleteModal(false)}
                     className="w-full py-4 rounded-sm font-bold text-[11px] uppercase tracking-[2px] border border-foreground/10 hover:bg-foreground/5 transition-all cursor-pointer"
