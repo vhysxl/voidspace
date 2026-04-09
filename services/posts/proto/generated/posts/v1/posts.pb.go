@@ -555,6 +555,50 @@ func (x *HandleAccountRestorationRequest) GetUserId() int64 {
 	return 0
 }
 
+type SearchPostsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Query         string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchPostsRequest) Reset() {
+	*x = SearchPostsRequest{}
+	mi := &file_posts_v1_posts_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchPostsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchPostsRequest) ProtoMessage() {}
+
+func (x *SearchPostsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_posts_v1_posts_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchPostsRequest.ProtoReflect.Descriptor instead.
+func (*SearchPostsRequest) Descriptor() ([]byte, []int) {
+	return file_posts_v1_posts_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *SearchPostsRequest) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
 type GetPostsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Posts         []*Post                `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
@@ -564,7 +608,7 @@ type GetPostsResponse struct {
 
 func (x *GetPostsResponse) Reset() {
 	*x = GetPostsResponse{}
-	mi := &file_posts_v1_posts_proto_msgTypes[11]
+	mi := &file_posts_v1_posts_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -576,7 +620,7 @@ func (x *GetPostsResponse) String() string {
 func (*GetPostsResponse) ProtoMessage() {}
 
 func (x *GetPostsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_v1_posts_proto_msgTypes[11]
+	mi := &file_posts_v1_posts_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -589,7 +633,7 @@ func (x *GetPostsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPostsResponse.ProtoReflect.Descriptor instead.
 func (*GetPostsResponse) Descriptor() ([]byte, []int) {
-	return file_posts_v1_posts_proto_rawDescGZIP(), []int{11}
+	return file_posts_v1_posts_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetPostsResponse) GetPosts() []*Post {
@@ -609,7 +653,7 @@ type GetFeedResponse struct {
 
 func (x *GetFeedResponse) Reset() {
 	*x = GetFeedResponse{}
-	mi := &file_posts_v1_posts_proto_msgTypes[12]
+	mi := &file_posts_v1_posts_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -621,7 +665,7 @@ func (x *GetFeedResponse) String() string {
 func (*GetFeedResponse) ProtoMessage() {}
 
 func (x *GetFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_v1_posts_proto_msgTypes[12]
+	mi := &file_posts_v1_posts_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -634,7 +678,7 @@ func (x *GetFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFeedResponse.ProtoReflect.Descriptor instead.
 func (*GetFeedResponse) Descriptor() ([]byte, []int) {
-	return file_posts_v1_posts_proto_rawDescGZIP(), []int{12}
+	return file_posts_v1_posts_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetFeedResponse) GetPosts() []*Post {
@@ -649,6 +693,50 @@ func (x *GetFeedResponse) GetHasMore() bool {
 		return x.HasMore
 	}
 	return false
+}
+
+type SearchPostsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Posts         []*Post                `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchPostsResponse) Reset() {
+	*x = SearchPostsResponse{}
+	mi := &file_posts_v1_posts_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchPostsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchPostsResponse) ProtoMessage() {}
+
+func (x *SearchPostsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_posts_v1_posts_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchPostsResponse.ProtoReflect.Descriptor instead.
+func (*SearchPostsResponse) Descriptor() ([]byte, []int) {
+	return file_posts_v1_posts_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *SearchPostsResponse) GetPosts() []*Post {
+	if x != nil {
+		return x.Posts
+	}
+	return nil
 }
 
 type Post struct {
@@ -668,7 +756,7 @@ type Post struct {
 
 func (x *Post) Reset() {
 	*x = Post{}
-	mi := &file_posts_v1_posts_proto_msgTypes[13]
+	mi := &file_posts_v1_posts_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -680,7 +768,7 @@ func (x *Post) String() string {
 func (*Post) ProtoMessage() {}
 
 func (x *Post) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_v1_posts_proto_msgTypes[13]
+	mi := &file_posts_v1_posts_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -693,7 +781,7 @@ func (x *Post) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Post.ProtoReflect.Descriptor instead.
 func (*Post) Descriptor() ([]byte, []int) {
-	return file_posts_v1_posts_proto_rawDescGZIP(), []int{13}
+	return file_posts_v1_posts_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *Post) GetId() int64 {
@@ -771,7 +859,7 @@ type PostImage struct {
 
 func (x *PostImage) Reset() {
 	*x = PostImage{}
-	mi := &file_posts_v1_posts_proto_msgTypes[14]
+	mi := &file_posts_v1_posts_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -783,7 +871,7 @@ func (x *PostImage) String() string {
 func (*PostImage) ProtoMessage() {}
 
 func (x *PostImage) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_v1_posts_proto_msgTypes[14]
+	mi := &file_posts_v1_posts_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -796,7 +884,7 @@ func (x *PostImage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostImage.ProtoReflect.Descriptor instead.
 func (*PostImage) Descriptor() ([]byte, []int) {
-	return file_posts_v1_posts_proto_rawDescGZIP(), []int{14}
+	return file_posts_v1_posts_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *PostImage) GetUrl() string {
@@ -867,12 +955,16 @@ const file_posts_v1_posts_proto_rawDesc = "" +
 	"\x1cHandleAccountDeletionRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\":\n" +
 	"\x1fHandleAccountRestorationRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\"8\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"*\n" +
+	"\x12SearchPostsRequest\x12\x14\n" +
+	"\x05query\x18\x01 \x01(\tR\x05query\"8\n" +
 	"\x10GetPostsResponse\x12$\n" +
 	"\x05posts\x18\x01 \x03(\v2\x0e.posts.v1.PostR\x05posts\"R\n" +
 	"\x0fGetFeedResponse\x12$\n" +
 	"\x05posts\x18\x01 \x03(\v2\x0e.posts.v1.PostR\x05posts\x12\x19\n" +
-	"\bhas_more\x18\x02 \x01(\bR\ahasMore\"\xc9\x02\n" +
+	"\bhas_more\x18\x02 \x01(\bR\ahasMore\";\n" +
+	"\x13SearchPostsResponse\x12$\n" +
+	"\x05posts\x18\x01 \x03(\v2\x0e.posts.v1.PostR\x05posts\"\xc9\x02\n" +
 	"\x04Post\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x18\n" +
 	"\acontent\x18\x02 \x01(\tR\acontent\x12\x17\n" +
@@ -891,7 +983,7 @@ const file_posts_v1_posts_proto_rawDesc = "" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x14\n" +
 	"\x05order\x18\x02 \x01(\x03R\x05order\x12\x14\n" +
 	"\x05width\x18\x03 \x01(\x03R\x05width\x12\x16\n" +
-	"\x06height\x18\x04 \x01(\x03R\x06height2\xf2\x06\n" +
+	"\x06height\x18\x04 \x01(\x03R\x06height2\xbe\a\n" +
 	"\vPostService\x129\n" +
 	"\n" +
 	"CreatePost\x12\x1b.posts.v1.CreatePostRequest\x1a\x0e.posts.v1.Post\x123\n" +
@@ -908,7 +1000,8 @@ const file_posts_v1_posts_proto_rawDesc = "" +
 	"\n" +
 	"UnlikePost\x12\x1b.posts.v1.UnlikePostRequest\x1a\x16.google.protobuf.Empty\x12W\n" +
 	"\x15HandleAccountDeletion\x12&.posts.v1.HandleAccountDeletionRequest\x1a\x16.google.protobuf.Empty\x12]\n" +
-	"\x18HandleAccountRestoration\x12).posts.v1.HandleAccountRestorationRequest\x1a\x16.google.protobuf.EmptyB\x14Z\x12./posts/v1;postsv1b\x06proto3"
+	"\x18HandleAccountRestoration\x12).posts.v1.HandleAccountRestorationRequest\x1a\x16.google.protobuf.Empty\x12J\n" +
+	"\vSearchPosts\x12\x1c.posts.v1.SearchPostsRequest\x1a\x1d.posts.v1.SearchPostsResponseB\x14Z\x12./posts/v1;postsv1b\x06proto3"
 
 var (
 	file_posts_v1_posts_proto_rawDescOnce sync.Once
@@ -922,7 +1015,7 @@ func file_posts_v1_posts_proto_rawDescGZIP() []byte {
 	return file_posts_v1_posts_proto_rawDescData
 }
 
-var file_posts_v1_posts_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_posts_v1_posts_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_posts_v1_posts_proto_goTypes = []any{
 	(*CreatePostRequest)(nil),               // 0: posts.v1.CreatePostRequest
 	(*GetPostRequest)(nil),                  // 1: posts.v1.GetPostRequest
@@ -935,52 +1028,57 @@ var file_posts_v1_posts_proto_goTypes = []any{
 	(*UnlikePostRequest)(nil),               // 8: posts.v1.UnlikePostRequest
 	(*HandleAccountDeletionRequest)(nil),    // 9: posts.v1.HandleAccountDeletionRequest
 	(*HandleAccountRestorationRequest)(nil), // 10: posts.v1.HandleAccountRestorationRequest
-	(*GetPostsResponse)(nil),                // 11: posts.v1.GetPostsResponse
-	(*GetFeedResponse)(nil),                 // 12: posts.v1.GetFeedResponse
-	(*Post)(nil),                            // 13: posts.v1.Post
-	(*PostImage)(nil),                       // 14: posts.v1.PostImage
-	(*timestamppb.Timestamp)(nil),           // 15: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                   // 16: google.protobuf.Empty
+	(*SearchPostsRequest)(nil),              // 11: posts.v1.SearchPostsRequest
+	(*GetPostsResponse)(nil),                // 12: posts.v1.GetPostsResponse
+	(*GetFeedResponse)(nil),                 // 13: posts.v1.GetFeedResponse
+	(*SearchPostsResponse)(nil),             // 14: posts.v1.SearchPostsResponse
+	(*Post)(nil),                            // 15: posts.v1.Post
+	(*PostImage)(nil),                       // 16: posts.v1.PostImage
+	(*timestamppb.Timestamp)(nil),           // 17: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                   // 18: google.protobuf.Empty
 }
 var file_posts_v1_posts_proto_depIdxs = []int32{
-	14, // 0: posts.v1.CreatePostRequest.images:type_name -> posts.v1.PostImage
-	14, // 1: posts.v1.UpdatePostRequest.images:type_name -> posts.v1.PostImage
-	15, // 2: posts.v1.GetGlobalFeedRequest.cursor_time:type_name -> google.protobuf.Timestamp
-	15, // 3: posts.v1.GetFollowingFeedRequest.cursor_time:type_name -> google.protobuf.Timestamp
-	13, // 4: posts.v1.GetPostsResponse.posts:type_name -> posts.v1.Post
-	13, // 5: posts.v1.GetFeedResponse.posts:type_name -> posts.v1.Post
-	14, // 6: posts.v1.Post.images:type_name -> posts.v1.PostImage
-	15, // 7: posts.v1.Post.created_at:type_name -> google.protobuf.Timestamp
-	15, // 8: posts.v1.Post.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 9: posts.v1.PostService.CreatePost:input_type -> posts.v1.CreatePostRequest
-	1,  // 10: posts.v1.PostService.GetPost:input_type -> posts.v1.GetPostRequest
-	2,  // 11: posts.v1.PostService.UpdatePost:input_type -> posts.v1.UpdatePostRequest
-	3,  // 12: posts.v1.PostService.DeletePost:input_type -> posts.v1.DeletePostRequest
-	4,  // 13: posts.v1.PostService.GetUserPosts:input_type -> posts.v1.GetUserPostsRequest
-	4,  // 14: posts.v1.PostService.GetLikedPosts:input_type -> posts.v1.GetUserPostsRequest
-	5,  // 15: posts.v1.PostService.GetGlobalFeed:input_type -> posts.v1.GetGlobalFeedRequest
-	6,  // 16: posts.v1.PostService.GetFollowingFeed:input_type -> posts.v1.GetFollowingFeedRequest
-	7,  // 17: posts.v1.PostService.LikePost:input_type -> posts.v1.LikePostRequest
-	8,  // 18: posts.v1.PostService.UnlikePost:input_type -> posts.v1.UnlikePostRequest
-	9,  // 19: posts.v1.PostService.HandleAccountDeletion:input_type -> posts.v1.HandleAccountDeletionRequest
-	10, // 20: posts.v1.PostService.HandleAccountRestoration:input_type -> posts.v1.HandleAccountRestorationRequest
-	13, // 21: posts.v1.PostService.CreatePost:output_type -> posts.v1.Post
-	13, // 22: posts.v1.PostService.GetPost:output_type -> posts.v1.Post
-	16, // 23: posts.v1.PostService.UpdatePost:output_type -> google.protobuf.Empty
-	16, // 24: posts.v1.PostService.DeletePost:output_type -> google.protobuf.Empty
-	11, // 25: posts.v1.PostService.GetUserPosts:output_type -> posts.v1.GetPostsResponse
-	11, // 26: posts.v1.PostService.GetLikedPosts:output_type -> posts.v1.GetPostsResponse
-	12, // 27: posts.v1.PostService.GetGlobalFeed:output_type -> posts.v1.GetFeedResponse
-	12, // 28: posts.v1.PostService.GetFollowingFeed:output_type -> posts.v1.GetFeedResponse
-	16, // 29: posts.v1.PostService.LikePost:output_type -> google.protobuf.Empty
-	16, // 30: posts.v1.PostService.UnlikePost:output_type -> google.protobuf.Empty
-	16, // 31: posts.v1.PostService.HandleAccountDeletion:output_type -> google.protobuf.Empty
-	16, // 32: posts.v1.PostService.HandleAccountRestoration:output_type -> google.protobuf.Empty
-	21, // [21:33] is the sub-list for method output_type
-	9,  // [9:21] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	16, // 0: posts.v1.CreatePostRequest.images:type_name -> posts.v1.PostImage
+	16, // 1: posts.v1.UpdatePostRequest.images:type_name -> posts.v1.PostImage
+	17, // 2: posts.v1.GetGlobalFeedRequest.cursor_time:type_name -> google.protobuf.Timestamp
+	17, // 3: posts.v1.GetFollowingFeedRequest.cursor_time:type_name -> google.protobuf.Timestamp
+	15, // 4: posts.v1.GetPostsResponse.posts:type_name -> posts.v1.Post
+	15, // 5: posts.v1.GetFeedResponse.posts:type_name -> posts.v1.Post
+	15, // 6: posts.v1.SearchPostsResponse.posts:type_name -> posts.v1.Post
+	16, // 7: posts.v1.Post.images:type_name -> posts.v1.PostImage
+	17, // 8: posts.v1.Post.created_at:type_name -> google.protobuf.Timestamp
+	17, // 9: posts.v1.Post.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 10: posts.v1.PostService.CreatePost:input_type -> posts.v1.CreatePostRequest
+	1,  // 11: posts.v1.PostService.GetPost:input_type -> posts.v1.GetPostRequest
+	2,  // 12: posts.v1.PostService.UpdatePost:input_type -> posts.v1.UpdatePostRequest
+	3,  // 13: posts.v1.PostService.DeletePost:input_type -> posts.v1.DeletePostRequest
+	4,  // 14: posts.v1.PostService.GetUserPosts:input_type -> posts.v1.GetUserPostsRequest
+	4,  // 15: posts.v1.PostService.GetLikedPosts:input_type -> posts.v1.GetUserPostsRequest
+	5,  // 16: posts.v1.PostService.GetGlobalFeed:input_type -> posts.v1.GetGlobalFeedRequest
+	6,  // 17: posts.v1.PostService.GetFollowingFeed:input_type -> posts.v1.GetFollowingFeedRequest
+	7,  // 18: posts.v1.PostService.LikePost:input_type -> posts.v1.LikePostRequest
+	8,  // 19: posts.v1.PostService.UnlikePost:input_type -> posts.v1.UnlikePostRequest
+	9,  // 20: posts.v1.PostService.HandleAccountDeletion:input_type -> posts.v1.HandleAccountDeletionRequest
+	10, // 21: posts.v1.PostService.HandleAccountRestoration:input_type -> posts.v1.HandleAccountRestorationRequest
+	11, // 22: posts.v1.PostService.SearchPosts:input_type -> posts.v1.SearchPostsRequest
+	15, // 23: posts.v1.PostService.CreatePost:output_type -> posts.v1.Post
+	15, // 24: posts.v1.PostService.GetPost:output_type -> posts.v1.Post
+	18, // 25: posts.v1.PostService.UpdatePost:output_type -> google.protobuf.Empty
+	18, // 26: posts.v1.PostService.DeletePost:output_type -> google.protobuf.Empty
+	12, // 27: posts.v1.PostService.GetUserPosts:output_type -> posts.v1.GetPostsResponse
+	12, // 28: posts.v1.PostService.GetLikedPosts:output_type -> posts.v1.GetPostsResponse
+	13, // 29: posts.v1.PostService.GetGlobalFeed:output_type -> posts.v1.GetFeedResponse
+	13, // 30: posts.v1.PostService.GetFollowingFeed:output_type -> posts.v1.GetFeedResponse
+	18, // 31: posts.v1.PostService.LikePost:output_type -> google.protobuf.Empty
+	18, // 32: posts.v1.PostService.UnlikePost:output_type -> google.protobuf.Empty
+	18, // 33: posts.v1.PostService.HandleAccountDeletion:output_type -> google.protobuf.Empty
+	18, // 34: posts.v1.PostService.HandleAccountRestoration:output_type -> google.protobuf.Empty
+	14, // 35: posts.v1.PostService.SearchPosts:output_type -> posts.v1.SearchPostsResponse
+	23, // [23:36] is the sub-list for method output_type
+	10, // [10:23] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_posts_v1_posts_proto_init() }
@@ -996,7 +1094,7 @@ func file_posts_v1_posts_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_posts_v1_posts_proto_rawDesc), len(file_posts_v1_posts_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -42,6 +42,8 @@ type PostUsecase interface {
 	// Account lifecycle
 	HandleAccountDeletion(ctx context.Context, userID int) error
 	HandleAccountRestoration(ctx context.Context, userID int) error
+
+	SearchPosts(ctx context.Context, query string) ([]Post, error)
 }
 
 type PostRepository interface {
@@ -62,4 +64,6 @@ type PostRepository interface {
 	// Account lifecycle (atomic operations with transaction)
 	HandleAccountDeletion(ctx context.Context, userID int) error
 	HandleAccountRestoration(ctx context.Context, userID int) error
+
+	SearchPosts(ctx context.Context, query string) ([]Post, error)
 }
