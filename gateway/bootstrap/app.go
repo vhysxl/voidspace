@@ -103,7 +103,7 @@ func App() (*Application, error) {
 		userpb.NewUserServiceClient(userConn),
 	)
 
-	uploadService, err := service.NewUploadService(context.Background(), config.BucketName)
+	uploadService, err := service.NewUploadService(context.Background(), config.BucketName, config.GoogleCredentialsPath)
 	if err != nil {
 		panic(err)
 	}
