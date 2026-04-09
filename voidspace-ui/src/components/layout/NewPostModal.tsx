@@ -52,19 +52,18 @@ export default function NewPostModal() {
     setIsSubmitting(true);
     setError(null);
     try {
-      // 1. Upload all images first
-      const uploadedImages: PostImage[] = [];
-      
-      for (let i = 0; i < images.length; i++) {
-        const { file } = images[i];
-        const result = await uploadImage(file, "posts");
-        uploadedImages.push({
+      // 1. Upload all images in parallel
+      const uploadPromises = images.map(async (img, i) => {
+        const result = await uploadImage(img.file, "posts");
+        return {
           image_url: result.url,
           order: i + 1,
           width: result.width,
           height: result.height
-        });
-      }
+        };
+      });
+      
+      const uploadedImages = await Promise.all(uploadPromises);
 
       // 2. Create post with image data
       const response = await createPost(content, uploadedImages);
@@ -110,39 +109,59 @@ export default function NewPostModal() {
 
             {/* Body */}
             <div className="p-6 flex gap-4 overflow-y-auto">
-              <div className="size-12 rounded-full bg-foreground/5 flex-shrink-0 flex items-center justify-center text-xs font-bold text-foreground/20 border border-foreground/10">
-                {user?.username?.slice(0, 2).toUpperCase() || "VO"}
+              <div className="size-12 rounded-full bg-void-gray flex-shrink-0 overflow-hidden border border-foreground/10">
+                {user?.profile?.avatar_url ? (
+                  <img src={user.profile.avatar_url} alt={user.username} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs font-bold text-foreground/20">
+                    {user?.username?.slice(0, 2).toUpperCase() || "VO"}
+                  </div>
+                )}
               </div>
               <div className="flex-1 space-y-4">
                 <textarea
                   autoFocus
                   disabled={isSubmitting}
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={(e) => setContent(e.target.value.slice(0, 240))}
                   placeholder="What's resonating in the void?"
                   className="w-full min-h-[120px] bg-transparent resize-none text-lg outline-none placeholder:text-foreground/20 leading-relaxed disabled:opacity-50"
                 />
                 
                 {/* Image Previews */}
                 {images.length > 0 && (
-                  <div className="grid grid-cols-2 gap-2 mt-4">
+                  <div className={`grid gap-2 mt-4 ${images.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
                     {images.map((img, idx) => (
-                      <div key={idx} className="relative aspect-video rounded-sm overflow-hidden border border-foreground/10 group">
-                        <img src={img.preview} alt="Preview" className="w-full h-full object-cover" />
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        key={idx} 
+                        className="relative aspect-video rounded-sm overflow-hidden border border-foreground/10 group bg-void-dark"
+                      >
+                        {img.preview ? (
+                          <img src={img.preview} alt="Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-foreground/5">
+                            <Loader2 className="size-4 animate-spin text-foreground/20" />
+                          </div>
+                        )}
                         <button
                           onClick={() => removeImage(idx)}
                           disabled={isSubmitting}
-                          className="absolute top-2 right-2 size-8 bg-background/80 backdrop-blur-md rounded-full flex items-center justify-center text-foreground hover:bg-foreground hover:text-background transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                          className="absolute top-2 right-2 size-8 bg-background/80 backdrop-blur-md rounded-full flex items-center justify-center text-foreground hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50 shadow-lg"
                         >
                           <X size={14} />
                         </button>
-                      </div>
+                        <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-background/60 backdrop-blur-sm rounded-sm text-[8px] font-bold uppercase tracking-widest text-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                          IMAGE {idx + 1}
+                        </div>
+                      </motion.div>
                     ))}
                     {images.length < 5 && (
                       <button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isSubmitting}
-                        className="aspect-video rounded-sm border border-dashed border-foreground/20 flex flex-col items-center justify-center text-foreground/20 hover:border-foreground/40 hover:text-foreground/40 transition-all disabled:opacity-50"
+                        className="aspect-video rounded-sm border border-dashed border-foreground/20 flex flex-col items-center justify-center text-foreground/20 hover:border-foreground/40 hover:text-foreground/40 hover:bg-foreground/[0.02] transition-all disabled:opacity-50"
                       >
                         <Plus size={24} />
                         <span className="text-[10px] font-bold uppercase tracking-widest mt-2">Add Image</span>
@@ -172,9 +191,10 @@ export default function NewPostModal() {
                   <button 
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isSubmitting || images.length >= 5}
-                    className="text-foreground/40 hover:text-foreground transition-colors p-2 hover:bg-foreground/5 rounded-full disabled:opacity-20"
+                    className="flex items-center gap-2 text-foreground/40 hover:text-foreground transition-colors px-3 py-1.5 hover:bg-foreground/5 rounded-full disabled:opacity-20 group"
                   >
                     <ImageIcon size={20} />
+                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Add Media</span>
                   </button>
                 </div>
               </div>
@@ -182,11 +202,11 @@ export default function NewPostModal() {
 
             {/* Footer */}
             <div className="p-4 border-t border-foreground/10 flex justify-between items-center">
-              <div className="text-[10px] text-foreground/30 uppercase tracking-[1px]">
-                {content.length} / 280 characters
+              <div className={`text-[10px] uppercase tracking-[1px] transition-colors ${content.length >= 240 ? "text-red-500 font-bold" : content.length >= 220 ? "text-amber-500 font-bold" : "text-foreground/30"}`}>
+                {content.length} / 240 characters
               </div>
               <button
-                disabled={(!content.trim() && images.length === 0) || isSubmitting}
+                disabled={(!content.trim() && images.length === 0) || content.length > 240 || isSubmitting}
                 onClick={handlePost}
                 className={`px-8 py-3 rounded-sm font-bold text-[11px] uppercase tracking-[2px] transition-all flex items-center gap-2 ${
                   (content.trim() || images.length > 0) && !isSubmitting

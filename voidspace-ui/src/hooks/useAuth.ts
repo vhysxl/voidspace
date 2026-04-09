@@ -28,11 +28,18 @@ export const useAuth = () => {
     return response;
   };
 
-  const register = async (username: string, email: string, password: string) => {
-    const response = await apiFetch<ApiResponse<AuthResponse>>("/auth/register", {
-      method: "POST",
-      body: JSON.stringify({ username, email, password }),
-    });
+  const register = async (
+    username: string,
+    email: string,
+    password: string,
+  ) => {
+    const response = await apiFetch<ApiResponse<AuthResponse>>(
+      "/auth/register",
+      {
+        method: "POST",
+        body: JSON.stringify({ username, email, password }),
+      },
+    );
 
     if (response.success && response.data) {
       setToken(response.data.access_token, response.data.expires_in);

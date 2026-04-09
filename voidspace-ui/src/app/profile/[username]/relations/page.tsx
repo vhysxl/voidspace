@@ -4,33 +4,67 @@ import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, Users, UserPlus } from "lucide-react";
+import { ChevronLeft, Users, UserPlus, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useUser } from "@/hooks/useUser";
+import { UserBanner as UserBannerType } from "@/types";
+import UserBanner from "@/components/profile/UserBanner";
 
 const tabs = [
-  { id: "followers", label: "Followers", icon: Users },
   { id: "following", label: "Following", icon: UserPlus },
+  { id: "followers", label: "Followers", icon: Users },
 ];
 
 export default function RelationsPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user: currentUser } = useAuthStore();
+  const { user: currentUser, _hasHydrated } = useAuthStore();
+  const { getFollowers, getFollowing } = useUser();
   
   const username = params.username as string;
-  const initialTab = searchParams.get("tab") || "followers";
+  const initialTab = searchParams.get("tab") || "following";
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [users, setUsers] = useState<UserBannerType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setActiveTab(initialTab);
   }, [initialTab]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!_hasHydrated) return;
+      
+      setIsLoading(true);
+      try {
+        const response = activeTab === "followers" 
+          ? await getFollowers(username)
+          : await getFollowing(username);
+          
+        if (response.success && response.data) {
+          setUsers(response.data);
+        } else {
+          setUsers([]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch relations:", err);
+        setUsers([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [activeTab, username, _hasHydrated]);
+
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
     router.push(`/profile/${username}/relations?tab=${tabId}`);
   };
+
+  if (!_hasHydrated) return null;
 
   return (
     <DashboardLayout fullWidth={true}>
@@ -44,7 +78,7 @@ export default function RelationsPage() {
             <ChevronLeft size={20} />
           </Link>
           <div>
-            <h1 className="font-space-grotesk text-xl font-bold tracking-tight uppercase leading-none">
+            <h1 className="font-space-grotesk text-xl font-bold tracking-tight leading-none">
               {username}
             </h1>
             <p className="text-[10px] text-foreground/40 uppercase tracking-[1px] mt-1">
@@ -89,50 +123,45 @@ export default function RelationsPage() {
 
         {/* Content Area */}
         <div className="flex-1 p-6 max-w-4xl mx-auto w-full">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
-            >
-              {/* Placeholder Empty State */}
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="size-16 rounded-full bg-foreground/5 flex items-center justify-center mb-4">
-                  {(() => {
-                    const ActiveIcon = tabs.find((t) => t.id === activeTab)?.icon;
-                    return ActiveIcon ? <ActiveIcon size={24} className="text-foreground/20" /> : null;
-                  })()}
-                </div>
-                <h2 className="font-space-grotesk text-lg font-bold uppercase tracking-tight mb-2">
-                  No {activeTab} yet
-                </h2>
-                <p className="text-foreground/40 text-sm max-w-xs mx-auto">
-                  {activeTab === "followers" 
-                    ? "This user doesn't have any followers in the void yet." 
-                    : "This user isn't following anyone in the void yet."}
-                </p>
-              </div>
-
-              {/* Sample User Item (Commented out until data is available) */}
-              {/* 
-              <div className="flex items-center justify-between p-4 border border-foreground/10 bg-foreground/5 rounded-sm group hover:border-foreground/20 transition-all">
-                <div className="flex items-center gap-3">
-                  <div className="size-12 rounded-full bg-foreground/10 border border-foreground/5" />
-                  <div>
-                    <p className="text-sm font-bold uppercase tracking-tight">Sample User</p>
-                    <p className="text-[10px] text-foreground/40 uppercase tracking-[1px]">@sample_user</p>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="size-8 text-foreground/20 animate-spin" />
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                {users.length > 0 ? (
+                  users.map((user) => (
+                    <UserBanner key={user.id} user={user} />
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="size-16 rounded-full bg-foreground/5 flex items-center justify-center mb-4">
+                      {(() => {
+                        const ActiveIcon = tabs.find((t) => t.id === activeTab)?.icon;
+                        return ActiveIcon ? <ActiveIcon size={24} className="text-foreground/20" /> : null;
+                      })()}
+                    </div>
+                    <h2 className="font-space-grotesk text-lg font-bold uppercase tracking-tight mb-2">
+                      No {activeTab} yet
+                    </h2>
+                    <p className="text-foreground/40 text-sm max-w-xs mx-auto">
+                      {activeTab === "followers" 
+                        ? "This user doesn't have any followers in the void yet." 
+                        : "This user isn't following anyone in the void yet."}
+                    </p>
                   </div>
-                </div>
-                <button className="px-6 py-2 border border-foreground/20 text-[10px] font-bold uppercase tracking-[1px] hover:bg-foreground hover:text-background transition-all rounded-sm">
-                  Follow
-                </button>
-              </div>
-              */}
-            </motion.div>
-          </AnimatePresence>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
       </div>
     </DashboardLayout>

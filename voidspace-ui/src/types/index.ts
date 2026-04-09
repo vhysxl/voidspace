@@ -47,7 +47,7 @@ export interface Post {
 }
 
 export interface Comment {
-  id: number;
+  comment_id: number;
   content: string;
   author: User;
   created_at: string;
@@ -75,6 +75,7 @@ export interface CreatePostRequest {
 
 export interface UpdatePostRequest {
   content: string;
+  post_images?: PostImage[];
 }
 
 export interface CreateCommentRequest {
@@ -99,4 +100,17 @@ export interface SignedURLResponse {
   publicUrl: string;
   fileName: string;
   folder: string;
+}
+
+export interface UserBanner {
+  id: number;
+  username: string
+  display_name: string;
+  avatar_url: string;
+}
+
+export interface PostCardProps {
+  post: Post;
+  isDetailed?: boolean;
+  onCommentClick?: () => void;
 }
