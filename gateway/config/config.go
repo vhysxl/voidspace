@@ -54,6 +54,6 @@ func initConfig() Config {
 		BucketName:            helper.GetEnv("BUCKET_NAME", "assets_voidspace"),
 		TemporalPort:          helper.GetEnv("TEMPORAL_PORT", "localhost:7233"),
 		Environment:           helper.GetEnv("ENV", "PROD"),
-		GoogleCredentialsPath: helper.GetEnv("GOOGLE_CREDENTIALS_PATH", "/etc/secrets/credentials_gcs.json"),
+		GoogleCredentialsPath: helper.GetEnv("/etc/secrets/credentials_gcs", "/etc/secrets/credentials_gcs"),
 	}
 }
