@@ -1,6 +1,6 @@
 # Voidspace
 
-**Voidspace** Social is a cloud-first mini-microservices application. It is a mini Twitter-like social media app where users can create posts, follow others, send direct messages, and view their timeline. 
+**Voidspace** Social is a cloud-first mini-microservices application. It is a mini Twitter-like social media app where users can create posts, follow others, and view their timeline. 
 
 ### Architecture & Tech Stack
 
