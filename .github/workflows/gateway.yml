@@ -78,3 +78,5 @@ jobs:
             TEMPORAL_HOST=${{ secrets.TEMPORAL_HOST }}
             TEMPORAL_NAMESPACE=${{ secrets.TEMPORAL_NAMESPACE }}
             TEMPORAL_API_KEY=${{ secrets.TEMPORAL_API_KEY }}
+            PUBLIC_KEY_PATH=${{ secrets.PUBLIC_KEY_PATH }}
+            GOOGLE_CREDENTIALS_PATH=${{ secrets.GOOGLE_CREDENTIALS_PATH }}

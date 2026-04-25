@@ -6,7 +6,6 @@ import (
 	"github.com/vhysxl/voidspace/shared/utils/helper"
 )
 
-// Config struct
 type Config struct {
 	Port           string
 	DBConnString   string

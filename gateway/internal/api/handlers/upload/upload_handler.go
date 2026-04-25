@@ -1,4 +1,4 @@
-package handlers
+package upload
 
 import (
 	"net/http"
@@ -59,16 +59,18 @@ func (uh *UploadHandler) GenerateSignedURL(c echo.Context) error {
 	fileName := utils.GenerateUniqueFileName(req.ContentType)
 
 	// Generate signed URL
-	signedUrl, err := uh.UploadService.GenerateSignedURL(fileName, req.ContentType)
+	signedUrl, err := uh.UploadService.GenerateSignedURL(req.Folder, fileName, req.ContentType)
 	if err != nil {
 		uh.Logger.Error("failed generate signed url:", zap.Error(err))
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to generate signed URL"})
 	}
 
-	publicUrl := uh.UploadService.GetPublicURL(fileName)
+	publicUrl := uh.UploadService.GetPublicURL(req.Folder, fileName)
 
 	return responses.SuccessResponseMessage(c, http.StatusOK, "Url Successfully generated", map[string]any{
 		"signedUrl": signedUrl,
 		"publicUrl": publicUrl,
+		"fileName":  fileName,
+		"folder":    req.Folder,
 	})
 }

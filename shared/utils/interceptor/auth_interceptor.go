@@ -40,13 +40,16 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 			"/users.v1.UserService/GetUserById":   true,
 			"/users.v1.UserService/ListFollowers": true,
 			"/users.v1.UserService/ListFollowing": true,
+			"/users.v1.UserService/SearchUsers":   true,
 
 			// Post
 			"/posts.v1.PostService/GetPost":                  true,
-			"/posts.v1.PostService/GetAllPosts":              true,
+			"/posts.v1.PostService/GetLikedPosts":            true,
+			"/posts.v1.PostService/GetUserPosts":             true,
 			"/posts.v1.PostService/GetGlobalFeed":            true,
 			"/posts.v1.PostService/HandleAccountDeletion":    true,
 			"/posts.v1.PostService/HandleAccountRestoration": true,
+			"/posts.v1.PostService/SearchPosts":              true,
 
 			// Comments
 			"/comments.v1.CommentService/GetAllCommentsByPostId":   true,
@@ -55,6 +58,7 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 			"/comments.v1.CommentService/HandleAccountDeletion":    true,
 			"/comments.v1.CommentService/HandleAccountRestoration": true,
 			"/comments.v1.CommentService/HandlePostDeletion":       true,
+			"/comments.v1.CommentService/SearchComments":           true,
 		}
 
 		isSkippedMethod := skipAuthMethods[info.FullMethod]

@@ -7,24 +7,16 @@
   --color-void-border: rgba(255, 255, 255, 0.1);
   --color-void-accent: #ffffff;
   
-  --font-inter: "Inter", sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --font-space-grotesk: var(--font-space-grotesk);
+  --font-manrope: var(--font-manrope);
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-.dark {
   --background: #000000;
   --foreground: #fafafa;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000000;
-    --foreground: #fafafa;
-  }
 }
 
 * {
@@ -34,7 +26,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter);
+  font-family: var(--font-manrope);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

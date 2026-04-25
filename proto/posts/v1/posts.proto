@@ -30,6 +30,7 @@ service PostService {
   // ---------------------- ACCOUNT LIFECYCLE ----------------------
   rpc HandleAccountDeletion(HandleAccountDeletionRequest) returns (google.protobuf.Empty);
   rpc HandleAccountRestoration(HandleAccountRestorationRequest) returns (google.protobuf.Empty);
+  rpc SearchPosts(SearchPostsRequest) returns (SearchPostsResponse);
 }
 
 // ---------------------- REQUEST MESSAGES ----------------------
@@ -84,6 +85,10 @@ message HandleAccountRestorationRequest {
   int64 user_id = 1;
 }
 
+message SearchPostsRequest {
+  string query = 1;
+}
+
 // ---------------------- RESPONSE MESSAGES ----------------------
 
 message GetPostsResponse {
@@ -93,6 +98,10 @@ message GetPostsResponse {
 message GetFeedResponse {
   repeated Post posts = 1;
   bool has_more = 2;
+}
+
+message SearchPostsResponse {
+  repeated Post posts = 1;
 }
 
 // ---------------------- DATA MODELS ----------------------

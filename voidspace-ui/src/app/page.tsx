@@ -1,65 +1,193 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState, useCallback, useRef } from "react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import PostCard from "@/components/posts/PostCard";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useFeed } from "@/hooks/useFeed";
+import { Post } from "@/types";
+import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
+
+export default function HomePage() {
+  const { _hasHydrated, isLoggedIn } = useAuthStore();
+  const { getGlobalFeed, getFollowingFeed } = useFeed();
+  const [activeTab, setActiveTab] = useState<"global" | "following">("global");
+  
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Ref to track if we've already done the initial fetch for current tab
+  const initialFetchDone = useRef<string | null>(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  const fetchFeed = useCallback(async (isMore = false) => {
+    if (!_hasHydrated) return;
+    if (isLoading || (isMore && !hasMore) || (isMore && isFetchingMore)) return;
+
+    if (isMore) {
+      setIsFetchingMore(true);
+    } else {
+      setIsLoading(true);
+      setPosts([]); // Clear posts on tab switch
+    }
+    
+    setError(null);
+
+    try {
+      const lastPost = isMore && posts.length > 0 ? posts[posts.length - 1] : null;
+      const cursor = lastPost?.created_at;
+      const cursorid = lastPost?.id;
+
+      const response = activeTab === "following" && isLoggedIn
+        ? await getFollowingFeed(cursor, cursorid) 
+        : await getGlobalFeed(cursor, cursorid);
+      
+      if (response.success && response.data) {
+        const newPosts = response.data.posts || [];
+        setPosts(prev => isMore ? [...prev, ...newPosts] : newPosts);
+        setHasMore(response.data.has_more);
+      } else {
+        setError(response.detail || "Failed to fetch feed");
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred while fetching the feed");
+    } finally {
+      setIsLoading(false);
+      setIsFetchingMore(false);
+    }
+  }, [_hasHydrated, isLoggedIn, activeTab, getGlobalFeed, getFollowingFeed, posts, hasMore, isLoading, isFetchingMore]);
+
+  // Initial fetch effect
+  useEffect(() => {
+    if (_hasHydrated && initialFetchDone.current !== activeTab) {
+      initialFetchDone.current = activeTab;
+      fetchFeed(false);
+    }
+  }, [_hasHydrated, activeTab, fetchFeed]);
+
+  // Reset tracker on auth change
+  useEffect(() => {
+    initialFetchDone.current = null;
+  }, [isLoggedIn]);
+
+  // Intersection Observer for Infinite Scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !isLoading && !isFetchingMore && posts.length > 0) {
+          fetchFeed(true);
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoading, isFetchingMore, posts.length, fetchFeed]);
+
+  if (!_hasHydrated) return null;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <DashboardLayout fullWidth={true}>
+      <div className="flex flex-col min-h-screen">
+        {/* Header & Tabs */}
+        <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-foreground/10">
+          <div className="px-6 py-4">
+            <h1 className="font-space-grotesk text-xl font-bold tracking-tight uppercase">
+              Feed
+            </h1>
+          </div>
+          
+          <div className="flex px-2">
+            <button
+              onClick={() => setActiveTab("global")}
+              className={`flex-1 relative py-4 text-[11px] font-bold uppercase tracking-[2px] transition-colors ${
+                activeTab === "global" ? "text-foreground" : "text-foreground/40 hover:text-foreground/60"
+              }`}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              Global
+              {activeTab === "global" && (
+                <motion.div
+                  layoutId="activeFeedTab"
+                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+            </button>
+            
+            {isLoggedIn && (
+              <button
+                onClick={() => setActiveTab("following")}
+                className={`flex-1 relative py-4 text-[11px] font-bold uppercase tracking-[2px] transition-colors ${
+                  activeTab === "following" ? "text-foreground" : "text-foreground/40 hover:text-foreground/60"
+                }`}
+              >
+                Following
+                {activeTab === "following" && (
+                  <motion.div
+                    layoutId="activeFeedTab"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+              </button>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Feed Content */}
+        <div className="flex-1 divide-y divide-foreground/10">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="size-8 text-foreground/20 animate-spin" />
+            </div>
+          ) : error ? (
+            <div className="p-10 text-center space-y-4">
+              <p className="text-red-500 uppercase text-xs tracking-widest font-bold">{error}</p>
+              <button 
+                onClick={() => fetchFeed(false)}
+                className="px-6 py-2 border border-foreground/20 text-[10px] font-bold uppercase tracking-[2px] hover:bg-foreground hover:text-background transition-all"
+              >
+                Retry
+              </button>
+            </div>
+          ) : posts.length > 0 ? (
+            <>
+              {posts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+              
+              {/* Infinite Scroll Trigger */}
+              <div ref={observerTarget} className="py-10 flex items-center justify-center">
+                {isFetchingMore && <Loader2 className="size-6 text-foreground/20 animate-spin" />}
+                {!hasMore && (
+                  <p className="text-foreground/20 text-[10px] uppercase tracking-[2px]">
+                    End of the void reached.
+                  </p>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="p-20 text-center">
+              <p className="text-foreground/40 uppercase text-xs tracking-widest">
+                {activeTab === "global" 
+                  ? "The void is silent. No transmissions found." 
+                  : "You aren't following anyone in the void yet."}
+              </p>
+            </div>
+          )}
         </div>
-      </main>
-    </div>
+
+        {/* Space for bottom nav on mobile */}
+        <div className="h-20" />
+      </div>
+    </DashboardLayout>
   );
 }
