@@ -36,6 +36,11 @@ jobs:
       - name: run test
         run: go test -v ./...
 
+      - name: vulnerability-check
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
       - name: build docker image
         run: docker build -f services/posts/Dockerfile -t voidspace-posts:latest .
         working-directory: ${{ github.workspace }}
