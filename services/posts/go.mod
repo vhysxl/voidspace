@@ -9,8 +9,8 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/vhysxl/voidspace/shared v0.0.0-00010101000000-000000000000
 	go.uber.org/zap v1.27.1
-	google.golang.org/grpc v1.74.2
-	google.golang.org/protobuf v1.36.7
+	google.golang.org/grpc v1.79.3
+	google.golang.org/protobuf v1.36.10
 )
 
 require (
@@ -18,17 +18,15 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/lib/pq v1.10.9 // indirect
-	go.opentelemetry.io/otel v1.37.0 // indirect
-	go.opentelemetry.io/otel/sdk/metric v1.37.0 // indirect
 )
 
 require (
 	go.uber.org/multierr v1.10.0 // indirect
-	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250811230008-5f3141c8851a // indirect
+	golang.org/x/net v0.48.0 // indirect
+	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/text v0.32.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251202230838-ff82c1b0f217 // indirect
 )
 
 replace github.com/vhysxl/voidspace/shared => ../../shared
