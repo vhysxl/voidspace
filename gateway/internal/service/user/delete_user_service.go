@@ -2,53 +2,53 @@ package user
 
 import (
 	"context"
-	"errors"
-	"strconv"
-	temporal_constants "voidspaceGateway/temporal/constants"
-	temporal_dto "voidspaceGateway/temporal/dto"
+	commentpb "voidspaceGateway/proto/generated/comments/v1"
+	postpb "voidspaceGateway/proto/generated/posts/v1"
+	"voidspaceGateway/utils"
 
-	"go.temporal.io/api/enums/v1"
-	"go.temporal.io/sdk/client"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (s *UserService) DeleteUser(ctx context.Context, userID string, username string) error {
+	ctx, cancel := context.WithTimeout(ctx, s.ContextTimeout)
+	defer cancel()
+
 	user, err := s.GetCurrentUser(ctx, userID, username)
 	if err != nil {
 		s.Logger.Error("failed to get user", zap.Error(err))
 		return err
 	}
 
-	param := temporal_dto.DeleteUserWorkflowParam{
-		UserID:   strconv.Itoa(user.ID),
-		Username: username,
-	}
+	md := utils.MetaDataHandler(userID, username)
+	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	run, err := s.TemporalClient.ExecuteWorkflow(
-		ctx,
-		client.StartWorkflowOptions{
-			ID:                       "delete-user-" + userID,
-			TaskQueue:                s.TemporalService,
-			WorkflowIDReusePolicy:    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY,
-			WorkflowIDConflictPolicy: enums.WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING,
-		},
-		temporal_constants.DeleteUserWorkflowName,
-		param,
-	)
-
+	// 1. Delete User via gRPC
+	_, err = s.UserClient.DeleteUser(ctx, &emptypb.Empty{})
 	if err != nil {
-		s.Logger.Error("failed to execute workflow", zap.Error(err))
+		s.Logger.Error("failed to call UserService.DeleteUser", zap.Error(err))
 		return err
 	}
 
-	var res temporal_dto.DeleteUserWorkflowResult
-	if err := run.Get(ctx, &res); err != nil {
-		s.Logger.Error("workflow failed", zap.Error(err))
+	userIDInt := int64(user.ID)
+
+	// 2. Delete User's Posts via gRPC
+	_, err = s.PostClient.HandleAccountDeletion(ctx, &postpb.HandleAccountDeletionRequest{
+		UserId: userIDInt,
+	})
+	if err != nil {
+		s.Logger.Error("failed to delete user's posts", zap.Error(err))
 		return err
 	}
 
-	if !res.Success {
-		return errors.New("delete user workflow failed")
+	// 3. Delete User's Comments via gRPC
+	_, err = s.CommentClient.HandleAccountDeletion(ctx, &commentpb.HandleAccountDeletionRequest{
+		UserId: userIDInt,
+	})
+	if err != nil {
+		s.Logger.Error("failed to delete user's comments", zap.Error(err))
+		return err
 	}
 
 	return nil

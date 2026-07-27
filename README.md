@@ -5,7 +5,7 @@
 ### Architecture & Tech Stack
 
 -   **BFF (Backend for Frontend)**: The API Gateway acts as an orchestrator and aggregator, exposing a clean REST API while communicating with various internal microservices via gRPC.
--   **Distributed Workflows**: Uses **Temporal** for reliable service orchestration and complex long-running operations (e.g., account deletion workflows with compensation logic).
+-   **Direct gRPC Orchestration**: Service operations and cascading deletions (e.g. account and post deletions) are orchestrated directly via gRPC microservice calls.
 -   **Deployment**: 
     -   **Backend**: Deployed on **Google Cloud Run** via GitHub Actions.
     -   **Frontend**: Next.js application deployed on **Vercel**.

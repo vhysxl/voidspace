@@ -22,16 +22,15 @@ import (
 )
 
 type Application struct {
-	Config          *config.Config
-	ApiSecret       string
-	ContextTimeout  time.Duration
-	Validator       *validator.Validate
-	Logger          *zap.Logger
-	TemporalService *TemporalService
-	UserService     *user_service.UserService
-	PostService     *post_service.PostService
-	UploadService   *service.UploadService
-	CommentService  *comment_service.CommentService
+	Config         *config.Config
+	ApiSecret      string
+	ContextTimeout time.Duration
+	Validator      *validator.Validate
+	Logger         *zap.Logger
+	UserService    *user_service.UserService
+	PostService    *post_service.PostService
+	UploadService  *service.UploadService
+	CommentService *comment_service.CommentService
 }
 
 func App() (*Application, error) {
@@ -47,11 +46,6 @@ func App() (*Application, error) {
 	logger, err := helper.InitLogger()
 	if err != nil {
 		log.Println("Logger failed to load", err)
-		return nil, err
-	}
-
-	temporalService, err := TemporalServiceInit(logger, config.TemporalPort)
-	if err != nil {
 		return nil, err
 	}
 
@@ -81,8 +75,6 @@ func App() (*Application, error) {
 		userpb.NewUserServiceClient(userConn),
 		postpb.NewPostServiceClient(postConn),
 		commentpb.NewCommentServiceClient(commentConn),
-		temporalService.Client,
-		temporalService.Service,
 	)
 
 	postService := post_service.NewPostService(
@@ -91,8 +83,6 @@ func App() (*Application, error) {
 		userpb.NewUserServiceClient(userConn),
 		postpb.NewPostServiceClient(postConn),
 		commentpb.NewCommentServiceClient(commentConn),
-		temporalService.Client,
-		temporalService.Service,
 	)
 
 	commentService := comment_service.NewCommentService(
@@ -108,19 +98,17 @@ func App() (*Application, error) {
 		panic(err)
 	}
 
-	// Register Activities
 	logger.Info("Gateway Ready")
 
 	return &Application{
-		Config:          config,
-		ApiSecret:       config.ApiSecret,
-		ContextTimeout:  time.Duration(config.ContextTimeout) * time.Second,
-		Validator:       validator,
-		Logger:          logger,
-		TemporalService: temporalService,
-		UserService:     userService,
-		PostService:     postService,
-		UploadService:   uploadService,
-		CommentService:  commentService,
+		Config:         config,
+		ApiSecret:      config.ApiSecret,
+		ContextTimeout: time.Duration(config.ContextTimeout) * time.Second,
+		Validator:      validator,
+		Logger:         logger,
+		UserService:    userService,
+		PostService:    postService,
+		UploadService:  uploadService,
+		CommentService: commentService,
 	}, nil
 }

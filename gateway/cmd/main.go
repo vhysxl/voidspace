@@ -10,7 +10,6 @@ import (
 	"time"
 	"voidspaceGateway/bootstrap"
 	"voidspaceGateway/internal/api/router"
-	"voidspaceGateway/temporal"
 
 	cstmMiddleware "voidspaceGateway/middleware"
 
@@ -24,14 +23,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	temporal.RegisterTemporal(app)
-
-	go func() {
-		if err := app.TemporalService.TemporalStart(); err != nil {
-			app.Logger.Fatal("Failed to start Temporal worker", zap.Error(err))
-		}
-	}()
 
 	e := echo.New()
 	e.Use(middleware.RateLimiterWithConfig(cstmMiddleware.RateLimitConfig()))
@@ -96,7 +87,6 @@ func main() {
 	defer cancel()
 
 	_ = e.Shutdown(shutdownCtx)
-	app.TemporalService.Stop()
 
 	app.Logger.Info("Exit cleanly")
 }

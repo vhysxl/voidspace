@@ -18,7 +18,6 @@ type Config struct {
 	PostServiceAddr       string
 	CommentServiceAddr    string
 	BucketName            string
-	TemporalPort          string
 	Environment           string
 	GoogleCredentialsPath string
 }
@@ -52,7 +51,6 @@ func initConfig() Config {
 		PostServiceAddr:       helper.GetEnv("POST_SERVICE_URL", "localhost:5000"),
 		CommentServiceAddr:    helper.GetEnv("COMMENT_SERVICE_URL", "localhost:8082"),
 		BucketName:            helper.GetEnv("BUCKET_NAME", "assets_voidspace"),
-		TemporalPort:          helper.GetEnv("TEMPORAL_PORT", "localhost:7233"),
 		Environment:           helper.GetEnv("ENV", "PROD"),
 		GoogleCredentialsPath: helper.GetEnv("GOOGLE_APPLICATION_CREDENTIALS", "/etc/secrets/credentials_gcs"),
 	}
